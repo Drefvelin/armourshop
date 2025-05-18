@@ -1,0 +1,17 @@
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\ArmourShop.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\Cache.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\enums\ArmorType.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\holder\ASInventoryHolder.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\loaders\BaseSetLoader.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\loaders\CategoryLoader.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\loaders\ConfigLoader.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\loaders\SkinSetLoader.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\managers\CommandManager.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\managers\InventoryManager.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\managers\SkinManager.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\objects\ArmorPiece.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\objects\BaseSet.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\objects\SkinCategory.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\objects\SkinSet.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\utils\Merger.java
+D:\Dokumenter\My Plugins\VSCode Workspace\armourshop\src\main\java\net\tfminecraft\ArmourShop\utils\Permissions.java

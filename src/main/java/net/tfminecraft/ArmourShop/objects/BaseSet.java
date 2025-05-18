@@ -18,6 +18,7 @@ public class BaseSet {
 	private List<ArmorPiece> chestplates = new ArrayList<>();
 	private List<ArmorPiece> leggings = new ArrayList<>();
 	private List<ArmorPiece> boots = new ArrayList<>();
+	private List<ArmorPiece> items = new ArrayList<>();
 	
 	public BaseSet(String key, ConfigurationSection config) {
 		this.id = key;
@@ -41,6 +42,11 @@ public class BaseSet {
 		if(config.contains("boots")) {
 			for(String s : config.getStringList("boots")) {
 				this.boots.add(new ArmorPiece(key, c.getItemFromPath("m."+s), ArmorType.BOOTS));
+			}
+		}
+		if(config.contains("item")) {
+			for(String s : config.getStringList("item")) {
+				this.items.add(new ArmorPiece(key, c.getItemFromPath("m."+s), ArmorType.ITEM));
 			}
 		}
 	}
@@ -80,6 +86,10 @@ public class BaseSet {
 			}
 		} else if(type.equals(ArmorType.BOOTS)) {
 			for(ArmorPiece p : boots) {
+				if(p.is(i)) return true;
+			}
+		} else if(type.equals(ArmorType.ITEM)) {
+			for(ArmorPiece p : items) {
 				if(p.is(i)) return true;
 			}
 		}

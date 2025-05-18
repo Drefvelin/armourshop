@@ -25,12 +25,14 @@ import me.Plugins.TLibs.Objects.API.ItemAPI;
 import net.Indyuce.mmoitems.api.event.item.ApplyGemStoneEvent;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.enums.ArmorType;
+import net.tfminecraft.ArmourShop.holder.ASInventoryHolder;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.objects.SkinCategory;
 import net.tfminecraft.ArmourShop.objects.SkinSet;
 import net.tfminecraft.ArmourShop.utils.Merger;
 
 public class SkinManager implements Listener{
+	InventoryManager inv = new InventoryManager();
 	private HashMap<Player, Boolean> usedGem = new HashMap<>();
 	private boolean isCategoryInventory(String name) {
 		for(SkinCategory c : CategoryLoader.get()) {
@@ -45,14 +47,29 @@ public class SkinManager implements Listener{
 		if(e.getClickedInventory() == null) return;
 		if(e.getCurrentItem() == null) return;
 		Player p = (Player) e.getWhoClicked();
-		if(e.getView().getTitle().equalsIgnoreCase("§7Armourshop Categories")) {
+		if(!(e.getView().getTopInventory().getHolder() instanceof ASInventoryHolder)) return;
+		ASInventoryHolder holder = (ASInventoryHolder) e.getView().getTopInventory().getHolder();
+		if(e.getView().getTitle().equalsIgnoreCase("Â§7Armourshop Categories")) {
 			e.setCancelled(true);
+			if(e.getSlot() == 26) {
+				inv.typeView(p);
+				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
+				return;
+			}
 			ItemStack item = e.getCurrentItem();
 			if(item == null) return;
 			SkinCategory c = CategoryLoader.getByName(item.getItemMeta().getDisplayName());
 			if(c == null) return;
-			InventoryManager inv = new InventoryManager();
-			inv.skinView(p, c, 0);
+			
+			inv.skinView(p, c, 0, holder.isItem());
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
+		} else if(e.getView().getTitle().equalsIgnoreCase("Â§7Armourshop Type")) {
+			e.setCancelled(true);
+			ItemStack item = e.getCurrentItem();
+			if(item == null) return;
+			boolean isItem = false;
+			if(e.getSlot() == 1) isItem = true;
+			inv.categoryView(p, isItem);
 			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 		} else if(isCategoryInventory(e.getView().getTitle())) {
 			SkinCategory c = CategoryLoader.getByName(e.getView().getTitle());
@@ -64,18 +81,15 @@ public class SkinManager implements Listener{
 			if(e.getSlot() == 3) {			
 				NamespacedKey key = new NamespacedKey(ArmourShop.plugin, "page");
 				int page = m.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
-				InventoryManager inv = new InventoryManager();
-				inv.skinView(p, c, page-1);
+				inv.skinView(p, c, page-1, holder.isItem());
 				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 			} else if(e.getSlot() == 5) {
 				NamespacedKey key = new NamespacedKey(ArmourShop.plugin, "page");
 				int page = m.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
-				InventoryManager inv = new InventoryManager();
-				inv.skinView(p, c, page+1);
+				inv.skinView(p, c, page+1, holder.isItem());
 				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 			} else if(e.getSlot() == 4) {
-				InventoryManager inv = new InventoryManager();
-				inv.categoryView(p);
+				inv.categoryView(p, holder.isItem());
 				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 			} else {
 				applySkin(p, item);
@@ -92,9 +106,11 @@ public class SkinManager implements Listener{
 		String info = m.getPersistentDataContainer().get(key, PersistentDataType.STRING);
 		SkinSet set = CategoryLoader.getByContainsSet(info.split("\\.")[0]);
 		if(set == null) return;
+		ItemStack scroll = null;
 		if(set.hasScroll()) {
-			if(!takeScroll(p, set.getScroll())) {
-				p.sendMessage("§cLacking Scroll");
+			scroll = findScroll(p, set.getScroll());
+			if(scroll == null) {
+				p.sendMessage("Â§cLacking Scroll");
 				p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
 				return;
 			}
@@ -113,6 +129,8 @@ public class SkinManager implements Listener{
 					s = set.getLeggings();
 				} else if(type.equals(ArmorType.BOOTS)) {
 					s = set.getBoots();
+				} else if(type.equals(ArmorType.ITEM)){
+					s = set.getItem();
 				}
 				Optional<String> name = Optional.empty();
 				if(set.addName()) {
@@ -120,23 +138,23 @@ public class SkinManager implements Listener{
 				}
 				Merger merger = new Merger();
 				p.getInventory().setItem(y, merger.merge(item, name, s));
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
+				if(set.hasScroll()) scroll.setAmount(scroll.getAmount()-1);
+				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
 				return;
 			}
 		}
-		p.sendMessage("§cNo item to apply skin on in your inventory");
+		p.sendMessage("Â§cNo item to apply skin on in your inventory");
 		p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
 	}
 	
-	public boolean takeScroll(Player p, String scroll) {
+	public ItemStack findScroll(Player p, String scroll) {
 		ItemAPI api = (ItemAPI) TLibs.getApiInstance(APIType.ITEM_API);
 		for(ItemStack i : p.getInventory().getContents()) {
 			if(api.getChecker().checkItemWithPath(i, scroll)) {
-				i.setAmount(i.getAmount()-1);
-				return true;
+				return i;
 			}
 		}
-		return false;
+		return null;
 	}
 	@EventHandler
 	public void fixItem(InventoryClickEvent e) {

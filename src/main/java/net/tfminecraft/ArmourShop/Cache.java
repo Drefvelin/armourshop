@@ -5,4 +5,5 @@ import java.util.List;
 
 public class Cache {
 	public static List<Integer> points = new ArrayList<>();
+	public static List<Integer> itemPoints = new ArrayList<>();
 }

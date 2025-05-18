@@ -2,6 +2,7 @@ package net.tfminecraft.ArmourShop.utils;
 
 import java.util.Optional;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -16,13 +17,27 @@ public class Merger {
 
 	public ItemStack merge(ItemStack item, Optional<String> name, String s) {
 		ItemAPI api = (ItemAPI) TLibs.getApiInstance(APIType.ITEM_API);
-		ItemStack skin = api.getCreator().getItemFromPath(s);
-		if(s.split("\\.")[0].equalsIgnoreCase("ia")) {
-			String namespace = s.split("\\.")[1].split("\\:")[0];
-			String id = s.split("\\.")[1].split("\\:")[1];
-			NBTItem mnbt = NBTItem.get(item);
-			mnbt.addTag(new ItemTag("ia", namespace+"."+id));
-			item = mnbt.toItem();
+		ItemStack skin = new ItemStack(Material.EMERALD, 1);
+		if(s.split("\\(")[0].equalsIgnoreCase("localmodel")) {
+			String info = s.split("\\(")[1].replace(")", "");
+			try {
+				skin = new ItemStack(Material.valueOf(info.split("\\.")[0].toUpperCase()), 1);
+				ItemMeta m = skin.getItemMeta();
+				m.setCustomModelData(Integer.parseInt(info.split("\\.")[1]));
+				skin.setItemMeta(m);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			skin = api.getCreator().getItemFromPath(s);
+
+			if(s.split("\\.")[0].equalsIgnoreCase("ia")) {
+				String namespace = s.split("\\.")[1].split("\\:")[0];
+				String id = s.split("\\.")[1].split("\\:")[1];
+				NBTItem mnbt = NBTItem.get(item);
+				mnbt.addTag(new ItemTag("ia", namespace+"."+id));
+				item = mnbt.toItem();
+			}
 		}
 		item.setType(skin.getType());
 		ItemMeta skinMeta = skin.getItemMeta();

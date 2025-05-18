@@ -6,20 +6,24 @@ import java.util.Optional;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import me.Plugins.TLibs.Objects.API.SubAPI.StringFormatter;
+
 public class SkinCategory {
 	private String id;
 	private String name;
 	private String item;
+	private boolean isItem;
 	private List<SkinSet> sets = new ArrayList<>();
 	private Optional<String> permission = Optional.empty();
 	
 	public SkinCategory(String key, ConfigurationSection config) {
 		this.id = key;
-		this.name = config.getString("name");
+		this.name = StringFormatter.formatHex(config.getString("name"));
 		this.item = config.getString("item");
 		if(config.contains("permission")) {
 			this.permission = Optional.of(config.getString("permission"));
 		}
+		isItem = config.getBoolean("is-item", false);
 	}
 
 	public String getId() {
@@ -32,6 +36,9 @@ public class SkinCategory {
 
 	public String getItem() {
 		return item;
+	}
+	public boolean isItem() {
+		return isItem;
 	}
 
 	public String getPermission() {
@@ -55,5 +62,6 @@ public class SkinCategory {
 		this.name = another.getName();
 		this.item = another.getItem();
 		this.permission = Optional.of(another.getPermission());
+		this.isItem = another.isItem();
 	}
 }

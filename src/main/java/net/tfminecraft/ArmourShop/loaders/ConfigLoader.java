@@ -19,5 +19,6 @@ public class ConfigLoader implements LoaderInterface{
             e.printStackTrace();
         }
         Cache.points = config.getIntegerList("start-points");
+        Cache.itemPoints = config.getIntegerList("item-start-points");
 	}
 }

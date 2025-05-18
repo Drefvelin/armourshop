@@ -5,4 +5,5 @@ public enum ArmorType {
 	CHESTPLATE,
 	LEGGINGS,
 	BOOTS,
+	ITEM,
 }

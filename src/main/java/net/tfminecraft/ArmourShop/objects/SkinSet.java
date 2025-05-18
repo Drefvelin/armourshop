@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import me.Plugins.TLibs.Objects.API.SubAPI.StringFormatter;
 import net.tfminecraft.ArmourShop.loaders.BaseSetLoader;
 
 public class SkinSet {
@@ -15,11 +16,12 @@ public class SkinSet {
 	private Optional<String> chestplate = Optional.empty();
 	private Optional<String> leggings = Optional.empty();
 	private Optional<String> boots = Optional.empty();
+	private Optional<String> item = Optional.empty();
 	private boolean addName;
 	
 	public SkinSet(String key, ConfigurationSection config) {
 		this.id = key;
-		this.name = config.getString("name");
+		this.name = StringFormatter.formatHex(config.getString("name"));
 		this.set = BaseSetLoader.getByString(config.getString("set"));
 		if(config.contains("scroll")) {
 			scroll = Optional.of(config.getString("scroll"));
@@ -35,6 +37,9 @@ public class SkinSet {
 		}
 		if(config.contains("boots")) {
 			boots = Optional.of(config.getString("boots"));
+		}
+		if(config.contains("item")){
+			item = Optional.of(config.getString("item"));
 		}
 		if(config.contains("add-name")) {
 			addName = config.getBoolean("add-name");
@@ -74,6 +79,10 @@ public class SkinSet {
 	public String getBoots() {
 		return boots.get();
 	}
+
+	public String getItem() {
+		return item.get();
+	}
 	
 	public boolean hasScroll() {
 		return scroll.isPresent();
@@ -89,6 +98,9 @@ public class SkinSet {
 	}
 	public boolean hasBoots() {
 		return boots.isPresent();
+	}
+	public boolean hasItem() {
+		return item.isPresent();
 	}
 
 	public boolean addName() {

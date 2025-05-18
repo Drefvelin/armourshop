@@ -1,8 +1,150 @@
-the_plateau:
-  name: "&bThe Plateau"
-  entry-title: true
-  limitations:
-    1:
-      conditions:
-        - location(y>220)
-        - biome(SNOWY_PLAINS,FROZEN_PEAKS,SNOWY_SLOPES)
+leather:
+  helmet:
+    - helmets.leather_helmet
+  chestplate:
+    - armors.leather_chestplate
+  leggings:
+    - armors.leather_leggings
+  boots:
+    - armors.leather_boots
+
+chainmail:
+  helmet:
+    - helmets.light_chainmail_helmet
+    - helmets.medium_chainmail_helmet
+    - helmets.heavy_chainmail_helmet
+  chestplate:
+    - armors.light_chainmail_chestplate
+    - armors.medium_chainmail_chestplate
+    - armors.heavy_chainmail_chestplate
+  leggings:
+    - armors.light_chainmail_leggings
+    - armors.medium_chainmail_leggings
+    - armors.heavy_chainmail_leggings
+  boots:
+    - armors.light_chainmail_boots
+    - armors.medium_chainmail_boots
+    - armors.heavy_chainmail_boots
+
+steel:
+  helmet:
+    - helmets.light_steel_helmet
+    - helmets.medium_steel_helmet
+    - helmets.heavy_steel_helmet
+  chestplate:
+    - armors.light_steel_chestplate
+    - armors.medium_steel_chestplate
+    - armors.heavy_steel_chestplate
+  leggings:
+    - armors.light_steel_leggings
+    - armors.medium_steel_leggings
+    - armors.heavy_steel_leggings
+  boots:
+    - armors.light_steel_boots
+    - armors.medium_steel_boots
+    - armors.heavy_steel_boots
+
+abyssalite:
+  helmet:
+    - helmets.light_abyssalite_helmet
+    - helmets.medium_abyssalite_helmet
+    - helmets.heavy_abyssalite_helmet
+  chestplate:
+    - armors.light_abyssalite_chestplate
+    - armors.medium_abyssalite_chestplate
+    - armors.heavy_abyssalite_chestplate
+  leggings:
+    - armors.light_abyssalite_leggings
+    - armors.medium_abyssalite_leggings
+    - armors.heavy_abyssalite_leggings
+  boots:
+    - armors.light_abyssalite_boots
+    - armors.medium_abyssalite_boots
+    - armors.heavy_abyssalite_boots
+
+mythril:
+  helmet:
+    - helmets.light_mythril_helmet
+    - helmets.medium_mythril_helmet
+    - helmets.heavy_mythril_helmet
+  chestplate:
+    - armors.light_mythril_chestplate
+    - armors.medium_mythril_chestplate
+    - armors.heavy_mythril_chestplate
+  leggings:
+    - armors.light_mythril_leggings
+    - armors.medium_mythril_leggings
+    - armors.heavy_mythril_leggings
+  boots:
+    - armors.light_mythril_boots
+    - armors.medium_mythril_boots
+    - armors.heavy_mythril_boots
+
+mage:
+  helmet:
+    - mage_armors.mage_iron_helmet
+    - mage_armors.mage_steel_helmet
+    - mage_armors.mage_abyssalite_helmet
+    - mage_armors.mage_mythril_helmet
+  chestplate:
+    - mage_armors.mage_iron_chestplate
+    - mage_armors.mage_steel_chestplate
+    - mage_armors.mage_abyssalite_chestplate
+    - mage_armors.mage_mythril_chestplate
+  leggings:
+    - mage_armors.mage_iron_leggings
+    - mage_armors.mage_steel_leggings
+    - mage_armors.mage_abyssalite_leggings
+    - mage_armors.mage_mythril_leggings
+  boots:
+    - mage_armors.mage_iron_boots
+    - mage_armors.mage_steel_boots
+    - mage_armors.mage_abyssalite_boots
+    - mage_armors.mage_mythril_boots
+
+infantry:
+  helmet:
+    - helmets.infantry_iron_helmet
+    - helmets.infantry_steel_helmet
+    - helmets.infantry_abyssalite_helmet
+    - helmets.infantry_mythril_helmet
+  chestplate:
+    - armors.infantry_iron_chestplate
+    - armors.infantry_steel_chestplate
+    - armors.infantry_abyssalite_chestplate
+    - armors.infantry_mythril_chestplate
+  leggings:
+    - armors.infantry_iron_leggings
+    - armors.infantry_steel_leggings
+    - armors.infantry_abyssalite_leggings
+    - armors.infantry_mythril_leggings
+  boots:
+    - armors.infantry_iron_boots
+    - armors.infantry_steel_boots
+    - armors.infantry_abyssalite_boots
+    - armors.infantry_mythril_boots
+
+exploration:
+  helmet:
+    - helmets.cold_steel_helmet
+    - helmets.cold_abyssalite_helmet
+    - helmets.cold_mythril_helmet
+  chestplate:
+    - armors.cold_steel_chestplate
+    - armors.cold_abyssalite_chestplate
+    - armors.cold_mythril_chestplate
+  leggings:
+    - armors.cold_steel_leggings
+    - armors.cold_abyssalite_leggings
+    - armors.cold_mythril_leggings
+  boots:
+    - armors.cold_steel_boots
+    - armors.cold_abyssalite_boots
+    - armors.cold_mythril_boots
+
+##Items
+
+swords:
+  item: true
+  items:
+    - swords.iron_sword

@@ -20,7 +20,7 @@ public class CommandManager implements Listener, CommandExecutor {
 			if(sender instanceof Player) {
 				Player player = (Player) sender;
 				InventoryManager i = new InventoryManager();
-				i.categoryView(player);
+				i.typeView(player);
 				return true;
 			}
 		} else if(cmd.getName().equalsIgnoreCase(cmd1) && args.length == 1 && args[0].equalsIgnoreCase("reload")) {
@@ -35,7 +35,7 @@ public class CommandManager implements Listener, CommandExecutor {
 			}
 			if(sender instanceof Player) {
 				Player p = (Player) sender;
-				p.sendMessage("§a[ArmourShop] §cYou do not have access to this command");
+				p.sendMessage("Â§a[ArmourShop] Â§cYou do not have access to this command");
 			}
 		}
 		return false;
