@@ -1,0 +1,8 @@
+the_plateau:
+  name: "&bThe Plateau"
+  entry-title: true
+  limitations:
+    1:
+      conditions:
+        - location(y>220)
+        - biome(SNOWY_PLAINS,FROZEN_PEAKS,SNOWY_SLOPES)
