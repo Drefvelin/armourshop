@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -41,10 +42,11 @@ public class InventoryManager {
 			if(!(cat.isItem() == item)) continue;
 			if(cat.hasPermission()) {
 				while(cat.hasPermission() && !player.hasPermission(cat.getPermission())) {
-					player.sendMessage(cat.getName()+" is item: "+cat.isItem()+", should be "+item);
 					y++;
 					if(y >= CategoryLoader.get().size()) break;
-					cat = CategoryLoader.get().get(y);
+					SkinCategory next = CategoryLoader.get().get(y);
+					if(!(next.isItem() == item)) continue;
+					cat = next;
 				}
 			}
 			if(!cat.hasPermission()) {
@@ -117,6 +119,7 @@ public class InventoryManager {
 		ItemStack i = new ItemStack(Material.IRON_CHESTPLATE, 1);
 		ItemMeta m = i.getItemMeta();
 		m.setDisplayName(StringFormatter.formatHex("#52de81§lArmour"));
+		m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		List<String> lore = new ArrayList<>();
 		lore.add("§7Armour skins");
 		lore.add("");
@@ -130,6 +133,7 @@ public class InventoryManager {
 		ItemStack i = new ItemStack(Material.IRON_SWORD, 1);
 		ItemMeta m = i.getItemMeta();
 		m.setDisplayName(StringFormatter.formatHex("#52de81§lItems"));
+		m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		List<String> lore = new ArrayList<>();
 		lore.add("§7Item skins");
 		lore.add("");
@@ -144,6 +148,7 @@ public class InventoryManager {
 		ItemStack i = api.getCreator().getItemFromPath(c.getItem());
 		if(i == null) i = new ItemStack(Material.DIRT, 1);
 		ItemMeta meta = i.getItemMeta();
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.setDisplayName(c.getName());
 		List<String> lore = new ArrayList<String>();
 		if(c.isItem()) lore.add("§a"+c.getSets().size()+" §eItems");
@@ -172,6 +177,7 @@ public class InventoryManager {
 		}
 		
 		ItemMeta meta = i.getItemMeta();
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if(type.equals(ArmorType.ITEM)) meta.setDisplayName(set.getName());
 		else meta.setDisplayName(set.getName()+" "+ WordUtils.capitalize(type.toString().toLowerCase()));
 		List<String> lore = new ArrayList<String>();
