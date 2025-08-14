@@ -2,6 +2,7 @@ package net.tfminecraft.ArmourShop.utils;
 
 import java.util.Optional;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -12,6 +13,11 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import me.Plugins.TLibs.TLibs;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
+import net.Indyuce.mmoitems.ItemStats;
+import net.Indyuce.mmoitems.api.item.mmoitem.LiveMMOItem;
+import net.Indyuce.mmoitems.stat.data.DoubleData;
+import net.Indyuce.mmoitems.stat.type.NameData;
+import net.Indyuce.mmoitems.stat.type.StatHistory;
 
 public class Merger {
 
@@ -39,6 +45,11 @@ public class Merger {
 				item = mnbt.toItem();
 			}
 		}
+		if(skin.getItemMeta().hasCustomModelData()) {
+			NBTItem mnbt = NBTItem.get(item);
+			mnbt.addTag(new ItemTag("amodel", String.valueOf(skin.getItemMeta().getCustomModelData())));
+			item = mnbt.toItem();
+		}
 		item.setType(skin.getType());
 		ItemMeta skinMeta = skin.getItemMeta();
 		ItemMeta m = item.getItemMeta();
@@ -46,6 +57,7 @@ public class Merger {
 			m.setDisplayName(name.get());
 		}
 		m.setCustomModelData(skinMeta.getCustomModelData());
+		
 		if(skin.getType().toString().toLowerCase().contains("leather")) {
 			LeatherArmorMeta ls = (LeatherArmorMeta) skinMeta;
 			LeatherArmorMeta lm = (LeatherArmorMeta) m;

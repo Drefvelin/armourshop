@@ -22,7 +22,10 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import me.Plugins.TLibs.TLibs;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
+import net.Indyuce.mmoitems.ItemStats;
 import net.Indyuce.mmoitems.api.event.item.ApplyGemStoneEvent;
+import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
+import net.Indyuce.mmoitems.stat.data.DoubleData;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.enums.ArmorType;
 import net.tfminecraft.ArmourShop.holder.ASInventoryHolder;
@@ -39,6 +42,34 @@ public class SkinManager implements Listener{
 			if(c.getName().equalsIgnoreCase(name)) return true;
 		}
 		return false;
+	}
+	@EventHandler
+	public void applyGem(ApplyGemStoneEvent e) {
+		Player p = e.getPlayer();
+		MMOItem mmoitem = e.getTargetItem();
+		DoubleData oldModel = null;
+		if(mmoitem.hasData(ItemStats.CUSTOM_MODEL_DATA)) {
+			oldModel = (DoubleData) mmoitem.getData(ItemStats.CUSTOM_MODEL_DATA);
+		}
+		ItemStack i = mmoitem.newBuilder().build();
+		NBTItem mnbt = NBTItem.get(i);
+		p.sendMessage(mnbt.getTags().toString());
+		final DoubleData fixed = oldModel;
+		if(mnbt.hasTag("amodel")) {
+			p.sendMessage("found");
+			String tag = mnbt.getString("amodel");
+			p.sendMessage("model is "+tag);
+			int model = Integer.parseInt(tag);
+			mmoitem.setData(ItemStats.CUSTOM_MODEL_DATA, new DoubleData(model));
+			if(fixed != null) {
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						mmoitem.setData(ItemStats.CUSTOM_MODEL_DATA, fixed);
+					}
+				}.runTaskLater(ArmourShop.plugin, 5L);
+			}
+		}
 	}
 	
 	
