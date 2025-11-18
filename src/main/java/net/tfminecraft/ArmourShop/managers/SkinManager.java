@@ -15,13 +15,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import dev.lone.LoneLibs.nbt.nbtapi.NBT;
 import dev.lone.itemsadder.api.CustomStack;
 import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import me.Plugins.TLibs.TLibs;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
+import me.Plugins.TLibs.Objects.API.SubAPI.ArmorMerger;
 import net.Indyuce.mmoitems.ItemStats;
 import net.Indyuce.mmoitems.api.event.item.ApplyGemStoneEvent;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
@@ -32,7 +32,6 @@ import net.tfminecraft.ArmourShop.holder.ASInventoryHolder;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.objects.SkinCategory;
 import net.tfminecraft.ArmourShop.objects.SkinSet;
-import net.tfminecraft.ArmourShop.utils.Merger;
 
 public class SkinManager implements Listener{
 	InventoryManager inv = new InventoryManager();
@@ -43,6 +42,7 @@ public class SkinManager implements Listener{
 		}
 		return false;
 	}
+	/*
 	@EventHandler
 	public void applyGem(ApplyGemStoneEvent e) {
 		Player p = e.getPlayer();
@@ -71,7 +71,7 @@ public class SkinManager implements Listener{
 			}
 		}
 	}
-	
+	*/
 	
 	@EventHandler
 	public void invenClick(InventoryClickEvent e) {
@@ -167,7 +167,7 @@ public class SkinManager implements Listener{
 				if(set.addName()) {
 					name = Optional.of(i.getItemMeta().getDisplayName());
 				}
-				Merger merger = new Merger();
+				ArmorMerger merger = TLibs.getItemAPI().getArmorMerger();
 				p.getInventory().setItem(y, merger.merge(item, name, s));
 				if(set.hasScroll()) scroll.setAmount(scroll.getAmount()-1);
 				p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
@@ -199,6 +199,7 @@ public class SkinManager implements Listener{
 		nbt.addTag(new ItemTag("ia", stack.getNamespace()+"."+stack.getId()));
 		e.setCurrentItem(nbt.toItem());
 	}
+	/*
 	@EventHandler
 	public void gemEvent(InventoryClickEvent e) {
 		if(!(e.getWhoClicked() instanceof Player)) return;
@@ -227,4 +228,5 @@ public class SkinManager implements Listener{
 			}
 		}.runTaskLater(ArmourShop.plugin, 5L);
 	}
+	*/
 }

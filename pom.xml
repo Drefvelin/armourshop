@@ -6,7 +6,7 @@
 
     <groupId>net.tfminecraft</groupId>
     <artifactId>armourshop</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.2</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -16,17 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>local</groupId>
-            <artifactId>LoneLibs</artifactId>
+            <artifactId>ItemsAdder</artifactId>
             <version>3.5.0</version>
             <scope>system</scope>
             <systemPath>D:/Dokumenter/My Plugins/Reference Libs/ItemsAdder_3.5.0-r2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>local</groupId>
-            <artifactId>ItemsAdder</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/LoneLibs.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
@@ -55,6 +48,13 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>D:/Dokumenter/My Plugins/TFMC/TLibs/TLibs.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>GunsAndGadgets</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>D:/Dokumenter/My Plugins/TFMC/GunsAndGadgets/gunsandgadgets-0.1.1-BETA.jar</systemPath>
         </dependency>
     </dependencies>
 

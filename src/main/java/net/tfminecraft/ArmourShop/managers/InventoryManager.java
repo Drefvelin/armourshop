@@ -3,7 +3,6 @@ package net.tfminecraft.ArmourShop.managers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -17,6 +16,7 @@ import me.Plugins.TLibs.TLibs;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
 import me.Plugins.TLibs.Objects.API.SubAPI.StringFormatter;
+import me.plugins.tlibs.shaded.lang3.text.WordUtils;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.Cache;
 import net.tfminecraft.ArmourShop.enums.ArmorType;
@@ -24,6 +24,10 @@ import net.tfminecraft.ArmourShop.holder.ASInventoryHolder;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.objects.SkinCategory;
 import net.tfminecraft.ArmourShop.objects.SkinSet;
+import net.tfminecraft.gunsandgadgets.GunsAndGadgets;
+import net.tfminecraft.gunsandgadgets.guns.skins.SkinData;
+import net.tfminecraft.gunsandgadgets.guns.skins.SkinState;
+import net.tfminecraft.gunsandgadgets.loader.SkinLoader;
 
 public class InventoryManager {
 
@@ -83,6 +87,10 @@ public class InventoryManager {
 		for(Integer x : points) {
 			if(c == cat.getSets().size()) break;
 			SkinSet set = cat.getSets().get(c);
+			if(set.hasPermission() && !player.hasPermission(set.getPermission())) {
+				c++;
+				continue;
+			}
 			if(set.hasItem()){
 				i.setItem(x, createSkinItem(set, set.getItem(), ArmorType.ITEM));
 				c++;
@@ -158,6 +166,7 @@ public class InventoryManager {
 		return i;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public ItemStack createSkinItem(SkinSet set, String id, ArmorType type) {
 		ItemStack i = null;
 		ItemAPI api = (ItemAPI) TLibs.getApiInstance(APIType.ITEM_API);
@@ -171,6 +180,15 @@ public class InventoryManager {
 			} catch (Exception e) {
 				e.printStackTrace();
 				i = new ItemStack(Material.DIRT, 1);
+			}
+		} else if(id.split("\\(")[0].equalsIgnoreCase("gunskin")) {
+			String value = id.split("\\(")[1].replace(")", "");
+			SkinData gunskin = SkinLoader.getByString(value);
+			if(gunskin == null) {
+				System.out.println("no skin called "+value);
+				i = new ItemStack(Material.DIRT, 1);
+			} else {
+				i = gunskin.parseModel(SkinState.CARRY);
 			}
 		} else{
 			i = api.getCreator().getItemFromPath(id);

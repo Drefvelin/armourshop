@@ -18,6 +18,7 @@ public class SkinSet {
 	private Optional<String> boots = Optional.empty();
 	private Optional<String> item = Optional.empty();
 	private boolean addName;
+	private String permission;
 	
 	public SkinSet(String key, ConfigurationSection config) {
 		this.id = key;
@@ -46,6 +47,15 @@ public class SkinSet {
 		} else {
 			addName = false;
 		}
+		permission = config.getString("permission", "none");
+	}
+
+	public boolean hasPermission() {
+		return !permission.equalsIgnoreCase("none");
+	}
+
+	public String getPermission() {
+		return permission;
 	}
 
 	public String getId() {

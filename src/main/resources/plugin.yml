@@ -4,7 +4,7 @@ name: ArmourShop
 version: 1.0
 author: Drefvelin
 
-depend: [TLibs, ItemsAdder, LoneLibs]
+depend: [TLibs, ItemsAdder]
 
 commands:
   armourshop:
