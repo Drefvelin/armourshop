@@ -38,10 +38,10 @@ public class InventoryManager {
 		player.openInventory(i);
 	}
 	public void categoryView(Player player, boolean item) {
-		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(item), 27, "§7Armourshop Categories");
+		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(item), 54, "§7Armourshop Categories");
 		int c = 0;
 		for(int y = 0; y<CategoryLoader.get().size();y++) {
-			if(c > 26) break;
+			if(c > 53) break;
 			SkinCategory cat = CategoryLoader.get().get(y);
 			if(!(cat.isItem() == item)) continue;
 			if(cat.hasPermission()) {
@@ -60,7 +60,7 @@ public class InventoryManager {
 			}
 			c++;
 		}
-		i.setItem(26, createBackButton());
+		i.setItem(53, createBackButton());
 		player.openInventory(i);
 	}
 	public void skinView(Player player, SkinCategory cat, int page, boolean item) {

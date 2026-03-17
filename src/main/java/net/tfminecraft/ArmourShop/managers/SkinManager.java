@@ -82,7 +82,7 @@ public class SkinManager implements Listener{
 		ASInventoryHolder holder = (ASInventoryHolder) e.getView().getTopInventory().getHolder();
 		if(e.getView().getTitle().equalsIgnoreCase("§7Armourshop Categories")) {
 			e.setCancelled(true);
-			if(e.getSlot() == 26) {
+			if(e.getSlot() == 53) {
 				inv.typeView(p);
 				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 				return;
