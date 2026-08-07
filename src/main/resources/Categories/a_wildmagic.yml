@@ -1,0 +1,8 @@
+illusion_mage:
+  name: "#4bc0c8Illusion #c779d0Mage#feac5e"
+  set: illusion
+  permission: armourshop.illusion
+  helmet: ia.tfmc_armor:illusion_mage_helmet
+  chestplate: ia.tfmc_armor:illusion_mage_chestplate
+  leggings: ia.tfmc_armor:illusion_mage_leggings
+  boots: ia.tfmc_armor:illusion_mage_boots

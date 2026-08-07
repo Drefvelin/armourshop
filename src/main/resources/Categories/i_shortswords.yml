@@ -1,0 +1,5 @@
+aemg_shortsword:
+  name: "#6d0a29A.E.M.G Shortsword"
+  set: shortswords
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(IRON_SWORD.49)

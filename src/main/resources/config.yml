@@ -1,1 +1,14 @@
 start-points: [9, 18, 27, 36, 45, 14, 23, 32, 41, 50]
+
+# ProvinceSystem skins API (Discord link, later code mint / apply)
+skins-api:
+  # No trailing slash
+  base-url: "http://127.0.0.1:8000"
+  plugin-key: "change-me"
+
+# ItemsAdder pack apply (Step 7 writer / Step 8 live)
+pack-apply:
+  # Absolute path to ItemsAdder contents/ (parent of namespaces). Dry-run: Copy; live: server plugins path.
+  ia-contents-path: "D:/Documents/TFMC/ItemsAdder Copy/ItemsAdder/contents"
+  # Step 8 — ArmourShop Categories folder (optional empty for now)
+  categories-path: ""

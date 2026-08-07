@@ -1,0 +1,298 @@
+blue_chain:
+  name: "§9Blue Levy"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:tyvanis_chain_helmet
+  chestplate: ia.tfmc_armor:tyvanis_chain_chestplate
+  leggings: ia.tfmc_armor:tyvanis_chain_leggings
+  boots: ia.tfmc_armor:tyvanis_chain_boots
+blue_steel:
+  name: "§9Blue Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:tyvanis_iron_helmet
+  chestplate: ia.tfmc_armor:tyvanis_iron_chestplate
+  leggings: ia.tfmc_armor:tyvanis_iron_leggings
+  boots: ia.tfmc_armor:tyvanis_iron_boots
+blue_abyssalite:
+  name: "§9Blue Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:tyvanis_steel_helmet
+  chestplate: ia.tfmc_armor:tyvanis_steel_chestplate
+  leggings: ia.tfmc_armor:tyvanis_steel_leggings
+  boots: ia.tfmc_armor:tyvanis_steel_boots
+
+decorated_chain:
+  name: "§6Decorated Levy"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:decorated_chain_helmet
+  chestplate: ia.tfmc_armor:decorated_chain_chestplate
+  leggings: ia.tfmc_armor:decorated_chain_leggings
+  boots: ia.tfmc_armor:decorated_chain_boots
+decorated_steel:
+  name: "§6Decorated Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:decorated_iron_helmet
+  chestplate: ia.tfmc_armor:decorated_iron_chestplate
+  leggings: ia.tfmc_armor:decorated_iron_leggings
+  boots: ia.tfmc_armor:decorated_iron_boots
+decorated_abyssalite:
+  name: "§6Decorated Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:decorated_steel_helmet
+  chestplate: ia.tfmc_armor:decorated_steel_chestplate
+  leggings: ia.tfmc_armor:decorated_steel_leggings
+  boots: ia.tfmc_armor:decorated_steel_boots
+
+medieval_green_leather:
+  name: "§2Green Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_green_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_green_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_green_leggings
+  boots: ia.tfmc_armor:medieval_leather_green_boots
+medieval_green_chain:
+  name: "§2Green Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_green_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_green_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_green_leggings
+  boots: ia.tfmc_armor:medieval_chain_green_boots
+medieval_green_steel:
+  name: "§2Green Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_green_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_green_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_green_leggings
+  boots: ia.tfmc_armor:medieval_steel_green_boots
+medieval_green_abyssalite:
+  name: "§2Green Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_green_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_green_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_green_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_green_boots
+medieval_blue_leather:
+  name: "§9Blue Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_blue_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_blue_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_blue_leggings
+  boots: ia.tfmc_armor:medieval_leather_blue_boots
+medieval_blue_chain:
+  name: "§9Blue Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_blue_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_blue_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_blue_leggings
+  boots: ia.tfmc_armor:medieval_chain_blue_boots
+medieval_blue_steel:
+  name: "§9Blue Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_blue_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_blue_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_blue_leggings
+  boots: ia.tfmc_armor:medieval_steel_blue_boots
+medieval_blue_abyssalite:
+  name: "§9Blue Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_blue_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_blue_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_blue_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_blue_boots
+medieval_bluegreen_leather:
+  name: "§9Blue-Green Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_bluegreen_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_bluegreen_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_bluegreen_leggings
+  boots: ia.tfmc_armor:medieval_leather_bluegreen_boots
+medieval_bluegreen_chain:
+  name: "§9Blue-Green Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_bluegreen_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_bluegreen_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_bluegreen_leggings
+  boots: ia.tfmc_armor:medieval_chain_bluegreen_boots
+medieval_bluegreen_steel:
+  name: "§9Blue-Green Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_bluegreen_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_bluegreen_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_bluegreen_leggings
+  boots: ia.tfmc_armor:medieval_steel_bluegreen_boots
+medieval_bluegreen_abyssalite:
+  name: "§9Blue-Green Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_bluegreen_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_bluegreen_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_bluegreen_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_bluegreen_boots
+medieval_red_leather:
+  name: "§cRed Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_red_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_red_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_red_leggings
+  boots: ia.tfmc_armor:medieval_leather_red_boots
+medieval_red_chain:
+  name: "§cRed Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_red_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_red_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_red_leggings
+  boots: ia.tfmc_armor:medieval_chain_red_boots
+medieval_red_steel:
+  name: "§cRed Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_red_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_red_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_red_leggings
+  boots: ia.tfmc_armor:medieval_steel_red_boots
+medieval_red_abyssalite:
+  name: "§cRed Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_red_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_red_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_red_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_red_boots
+medieval_yellow_leather:
+  name: "§eYellow Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_yellow_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_yellow_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_yellow_leggings
+  boots: ia.tfmc_armor:medieval_leather_yellow_boots
+medieval_yellow_chain:
+  name: "§eYellow Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_yellow_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_yellow_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_yellow_leggings
+  boots: ia.tfmc_armor:medieval_chain_yellow_boots
+medieval_yellow_steel:
+  name: "§eYellow Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_yellow_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_yellow_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_yellow_leggings
+  boots: ia.tfmc_armor:medieval_steel_yellow_boots
+medieval_yellow_abyssalite:
+  name: "§eYellow Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_yellow_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_yellow_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_yellow_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_yellow_boots
+medieval_redyellow_leather:
+  name: "§cRed-Yellow Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_redyellow_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_redyellow_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_redyellow_leggings
+  boots: ia.tfmc_armor:medieval_leather_redyellow_boots
+medieval_redyellow_chain:
+  name: "§cRed-Yellow Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_redyellow_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_redyellow_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_redyellow_leggings
+  boots: ia.tfmc_armor:medieval_chain_redyellow_boots
+medieval_redyellow_steel:
+  name: "§cRed-Yellow Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_redyellow_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_redyellow_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_redyellow_leggings
+  boots: ia.tfmc_armor:medieval_steel_redyellow_boots
+medieval_redyellow_abyssalite:
+  name: "§cRed-Yellow Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_redyellow_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_redyellow_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_redyellow_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_redyellow_boots
+medieval_stripe_leather:
+  name: "§cStriped Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_stripe_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_stripe_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_stripe_leggings
+  boots: ia.tfmc_armor:medieval_leather_stripe_boots
+medieval_stripe_chain:
+  name: "§cStriped Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_stripe_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_stripe_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_stripe_leggings
+  boots: ia.tfmc_armor:medieval_chain_stripe_boots
+medieval_stripe_steel:
+  name: "§cStriped Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_stripe_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_stripe_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_stripe_leggings
+  boots: ia.tfmc_armor:medieval_steel_stripe_boots
+medieval_stripe_abyssalite:
+  name: "§cStriped Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_stripe_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_stripe_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_stripe_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_stripe_boots
+medieval_yellowpurple_leather:
+  name: "§5Purple-Yellow Levy"
+  set: leather
+  helmet: ia.tfmc_armor:medieval_leather_yellowpurple_helmet
+  chestplate: ia.tfmc_armor:medieval_leather_yellowpurple_chestplate
+  leggings: ia.tfmc_armor:medieval_leather_yellowpurple_leggings
+  boots: ia.tfmc_armor:medieval_leather_yellowpurple_boots
+medieval_yellowpurple_chain:
+  name: "§5Purple-Yellow Guard"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_chain_yellowpurple_helmet
+  chestplate: ia.tfmc_armor:medieval_chain_yellowpurple_chestplate
+  leggings: ia.tfmc_armor:medieval_chain_yellowpurple_leggings
+  boots: ia.tfmc_armor:medieval_chain_yellowpurple_boots
+medieval_yellowpurple_steel:
+  name: "§5Purple-Yellow Soldier"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_steel_yellowpurple_helmet
+  chestplate: ia.tfmc_armor:medieval_steel_yellowpurple_chestplate
+  leggings: ia.tfmc_armor:medieval_steel_yellowpurple_leggings
+  boots: ia.tfmc_armor:medieval_steel_yellowpurple_boots
+medieval_yellowpurple_abyssalite:
+  name: "§5Purple-Yellow Knight"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:medieval_abyssalite_yellowpurple_helmet
+  chestplate: ia.tfmc_armor:medieval_abyssalite_yellowpurple_chestplate
+  leggings: ia.tfmc_armor:medieval_abyssalite_yellowpurple_leggings
+  boots: ia.tfmc_armor:medieval_abyssalite_yellowpurple_boots

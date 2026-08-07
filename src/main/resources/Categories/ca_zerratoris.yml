@@ -1,0 +1,72 @@
+zerratoris_light:
+  name: "#3C44AAZerratoris #A12A23Light"
+  set: abyssalite
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_light_helmet
+  chestplate: ia.tfmc_armor:zerratoris_light_chestplate
+  leggings: ia.tfmc_armor:zerratoris_light_leggings
+  boots: ia.tfmc_armor:zerratoris_light_boots
+zerratoris_medium:
+  name: "#3C44AAZerratoris #A12A23Medium"
+  set: abyssalite
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_medium_helmet
+  chestplate: ia.tfmc_armor:zerratoris_medium_chestplate
+  leggings: ia.tfmc_armor:zerratoris_medium_leggings
+  boots: ia.tfmc_armor:zerratoris_medium_boots
+zerratoris_heavy:
+  name: "#3C44AAZerratoris #A12A23Heavy"
+  set: abyssalite
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_heavy_helmet
+  chestplate: ia.tfmc_armor:zerratoris_heavy_chestplate
+  leggings: ia.tfmc_armor:zerratoris_heavy_leggings
+  boots: ia.tfmc_armor:zerratoris_heavy_boots
+zerratoris_mage:
+  name: "#3C44AAZerratoris #A12A23Mage"
+  set: mage
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_mage_helmet
+  chestplate: ia.tfmc_armor:zerratoris_mage_chestplate
+  leggings: ia.tfmc_armor:zerratoris_mage_leggings
+  boots: ia.tfmc_armor:zerratoris_mage_boots
+zerratoris_musketeer:
+  name: "#3C44AAZerratoris #A12A23Infantry"
+  set: infantry
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_light_helmet
+  chestplate: ia.tfmc_armor:zerratoris_light_chestplate
+  leggings: ia.tfmc_armor:zerratoris_light_leggings
+  boots: ia.tfmc_armor:zerratoris_light_boots
+zerratoris_mythril_light:
+  name: "#3C44AAZerratoris #A12A23Light Mythril"
+  set: mythril
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_light_mythril_helmet
+  chestplate: ia.tfmc_armor:zerratoris_light_mythril_chestplate
+  leggings: ia.tfmc_armor:zerratoris_light_mythril_leggings
+  boots: ia.tfmc_armor:zerratoris_light_mythril_boots
+zerratoris_mythril_medium:
+  name: "#3C44AAZerratoris #A12A23Medium Mythril"
+  set: mythril
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_medium_mythril_helmet
+  chestplate: ia.tfmc_armor:zerratoris_medium_mythril_chestplate
+  leggings: ia.tfmc_armor:zerratoris_medium_mythril_leggings
+  boots: ia.tfmc_armor:zerratoris_medium_mythril_boots
+zerratoris_mythril_heavy:
+  name: "#3C44AAZerratoris #A12A23Heavy Mythril"
+  set: mythril
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_heavy_mythril_helmet
+  chestplate: ia.tfmc_armor:zerratoris_heavy_mythril_chestplate
+  leggings: ia.tfmc_armor:zerratoris_heavy_mythril_leggings
+  boots: ia.tfmc_armor:zerratoris_heavy_mythril_boots
+zerratoris_mythril_musketeer:
+  name: "#3C44AAZerratoris #A12A23Infantry Mythril"
+  set: infantry
+  permission: armourshop.zerratoris
+  helmet: ia.tfmc_armor:zerratoris_light_mythril_helmet
+  chestplate: ia.tfmc_armor:zerratoris_light_mythril_chestplate
+  leggings: ia.tfmc_armor:zerratoris_light_mythril_leggings
+  boots: ia.tfmc_armor:zerratoris_light_mythril_boots

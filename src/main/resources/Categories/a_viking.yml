@@ -1,0 +1,24 @@
+hraftar_chain:
+  name: "#444f4bViking Raider"
+  set: iron
+  scroll: m.loot.common_item_skin_scroll
+  helmet: ia.tfmc_armor:hraftar_chain_helmet
+  chestplate: ia.tfmc_armor:hraftar_chain_chestplate
+  leggings: ia.tfmc_armor:hraftar_chain_leggings
+  boots: ia.tfmc_armor:hraftar_chain_boots
+hraftar_steel:
+  name: "#444f4bViking Berserker"
+  set: steel
+  scroll: m.loot.rare_item_skin_scroll
+  helmet: ia.tfmc_armor:hraftar_iron_helmet
+  chestplate: ia.tfmc_armor:hraftar_iron_chestplate
+  leggings: ia.tfmc_armor:hraftar_iron_leggings
+  boots: ia.tfmc_armor:hraftar_iron_boots
+hraftar_abyssalite:
+  name: "#444f4bViking Champion"
+  set: abyssalite
+  scroll: m.loot.epic_item_skin_scroll
+  helmet: ia.tfmc_armor:hraftar_steel_helmet
+  chestplate: ia.tfmc_armor:hraftar_steel_chestplate
+  leggings: ia.tfmc_armor:hraftar_steel_leggings
+  boots: ia.tfmc_armor:hraftar_steel_boots

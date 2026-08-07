@@ -1,0 +1,21 @@
+white_raven_abyssalite:
+  name: "#4F4240White Raven"
+  set: abyssalite
+  add-name: true
+  permission: armourshop.whiteraven
+  helmet: ia.tfmc_armor:white_raven_helmet
+  chestplate: ia.tfmc_armor:white_raven_chestplate
+  leggings: ia.tfmc_armor:white_raven_leggings
+  boots: ia.tfmc_armor:white_raven_boots
+
+white_raven_mythril:
+  name: "#4F4240White Raven"
+  set: mythril
+  add-name: true
+  permission: armourshop.whiteraven
+  helmet: ia.tfmc_armor:white_raven_helmet
+  chestplate: ia.tfmc_armor:white_raven_chestplate
+  leggings: ia.tfmc_armor:white_raven_leggings
+  boots: ia.tfmc_armor:white_raven_boots
+
+

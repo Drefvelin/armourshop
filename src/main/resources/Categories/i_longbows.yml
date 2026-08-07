@@ -1,0 +1,26 @@
+overgrown_longbow:
+  name: "#338426Overgrown Longbow"
+  set: longbows
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(BOW.12)
+gilded_longbow:
+  name: "#b79829Gilded Longbow"
+  set: longbows
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(BOW.13)
+royal_longbow:
+  name: "#f2ead8Royal Longbow"
+  set: longbows
+  scroll: m.loot.epic_item_skin_scroll
+  item: localmodel(BOW.14)
+dark_longbow:
+  name: "#1d1404Dark Longbow"
+  set: longbows
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(BOW.15)
+light_longbow:
+  name: "#cbcbc4Light Longbow"
+  set: longbows
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(BOW.16)
+

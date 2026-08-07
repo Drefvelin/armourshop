@@ -1,0 +1,30 @@
+grimshaw_iron:
+  name: "#9c001aGrimshaw Iron"
+  set: iron
+  add-name: true
+  permission: armourshop.grimshaw
+  helmet: ia.tfmc_armor:grimshaw_iron_helmet
+  chestplate: ia.tfmc_armor:grimshaw_iron_chestplate
+  leggings: ia.tfmc_armor:grimshaw_iron_leggings
+  boots: ia.tfmc_armor:grimshaw_iron_boots
+  
+grimshaw_steel:
+  name: "#9c001aGrimshaw Steel"
+  set: steel
+  add-name: true
+  permission: armourshop.grimshaw
+  helmet: ia.tfmc_armor:grimshaw_steel_helmet
+  chestplate: ia.tfmc_armor:grimshaw_steel_chestplate
+  leggings: ia.tfmc_armor:grimshaw_steel_leggings
+  boots: ia.tfmc_armor:grimshaw_steel_boots
+  
+grimshaw_mage:
+  name: "#540621Grimshaw Mage"
+  set: mage
+  add-name: true
+  permission: armourshop.grimshaw
+  helmet: ia.tfmc_armor:grimshaw_mage_helmet
+  chestplate: ia.tfmc_armor:grimshaw_mage_chestplate
+  leggings: ia.tfmc_armor:grimshaw_mage_leggings
+  boots: ia.tfmc_armor:grimshaw_mage_boots  
+

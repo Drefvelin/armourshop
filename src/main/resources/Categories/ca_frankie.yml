@@ -1,0 +1,24 @@
+frankie_mage:
+  name: "#808080Frankie Mage"
+  set: mage
+  add-name: true
+  permission: armourshop.frankie_illusion
+  helmet: ia.tfmc_armor:frankie_helmet
+  chestplate: ia.tfmc_armor:frankie_chestplate
+  leggings: ia.tfmc_armor:frankie_leggings
+  boots: ia.tfmc_armor:frankie_boots
+  
+frankie_mage_ill:
+  name: "#808080Frankie Mage Illusion"
+  set: illusion
+  add-name: true
+  permission: armourshop.frankie_illusion
+  helmet: ia.tfmc_armor:frankie_helmet
+  chestplate: ia.tfmc_armor:frankie_chestplate
+  leggings: ia.tfmc_armor:frankie_leggings
+  boots: ia.tfmc_armor:frankie_boots
+  
+
+
+  
+

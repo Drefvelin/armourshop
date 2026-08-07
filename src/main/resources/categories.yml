@@ -1,50 +1,250 @@
-medieval:
-  name: "§7Medieval"
+#Armors
+a_medieval:
+  name: "#959e97Medieval"
   item: ia.tfmc_armor:decorated_iron_chestplate
 
-forest:
-  name: "§2Forest"
+a_forest:
+  name: "#088228Forest"
   item: ia.tfmc_armor:forestman_iron_chestplate
 
-viking:
-  name: "§9Viking"
+a_viking:
+  name: "#444f4bViking"
   item: ia.tfmc_armor:hraftar_iron_chestplate
 
-imperial:
-  name: "§6Imperial"
-  item: ia.tfmc_armor:imperial_iron_chestplate
-
-samurai:
-  name: "§cSamurai"
+a_samurai:
+  name: "#de4545Samurai"
   item: ia.tfmc_samurai:samurai_iron_chestplate
 
-mage:
-  name: "§3Mage"
+a_mage:
+  name: "#0fa863Mage"
   item: ia.tfmc_armor:mage_steel_chestplate
 
-pirate:
-  name: "§6Pirate"
+a_pirate:
+  name: "#e86b8cPirate"
   item: ia.tfmc_armor:pirate_iron_chestplate
 
-infantry:
-  name: "§7Infantry"
+a_osenic:
+  name: "#c22b2bOsenic"
+  item: ia.tfmc_armor:osenic_chain_chestplate
+
+a_ravoukar:
+  name: "#96544bRavoukar"
+  permission: armourshop.ravoukar
+  item: ia.tfmc_armor:ravoukar_chestplate
+
+a_infantry:
+  name: "#bebfbdInfantry"
   item: ia.tfmc_armor:line_blue_chestplate
 
-other:
-  name: "§7Other"
+a_mythril:
+  name: "#9be1f3Mythril"
   item: ia.tfmc_armor:aemg_steel_chestplate
 
-dwarf:
-  name: "§6Dwarven"
-  permission: armourshop.dwarven
-  item: ia.tfmc_armor:dwardenred_heavy_chain_chestplate
-
-dryad_exploration:
-  name: "§aDryad Exploration"
-  permission: armourshop.dryad_exploration
+a_exploration:
+  name: "#8aed66Exploration"
   item: ia.tfmc_armor:dryad_exploration_chestplate
 
-swords:
-  name: "§7Swords"
-  item: m.swords.iron_sword
+a_wildmagic:
+  name: "#df4ff6Wild Magic"
+  item: ia.tfmc_armor:illusion_mage_chestplate
+  permission: armourshop.wildmagic
+
+ca_krung:
+  name: "#d1a473Krung/Ladybird"
+  item: ia.tfmc_armor:krung_chestplate
+  permission: armourshop.krung
+  
+ca_pinkhoney:
+  name: "#944ebfCherri Mage"
+  item: ia.tfmc_armor:pinkhoney_mage_chestplate
+  permission: armourshop.cherri
+
+ca_valanaar:
+  name: "#eb9d02Valanaar"
+  item: ia.tfmc_armor:valanaar_chainmail_chestplate
+  permission: armourshop.valanaar
+
+ca_prism:
+  name: "#808080Prism"
+  item: ia.tfmc_armor:prism_chainmail_chestplate
+  permission: armourshop.prism
+
+ca_grimshaw:
+  name: "#9c001aGrimshaw"
+  item: ia.tfmc_armor:grimshaw_iron_chestplate
+  permission: armourshop.grimshaw
+  
+ca_lucilinburhuc:
+  name: "#0000FFLucilinburhuc"
+  item: ia.tfmc_armor:lucilinburhuc_chainmail_chestplate
+  permission: armourshop.lucilinburhuc
+  
+ca_roseyginger:
+  name: "#808080Runebound Aegis"
+  item: ia.tfmc_armor:roseyginger_chestplate
+  permission: armourshop.roseyginger
+
+ca_papal:
+  name: "#dd51edPapal"
+  item: ia.tfmc_armor:papal_robes_chestplate
+  permission: armourshop.papal
+  
+ca_whiteraven:
+  name: "#4F4240White Raven"
+  item: ia.tfmc_armor:white_raven_chestplate
+  permission: armourshop.whiteraven
+
+ca_babylon:
+  name: "#E3DF4DBabylon"
+  item: ia.tfmc_armor:babylon_chestplate
+  permission: armourshop.babylon
+
+ca_zerratoris:
+  name: "#3C44AARothil #A12A23Zerratoris"
+  item: ia.tfmc_armor:zerratoris_medium_chestplate
+  permission: armourshop.zerratoris
+  
+ca_gourmet:
+  name: "#540A64Gourmet"
+  item: ia.tfmc_armor:gourmet_chestplate
+  permission: armourshop.gourmet
+
+ca_female_bloodmage:
+  name: "#AA0000Female Bloodmage"
+  item: ia.tfmc_armor:female_bloodmage_chestplate
+  permission: armourshop.female_bloodmage
+
+ca_tenceur:
+  name: "#0000AAHouse #FFFFFFTenceur"
+  item: ia.tfmc_armor:tenceur_helmet
+  permission: armourshop.tenceur
+  
+ca_nurrithian:
+  name: "Nurrithian Mage"
+  item: ia.tfmc_armor:nurrithian_mage_green_chestplate
+  permission: armourshop.nurrithian
+
+ca_sacred_safeguard:
+  name: "#CECECESacred Safeguard"
+  item: ia.tfmc_armor:sacred_safeguard_chestplate
+  permission: armourshop.sacred_safeguard_armor
+
+ca_frankie:
+  name: "Frankie Illusion"
+  item: ia.tfmc_armor:babylon_helmet
+  permission: armourshop.frankie
+
+ca_evil:
+  name: "Evil fucking chuds"
+  item: ia.tfmc_armor:yorimir_chestplate
+  permission: armourshop.evil
+  
+i_swords:
+  name: "#7f7d80Swords"
+  item: m.sword.steel_sword
+  is-item: true
+
+i_battleaxes:
+  name: "§#7f7d80Battleaxes"
+  item: m.battleaxes.steel_battleaxe
+  is-item: true
+
+i_daggers:
+  name: "§#7f7d80Daggers"
+  item: m.daggers.steel_dagger
+  is-item: true
+
+i_warhammers:
+  name: "§#7f7d80Warhammers"
+  item: m.warhammers.steel_warhammer
+  is-item: true
+
+i_spears:
+  name: "§#7f7d80Spears"
+  item: m.spears.steel_spear
+  is-item: true
+
+i_polearms:
+  name: "§#7f7d80Polearms"
+  item: m.polearms.steel_polearm
+  is-item: true
+
+i_greathammers:
+  name: "§#7f7d80Greathammers"
+  item: m.greathammers.steel_greathammer
+  is-item: true
+
+i_longswords:
+  name: "§#7f7d80Longswords"
+  item: m.longswords.steel_longsword
+  is-item: true
+
+i_greataxes:
+  name: "§#7f7d80Greataxes"
+  item: m.greataxes.steel_greataxe
+  is-item: true
+
+i_shortbows:
+  name: "§#7f7d80Shortbows"
+  item: m.shortbows.maplewood_shortbow
+  is-item: true
+
+i_longbows:
+  name: "§#7f7d80Longbows"
+  item: m.longbows.maplewood_longbow
+  is-item: true
+
+i_crossbows:
+  name: "§#7f7d80Crossbows"
+  item: m.miscellanea.maplewood_crossbows
+  is-item: true
+
+i_mage_staffs:
+  name: "§#7f7d80Mage Staffs"
+  item: m.mage_staffs.mage_steel_staff
+  is-item: true
+
+i_mage_wands:
+  name: "§#7f7d80Mage Wands"
+  item: m.mage_wands.mage_steel_wand
+  is-item: true
+
+i_mage_blades:
+  name: "§#7f7d80Mage Blades"
+  item: m.mage_swords.mage_steel_sword
+  is-item: true
+
+i_shortswords:
+  name: "§#7f7d80Shortswords"
+  item: m.shortswords.steel_shortsword
+  is-item: true
+
+i_shields:
+  name: "§#7f7d80Shields"
+  item: m.shields.steel_shield
+  is-item: true
+
+i_battle_standards:
+  name: "§#7f7d80Battle Standards"
+  item: m.banners.maplewood_banner
+  is-item: true
+
+i_helmets:
+  name: "§#7f7d80Helmets"
+  item: m.helmets.shako
+  is-item: true
+
+i_guns:
+  name: "§#7f7d80Guns"
+  item: m.guns.rifle_template
+  is-item: true
+
+i_tools:
+  name: "§#7f7d80Tools"
+  item: m.miscellanea.steel_tools
+  is-item: true
+
+i_consumables:
+  name: "§#7f7d80Consumables"
+  item: m.consumables.major_health_potion
   is-item: true

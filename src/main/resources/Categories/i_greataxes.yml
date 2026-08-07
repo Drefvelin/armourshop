@@ -1,0 +1,15 @@
+bronze_greataxe:
+  name: "#b38e58Bronze Greataxe"
+  set: greataxes
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_AXE.13)
+two_headed_greataxe:
+  name: "#7F7D80Two-Headed Greataxe"
+  set: greataxes
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_AXE.17)
+crimson_greataxe:
+  name: "#9f0000Crimson Greataxe"
+  set: greataxes
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(IRON_AXE.18)

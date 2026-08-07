@@ -1,0 +1,15 @@
+bronze_greathammer:
+  name: "#b38e58Bronze Greathammer"
+  set: greathammers
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_SHOVEL.15)
+wooden_maul:
+  name: "#5B4A31Wooden Maul"
+  set: greathammers
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_SHOVEL.21)
+darksteel_greathammer:
+  name: "#665d5dDarksteel Greathammer"
+  set: greathammers
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(IRON_SHOVEL.22)

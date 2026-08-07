@@ -11,7 +11,9 @@ import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.loaders.ConfigLoader;
 import net.tfminecraft.ArmourShop.loaders.SkinSetLoader;
 import net.tfminecraft.ArmourShop.managers.CommandManager;
+import net.tfminecraft.ArmourShop.managers.LinkDiscordCommand;
 import net.tfminecraft.ArmourShop.managers.SkinManager;
+import net.tfminecraft.ArmourShop.managers.UnlinkDiscordCommand;
 
 public class ArmourShop extends JavaPlugin{
 	public static ArmourShop plugin;
@@ -32,6 +34,17 @@ public class ArmourShop extends JavaPlugin{
 		loadConfigs();
 		registerListeners();
 		getCommand(commandManager.cmd1).setExecutor(commandManager);
+		getCommand(commandManager.cmd1).setTabCompleter(commandManager);
+		if (getCommand("linkdiscord") != null) {
+			getCommand("linkdiscord").setExecutor(new LinkDiscordCommand());
+		} else {
+			getLogger().severe("Command linkdiscord missing from plugin.yml");
+		}
+		if (getCommand("unlinkdiscord") != null) {
+			getCommand("unlinkdiscord").setExecutor(new UnlinkDiscordCommand());
+		} else {
+			getLogger().severe("Command unlinkdiscord missing from plugin.yml");
+		}
 	}
 	
 	public void registerListeners() {

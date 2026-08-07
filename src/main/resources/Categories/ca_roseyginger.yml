@@ -1,0 +1,10 @@
+roseyginger_mage:
+  name: "#808080Runebound Aegis"
+  set: mage
+  add-name: true
+  permission: armourshop.roseyginger
+  helmet: ia.tfmc_armor:roseyginger_helmet
+  chestplate: ia.tfmc_armor:roseyginger_chestplate
+  leggings: ia.tfmc_armor:roseyginger_leggings
+  boots: ia.tfmc_armor:roseyginger_boots
+

@@ -1,0 +1,9 @@
+nurrithian_green_mage:
+  name: "#4edea4Nurrithian Green Mage"
+  set: mage
+  add-name: true
+  permission: armourshop.nurrithian
+  helmet: ia.tfmc_armor:nurrithian_mage_green_helmet
+  chestplate: ia.tfmc_armor:nurrithian_mage_green_chestplate
+  leggings: ia.tfmc_armor:nurrithian_mage_green_leggings
+  boots: ia.tfmc_armor:nurrithian_mage_green_boots

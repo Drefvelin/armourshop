@@ -1,0 +1,45 @@
+bronze_sword:
+  name: "#b38e58Bronze Longsword"
+  set: swords
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_SWORD.25)
+katana:
+  name: "#de4545Katana"
+  set: longswords
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_SWORD.39)
+gilded_longsword:
+  name: "#b79829Gilded Longsword"
+  set: longswords
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(IRON_SWORD.40)
+royal_longsword:
+  name: "#f2ead8Royal Longsword"
+  set: longswords
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(IRON_SWORD.41)
+ashen_longsword:
+  name: "#f25a0dAshen Longsword"
+  set: longswords
+  scroll: m.loot.epic_item_skin_scroll
+  item: localmodel(IRON_SWORD.42)
+valnaari_rapier:
+  name: "#c4ebfdValnaari Rapier"
+  set: longswords
+  scroll: m.loot.epic_item_skin_scroll
+  item: localmodel(IRON_SWORD.43)
+white_raven_greatsword:
+  name: "#ebebebWhite Raven Greatsword"
+  set: longswords
+  scroll: m.loot.epic_item_skin_scroll
+  item: localmodel(IRON_SWORD.44)
+lightning_bolt_blade:
+  name: "#f0d75dLightning Bolt Blade"
+  set: longswords
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(IRON_SWORD.45)
+peacekeeper_greatsword:
+  name: "#e3ec66Peacekeeper Greatsword"
+  set: longswords
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(IRON_SWORD.46)

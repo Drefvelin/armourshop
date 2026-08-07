@@ -1,0 +1,15 @@
+thornwood_shortbow:
+  name: "#398c8aThornwood Shortbow"
+  set: shortbows
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(BOW.9)
+tribal_shortbow:
+  name: "#4b873bTribal Shortbow"
+  set: shortbows
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(BOW.10)
+royal_shortbow:
+  name: "#f2ead8Royal Shortbow"
+  set: shortbows
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(BOW.11)

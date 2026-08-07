@@ -1,0 +1,65 @@
+blue_shield:
+  name: "#304bd1Blue Shield"
+  set: shields
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(SHIELD.7)
+red_shield:
+  name: "#de1010Red Shield"
+  set: shields
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(SHIELD.8)
+yellow_shield:
+  name: "#fbff2bYellow Shield"
+  set: shields
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(SHIELD.9)
+cyan_shield:
+  name: "#27a37eCyan Shield"
+  set: shields
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(SHIELD.27)
+striped_shield:
+  name: "#e8ab31Striped Shield"
+  set: shields
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(SHIELD.17)
+black_shield:
+  name: "#706d66Black Shield"
+  set: shields
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(SHIELD.13)
+white_shield:
+  name: "#93f5eeWhite Shield"
+  set: shields
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(SHIELD.14)
+crow_shield:
+  name: "#4f6160Crow Shield"
+  set: shields
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(SHIELD.15)
+skull_shield:
+  name: "#6b5121Skull Shield"
+  set: shields
+  scroll: m.loot.epic_item_skin_scroll
+  item: localmodel(SHIELD.20)
+purple_shield:
+  name: "#883ea3Purple Shield"
+  set: shields
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(SHIELD.12)
+ikaros_shield:
+  name: "#78571aIkaros Shield"
+  set: shields
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(SHIELD.18)
+bronze_shield:
+  name: "#f09929Bronze Shield"
+  set: shields
+  scroll: m.loot.legendary_item_skin_scroll
+  item: localmodel(SHIELD.11)
+oseni_shield:
+  name: "#c42f27Oseni Shield"
+  set: shields
+  permission: armourshop.ravoukar
+  item: localmodel(SHIELD.33)

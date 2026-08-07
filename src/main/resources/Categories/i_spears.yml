@@ -1,0 +1,15 @@
+bronze_spear:
+  name: "#b38e58Bronze Spear"
+  set: spears
+  scroll: m.loot.common_item_skin_scroll
+  item: localmodel(IRON_HOE.10)
+tribal_spear:
+  name: "#4b873bTribal Spear"
+  set: spears
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(IRON_HOE.12)
+jellyfish_sting_spear:
+  name: "#cf728dJellyfish Sting Spear"
+  set: spears
+  scroll: m.loot.rare_item_skin_scroll
+  item: localmodel(IRON_HOE.13)
