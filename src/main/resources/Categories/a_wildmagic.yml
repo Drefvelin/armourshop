@@ -1,5 +1,6 @@
 illusion_mage:
-  name: "#4bc0c8Illusion #c779d0Mage#feac5e"
+  name: "Illusion #c779d0Mage#feac5e"
+  colour: "#4bc0c8"
   set: illusion
   permission: armourshop.illusion
   helmet: ia.tfmc_armor:illusion_mage_helmet

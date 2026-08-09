@@ -1,5 +1,6 @@
 osenic_chain:
-  name: "#c22b2bOsenic Iron"
+  name: "Osenic Iron"
+  colour: "#c22b2b"
   set: iron
   scroll: m.loot.common_item_skin_scroll
   helmet: ia.tfmc_armor:osenic_chain_helmet
@@ -7,7 +8,8 @@ osenic_chain:
   leggings: ia.tfmc_armor:osenic_chain_leggings
   boots: ia.tfmc_armor:osenic_chain_boots
 osenic_steel:
-  name: "#c22b2bOsenic Steel"
+  name: "Osenic Steel"
+  colour: "#c22b2b"
   set: steel
   scroll: m.loot.rare_item_skin_scroll
   helmet: ia.tfmc_armor:osenic_steel_helmet
@@ -15,7 +17,8 @@ osenic_steel:
   leggings: ia.tfmc_armor:osenic_steel_leggings
   boots: ia.tfmc_armor:osenic_steel_boots
 osenic_abyssalite:
-  name: "#c22b2bOsenic Abyssalte"
+  name: "Osenic Abyssalte"
+  colour: "#c22b2b"
   set: abyssalite
   scroll: m.loot.epic_item_skin_scroll
   helmet: ia.tfmc_armor:osenic_abyssalite_helmet
@@ -23,7 +26,8 @@ osenic_abyssalite:
   leggings: ia.tfmc_armor:osenic_abyssalite_leggings
   boots: ia.tfmc_armor:osenic_abyssalite_boots
 osenic_mythril:
-  name: "#c22b2bOsenic Mythril"
+  name: "Osenic Mythril"
+  colour: "#c22b2b"
   set: mythril
   scroll: m.loot.legendary_item_skin_scroll
   helmet: ia.tfmc_armor:osenic_mythril_helmet

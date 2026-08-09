@@ -1,5 +1,6 @@
 krung_abyssalite:
-  name: "#a19381Heavy Abyssalite"
+  name: "Heavy Abyssalite"
+  colour: "#a19381"
   set: abyssalite
   add-name: true
   permission: armourshop.krung
@@ -8,7 +9,8 @@ krung_abyssalite:
   leggings: ia.tfmc_armor:krung_leggings
   boots: ia.tfmc_armor:krung_boots
 krung_mythril:
-  name: "#a19381Heavy Mythril"
+  name: "Heavy Mythril"
+  colour: "#a19381"
   set: mythril
   add-name: true
   permission: armourshop.krung
@@ -17,7 +19,8 @@ krung_mythril:
   leggings: ia.tfmc_armor:krung_leggings
   boots: ia.tfmc_armor:krung_boots
 ladybird_mage:
-  name: "#bd6fc7Heavy Mage"
+  name: "Heavy Mage"
+  colour: "#bd6fc7"
   set: mage
   add-name: true
   permission: armourshop.krung

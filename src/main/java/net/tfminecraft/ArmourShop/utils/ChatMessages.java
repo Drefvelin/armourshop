@@ -58,4 +58,43 @@ public final class ChatMessages {
 
 		player.spigot().sendMessage(label, codeComp, hint);
 	}
+
+	/**
+	 * One active-token list line with a red [Delete] that runs token delete.
+	 */
+	public static void sendTokenListLine(Player player, String code, String ownerLabel) {
+		if (code == null || code.isEmpty()) {
+			return;
+		}
+		String owner = ownerLabel == null || ownerLabel.isBlank() ? "?" : ownerLabel.trim();
+
+		TextComponent line = new TextComponent(code);
+		line.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+
+		TextComponent sep = new TextComponent(" — ");
+		sep.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+
+		TextComponent ownerComp = new TextComponent(owner);
+		ownerComp.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+
+		TextComponent space = new TextComponent(" ");
+
+		TextComponent delete = new TextComponent("[Delete]");
+		delete.setColor(net.md_5.bungee.api.ChatColor.RED);
+		delete.setBold(true);
+		delete.setClickEvent(
+			new ClickEvent(
+				ClickEvent.Action.RUN_COMMAND,
+				"/armourshop token delete " + code
+			)
+		);
+		@SuppressWarnings("deprecation")
+		HoverEvent hover = new HoverEvent(
+			HoverEvent.Action.SHOW_TEXT,
+			new ComponentBuilder("Click to delete").create()
+		);
+		delete.setHoverEvent(hover);
+
+		player.spigot().sendMessage(line, sep, ownerComp, space, delete);
+	}
 }

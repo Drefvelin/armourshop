@@ -11,9 +11,11 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Same layout as Workspace/guides (Guidebook) -->
         <tfmc.refs>D:/Documents/TFMC/ReferenceLibs</tfmc.refs>
         <tfmc.builds>D:/Documents/TFMC/Builds/ArmourShop</tfmc.builds>
+        <tfmc.tlibs>D:/Documents/TFMC/Builds/TLibs</tfmc.tlibs>
     </properties>
 
     <dependencies>
@@ -37,7 +39,7 @@
             <artifactId>TLibs</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${tfmc.refs}/TLibs.jar</systemPath>
+            <systemPath>${tfmc.tlibs}/TLibs.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
@@ -45,6 +47,14 @@
             <version>3.5.0</version>
             <scope>system</scope>
             <systemPath>${tfmc.refs}/ItemsAdder_3.5.0-r2.jar</systemPath>
+        </dependency>
+        <!-- Compile-time only; LuckPerms plugin provides API at runtime -->
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>luckperms-api</artifactId>
+            <version>5.4</version>
+            <scope>system</scope>
+            <systemPath>${tfmc.refs}/api-5.4.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
@@ -60,13 +70,19 @@
             <scope>system</scope>
             <systemPath>${tfmc.refs}/MythicLib-1.7.jar</systemPath>
         </dependency>
+        <!-- Pack 3D writers (also provided by Spigot at runtime) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
         <!-- Compile-time only; jar lives with server plugins (not in ReferenceLibs) -->
         <dependency>
             <groupId>local</groupId>
             <artifactId>GunsAndGadgets</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <scope>system</scope>
-            <systemPath>D:/Documents/TFMC/Workspace/plugins/gunsandgadgets-1.0.2.jar</systemPath>
+            <systemPath>D:/Documents/TFMC/Builds/GunsAndGadgets/gunsandgadgets-1.0.3.jar</systemPath>
         </dependency>
     </dependencies>
 

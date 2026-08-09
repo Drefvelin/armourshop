@@ -1,5 +1,6 @@
 prism_chainmail:
-  name: "#808080Prism"
+  name: "Prism"
+  colour: "#808080"
   set: iron
   add-name: true
   permission: armourshop.prism
@@ -9,7 +10,8 @@ prism_chainmail:
   boots: ia.tfmc_armor:prism_chainmail_boots
 
 prism_steel:
-  name: "#808080Prism"
+  name: "Prism"
+  colour: "#808080"
   set: steel
   add-name: true
   permission: armourshop.prism
@@ -19,7 +21,8 @@ prism_steel:
   boots: ia.tfmc_armor:prism_chainmail_boots
 
 prism_mage_1:
-  name: "#808080Prism"
+  name: "Prism"
+  colour: "#808080"
   set: mage
   add-name: true
   permission: armourshop.prism
@@ -29,7 +32,8 @@ prism_mage_1:
   boots: ia.tfmc_armor:prism_chainmail_boots
   
 prism_infantry:
-  name: "#808080Prism"
+  name: "Prism"
+  colour: "#808080"
   set: infantry
   add-name: true
   permission: armourshop.prism
@@ -39,7 +43,8 @@ prism_infantry:
   boots: ia.tfmc_armor:prism_chainmail_boots
 
 prism_mage_2:
-  name: "#808080Prism"
+  name: "Prism"
+  colour: "#808080"
   set: mage
   add-name: true
   permission: armourshop.prism

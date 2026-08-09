@@ -1,5 +1,6 @@
 female_bloodmage:
-  name: "#aa0000Female Bloodmage"
+  name: "Female Bloodmage"
+  colour: "#aa0000"
   set: bloodmagic
   add-name: false
   permission: armourshop.female_bloodmage

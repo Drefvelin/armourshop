@@ -1,16 +1,16 @@
 main: net.tfminecraft.ArmourShop.ArmourShop
 api-version: 1.20
-name: ArmourShop
+name: "ArmourShop"
 version: 1.0
 author: Drefvelin
 
 depend: [TLibs, ItemsAdder]
-softdepend: [MMOItems, MythicLib]
+softdepend: [MMOItems, MythicLib, LuckPerms]
 
 commands:
   armourshop:
-      usage: /<command> | /<command> reload | /<command> token create
-      description: Open ArmourShop, reload config, or create a skins upload code
+      usage: /<command> | /<command> reload | /<command> token create | /<command> token delete <code> | /<command> listtokens | /<command> pack pull
+      description: Open ArmourShop, reload, manage skins tokens, or pull approved packs
   linkdiscord:
       usage: /linkdiscord
       description: Get a code to link your Discord account for skin submissions
@@ -24,7 +24,7 @@ commands:
 
 permissions:
   armourshop.admin:
-    description: Admin perms for ArmourShop (reload and token create)
+    description: Admin perms for ArmourShop (reload, listtokens, token delete, pack pull)
     default: false
   armourshop.token.create:
     description: Create a skins upload code via /armourshop token create

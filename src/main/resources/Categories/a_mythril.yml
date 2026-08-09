@@ -1,5 +1,6 @@
 aemg_steel:
-  name: "#753b2fA.E.M.G"
+  name: "A.E.M.G"
+  colour: "#753b2f"
   set: mythril
   scroll: m.loot.legendary_item_skin_scroll
   helmet: ia.tfmc_armor:aemg_steel_helmet
@@ -7,7 +8,8 @@ aemg_steel:
   leggings: ia.tfmc_armor:aemg_steel_leggings
   boots: ia.tfmc_armor:aemg_steel_boots
 malevoria_steel:
-  name: "#ab0a0aMalevorian"
+  name: "Malevorian"
+  colour: "#ab0a0a"
   set: mythril
   scroll: m.loot.legendary_item_skin_scroll
   helmet: ia.tfmc_armor:malevoria_steel_helmet
@@ -15,7 +17,8 @@ malevoria_steel:
   leggings: ia.tfmc_armor:malevoria_steel_leggings
   boots: ia.tfmc_armor:malevoria_steel_boots
 dwarf_mythril:
-  name: "#306a80Dwarven"
+  name: "Dwarven"
+  colour: "#306a80"
   set: mythril
   scroll: m.loot.legendary_item_skin_scroll
   helmet: ia.tfmc_armor:dwardenred_heavy_chain_helmet
@@ -23,7 +26,8 @@ dwarf_mythril:
   leggings: ia.tfmc_armor:dwardenred_heavy_chain_leggings
   boots: ia.tfmc_armor:dwardenred_heavy_chain_boots
 cervalic:
-  name: "#e3da39Cervalic"
+  name: "Cervalic"
+  colour: "#e3da39"
   set: mythril
   scroll: m.loot.legendary_item_skin_scroll
   helmet: ia.tfmc_armor:cervalic_steel_helmet

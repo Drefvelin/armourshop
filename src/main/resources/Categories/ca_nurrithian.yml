@@ -1,5 +1,6 @@
 nurrithian_green_mage:
-  name: "#4edea4Nurrithian Green Mage"
+  name: "Nurrithian Green Mage"
+  colour: "#4edea4"
   set: mage
   add-name: true
   permission: armourshop.nurrithian

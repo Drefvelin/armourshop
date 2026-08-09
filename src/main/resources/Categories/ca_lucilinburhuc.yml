@@ -1,5 +1,6 @@
 lucilinburhuc_chainmail:
-  name: "#0000FFLucilinburhuc"
+  name: "Lucilinburhuc"
+  colour: "#0000ff"
   set: iron
   add-name: true
   permission: armourshop.lucilinburhuc
@@ -9,7 +10,8 @@ lucilinburhuc_chainmail:
   boots: ia.tfmc_armor:lucilinburhuc_chainmail_boots
 
 lucilinburhuc_steel:
-  name: "#0000FFLucilinburhuc"
+  name: "Lucilinburhuc"
+  colour: "#0000ff"
   set: steel
   add-name: true
   permission: armourshop.lucilinburhuc

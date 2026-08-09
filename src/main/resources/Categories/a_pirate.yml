@@ -1,5 +1,6 @@
 pirate_chain:
-  name: "#e86b8cPirate Raider"
+  name: "Pirate Raider"
+  colour: "#e86b8c"
   set: iron
   scroll: m.loot.common_item_skin_scroll
   helmet: ia.tfmc_armor:pirate_chain_helmet
@@ -7,7 +8,8 @@ pirate_chain:
   leggings: ia.tfmc_armor:pirate_chain_leggings
   boots: ia.tfmc_armor:pirate_chain_boots
 pirate_steel:
-  name: "#e86b8cPirate Buccaneer"
+  name: "Pirate Buccaneer"
+  colour: "#e86b8c"
   set: steel
   scroll: m.loot.rare_item_skin_scroll
   helmet: ia.tfmc_armor:pirate_iron_helmet
@@ -15,7 +17,8 @@ pirate_steel:
   leggings: ia.tfmc_armor:pirate_iron_leggings
   boots: ia.tfmc_armor:pirate_iron_boots
 pirate_abyssalite:
-  name: "#e86b8cPirate Swashbuckler"
+  name: "Pirate Swashbuckler"
+  colour: "#e86b8c"
   set: abyssalite
   scroll: m.loot.epic_item_skin_scroll
   helmet: ia.tfmc_armor:pirate_steel_helmet
@@ -23,7 +26,8 @@ pirate_abyssalite:
   leggings: ia.tfmc_armor:pirate_steel_leggings
   boots: ia.tfmc_armor:pirate_steel_boots
 pirate_infantry:
-  name: "#e86b8cPirate Musketeer"
+  name: "Pirate Musketeer"
+  colour: "#e86b8c"
   set: infantry
   scroll: m.loot.common_item_skin_scroll
   helmet: ia.tfmc_armor:pirate_infantry_helmet

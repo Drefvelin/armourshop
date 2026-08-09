@@ -33,6 +33,19 @@ public class LinkDiscordCommand implements CommandExecutor {
 			return true;
 		}
 
+		if (result.alreadyLinked) {
+			String name = result.discordUsername;
+			if (name != null && !name.isBlank()) {
+				ChatMessages.info(
+					player,
+					"Already linked with Discord user " + ChatColor.AQUA + name.trim()
+				);
+			} else {
+				ChatMessages.info(player, "Already linked.");
+			}
+			return true;
+		}
+
 		ChatMessages.sendCopyableCode(
 			player,
 			"Your Discord link code (click to copy):",

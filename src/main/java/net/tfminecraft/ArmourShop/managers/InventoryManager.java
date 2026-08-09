@@ -24,7 +24,6 @@ import net.tfminecraft.ArmourShop.holder.ASInventoryHolder;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.objects.SkinCategory;
 import net.tfminecraft.ArmourShop.objects.SkinSet;
-import net.tfminecraft.gunsandgadgets.GunsAndGadgets;
 import net.tfminecraft.gunsandgadgets.guns.skins.SkinData;
 import net.tfminecraft.gunsandgadgets.guns.skins.SkinState;
 import net.tfminecraft.gunsandgadgets.loader.SkinLoader;
@@ -32,13 +31,13 @@ import net.tfminecraft.gunsandgadgets.loader.SkinLoader;
 public class InventoryManager {
 
 	public void typeView(Player player) {
-		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(false), 9, "§7Armourshop Type");
+		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(false), 9, "\u00A77Armourshop Type");
 		i.setItem(0, createArmourItem());
 		i.setItem(1, createItemItem());
 		player.openInventory(i);
 	}
 	public void categoryView(Player player, boolean item) {
-		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(item), 54, "§7Armourshop Categories");
+		Inventory i = ArmourShop.plugin.getServer().createInventory(new ASInventoryHolder(item), 54, "\u00A77Armourshop Categories");
 		int c = 0;
 		for(int y = 0; y<CategoryLoader.get().size();y++) {
 			if(c > 53) break;
@@ -69,7 +68,7 @@ public class InventoryManager {
 		while(slot < 9) {
 			ItemStack fill = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
 			ItemMeta fm = fill.getItemMeta();
-			fm.setDisplayName("§8 ");
+			fm.setDisplayName("\u00A78 ");
 			fill.setItemMeta(fm);
 			i.setItem(slot, fill);
 			slot++;
@@ -126,10 +125,10 @@ public class InventoryManager {
 	public ItemStack createArmourItem(){
 		ItemStack i = new ItemStack(Material.IRON_CHESTPLATE, 1);
 		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(StringFormatter.formatHex("#52de81§lArmour"));
+		m.setDisplayName(StringFormatter.formatHex("#52de81\u00A7lArmour"));
 		m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		List<String> lore = new ArrayList<>();
-		lore.add("§7Armour skins");
+		lore.add("\u00A77Armour skins");
 		lore.add("");
 		lore.add(StringFormatter.formatHex("#21de21Click to View"));
 		m.setLore(lore);
@@ -140,10 +139,10 @@ public class InventoryManager {
 	public ItemStack createItemItem(){
 		ItemStack i = new ItemStack(Material.IRON_SWORD, 1);
 		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(StringFormatter.formatHex("#52de81§lItems"));
+		m.setDisplayName(StringFormatter.formatHex("#52de81\u00A7lItems"));
 		m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		List<String> lore = new ArrayList<>();
-		lore.add("§7Item skins");
+		lore.add("\u00A77Item skins");
 		lore.add("");
 		lore.add(StringFormatter.formatHex("#21de21Click to View"));
 		m.setLore(lore);
@@ -159,8 +158,8 @@ public class InventoryManager {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		meta.setDisplayName(c.getName());
 		List<String> lore = new ArrayList<String>();
-		if(c.isItem()) lore.add("§a"+c.getSets().size()+" §eItems");
-		else lore.add("§a"+c.getSets().size()+" §eArmor Sets");
+		if(c.isItem()) lore.add("\u00A7a"+c.getSets().size()+" \u00A7eItems");
+		else lore.add("\u00A7a"+c.getSets().size()+" \u00A7eArmor Sets");
 		meta.setLore(lore);
 		i.setItemMeta(meta);
 		return i;
@@ -196,13 +195,12 @@ public class InventoryManager {
 		
 		ItemMeta meta = i.getItemMeta();
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		if(type.equals(ArmorType.ITEM)) meta.setDisplayName(set.getName());
-		else meta.setDisplayName(set.getName()+" "+ WordUtils.capitalize(type.toString().toLowerCase()));
+		meta.setDisplayName(set.getFormattedPieceName(type));
 		List<String> lore = new ArrayList<String>();
-		lore.add("§eTier: §f"+WordUtils.capitalize(set.getSet().getId()));
+		lore.add("\u00A7eTier: \u00A7f"+WordUtils.capitalize(set.getSet().getId()));
 		if(set.hasScroll()) {
 			lore.add(" ");
-			lore.add("§7Scroll: "+ api.getCreator().getItemFromPath(set.getScroll()).getItemMeta().getDisplayName());
+			lore.add("\u00A77Scroll: "+ api.getCreator().getItemFromPath(set.getScroll()).getItemMeta().getDisplayName());
 		}
 		NamespacedKey key = new NamespacedKey(ArmourShop.plugin, "set");
 		meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, set.getId()+"."+type.toString().toLowerCase());
@@ -224,7 +222,7 @@ public class InventoryManager {
 	public ItemStack createBackButton() {
 		ItemStack i = new ItemStack(Material.BARRIER, 1);
 		ItemMeta m = i.getItemMeta();
-		m.setDisplayName("§cBACK");
+		m.setDisplayName("\u00A7cBACK");
 		i.setItemMeta(m);
 		return i;
 	}

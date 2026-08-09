@@ -1,5 +1,6 @@
 roseyginger_mage:
-  name: "#808080Runebound Aegis"
+  name: "Runebound Aegis"
+  colour: "#808080"
   set: mage
   add-name: true
   permission: armourshop.roseyginger

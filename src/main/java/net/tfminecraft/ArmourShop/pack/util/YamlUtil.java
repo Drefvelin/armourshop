@@ -1,13 +1,13 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.util;
 
 /**
  * Minimal YAML helpers for pack writers.
  */
-final class YamlUtil {
+public final class YamlUtil {
 
 	private YamlUtil() {}
 
-	static String escapeDoubleQuoted(String raw) {
+	public static String escapeDoubleQuoted(String raw) {
 		if (raw == null) {
 			return "";
 		}
@@ -35,7 +35,7 @@ final class YamlUtil {
 		return sb.toString();
 	}
 
-	static void validateSlug(String slug) {
+	public static void validateSlug(String slug) {
 		for (int i = 0; i < slug.length(); i++) {
 			char c = slug.charAt(i);
 			if (!(c >= 'a' && c <= 'z'

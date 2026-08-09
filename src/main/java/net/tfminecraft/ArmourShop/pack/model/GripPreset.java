@@ -1,4 +1,4 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.model;
 
 /**
  * Grip presets for large_handheld (locked display templates).

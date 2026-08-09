@@ -39,5 +39,13 @@ public class ConfigLoader implements LoaderInterface{
 
         String catPath = config.getString("pack-apply.categories-path", "");
         Cache.categoriesPath = catPath == null ? "" : catPath.trim();
+
+        String gunsSkins = config.getString("pack-apply.guns-skins-yml", "");
+        Cache.gunsSkinsYmlPath = gunsSkins == null ? "" : gunsSkins.trim();
+
+        String forceTime = config.getString("pack-apply.force-reload-time", "06:00");
+        Cache.forceReloadTime = forceTime == null ? "" : forceTime.trim();
+
+        Cache.iaReloadDelaySeconds = Math.max(0, config.getInt("pack-apply.ia-reload-delay-seconds", 5));
 	}
 }

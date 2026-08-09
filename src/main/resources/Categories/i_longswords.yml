@@ -1,45 +1,54 @@
 bronze_sword:
-  name: "#b38e58Bronze Longsword"
+  name: "Bronze Longsword"
+  colour: "#b38e58"
   set: swords
   scroll: m.loot.common_item_skin_scroll
   item: localmodel(IRON_SWORD.25)
 katana:
-  name: "#de4545Katana"
+  name: "Katana"
+  colour: "#de4545"
   set: longswords
   scroll: m.loot.common_item_skin_scroll
   item: localmodel(IRON_SWORD.39)
 gilded_longsword:
-  name: "#b79829Gilded Longsword"
+  name: "Gilded Longsword"
+  colour: "#b79829"
   set: longswords
   scroll: m.loot.rare_item_skin_scroll
   item: localmodel(IRON_SWORD.40)
 royal_longsword:
-  name: "#f2ead8Royal Longsword"
+  name: "Royal Longsword"
+  colour: "#f2ead8"
   set: longswords
   scroll: m.loot.rare_item_skin_scroll
   item: localmodel(IRON_SWORD.41)
 ashen_longsword:
-  name: "#f25a0dAshen Longsword"
+  name: "Ashen Longsword"
+  colour: "#f25a0d"
   set: longswords
   scroll: m.loot.epic_item_skin_scroll
   item: localmodel(IRON_SWORD.42)
 valnaari_rapier:
-  name: "#c4ebfdValnaari Rapier"
+  name: "Valnaari Rapier"
+  colour: "#c4ebfd"
   set: longswords
   scroll: m.loot.epic_item_skin_scroll
   item: localmodel(IRON_SWORD.43)
 white_raven_greatsword:
-  name: "#ebebebWhite Raven Greatsword"
+  name: "White Raven Greatsword"
+  colour: "#ebebeb"
   set: longswords
   scroll: m.loot.epic_item_skin_scroll
   item: localmodel(IRON_SWORD.44)
 lightning_bolt_blade:
-  name: "#f0d75dLightning Bolt Blade"
+  name: "Lightning Bolt Blade"
+  colour: "#f0d75d"
   set: longswords
   scroll: m.loot.legendary_item_skin_scroll
   item: localmodel(IRON_SWORD.45)
 peacekeeper_greatsword:
-  name: "#e3ec66Peacekeeper Greatsword"
+  name: "Peacekeeper Greatsword"
+  colour: "#e3ec66"
   set: longswords
   scroll: m.loot.legendary_item_skin_scroll
   item: localmodel(IRON_SWORD.46)

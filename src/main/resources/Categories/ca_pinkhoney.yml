@@ -1,5 +1,6 @@
 pinkhoney_mage:
-  name: "#ad5fc9Mage"
+  name: "Mage"
+  colour: "#ad5fc9"
   set: mage
   add-name: true
   permission: armourshop.cherri

@@ -1,5 +1,6 @@
 grimshaw_iron:
-  name: "#9c001aGrimshaw Iron"
+  name: "Grimshaw Iron"
+  colour: "#9c001a"
   set: iron
   add-name: true
   permission: armourshop.grimshaw
@@ -9,7 +10,8 @@ grimshaw_iron:
   boots: ia.tfmc_armor:grimshaw_iron_boots
   
 grimshaw_steel:
-  name: "#9c001aGrimshaw Steel"
+  name: "Grimshaw Steel"
+  colour: "#9c001a"
   set: steel
   add-name: true
   permission: armourshop.grimshaw
@@ -19,7 +21,8 @@ grimshaw_steel:
   boots: ia.tfmc_armor:grimshaw_steel_boots
   
 grimshaw_mage:
-  name: "#540621Grimshaw Mage"
+  name: "Grimshaw Mage"
+  colour: "#540621"
   set: mage
   add-name: true
   permission: armourshop.grimshaw

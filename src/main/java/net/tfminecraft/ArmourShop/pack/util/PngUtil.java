@@ -1,4 +1,4 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.util;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -10,11 +10,11 @@ import javax.imageio.ImageIO;
 /**
  * PNG helpers for pack fixtures.
  */
-final class PngUtil {
+public final class PngUtil {
 
 	private PngUtil() {}
 
-	static byte[] solidPng(int w, int h, Color color) throws Exception {
+	public static byte[] solidPng(int w, int h, Color color) throws Exception {
 		BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = img.createGraphics();
 		try {

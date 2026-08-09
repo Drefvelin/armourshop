@@ -1,5 +1,11 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.writer.armor;
 
+
+import net.tfminecraft.ArmourShop.pack.model.PackKind;
+import net.tfminecraft.ArmourShop.pack.model.PackPaths;
+import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
+import net.tfminecraft.ArmourShop.pack.util.Model3dUtil;
+import net.tfminecraft.ArmourShop.pack.util.YamlUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -8,18 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Writes an armor_set into tfmc_submissions (YAML + six PNGs).
+ * Writes an armor_set into tfmc_submissions (YAML + PNGs; optional 3D helmet).
  */
 public final class ArmorSetWriter {
 
-	private static final String[] ICON_STEMS = {
-		"helmet", "chestplate", "leggings", "boots"
+	private static final String[] BODY_ICON_STEMS = {
+		"chestplate", "leggings", "boots"
 	};
-	private static final String[] ICON_SLOTS = {
-		"head", "chest", "legs", "feet"
+	private static final String[] BODY_ICON_SLOTS = {
+		"chest", "legs", "feet"
 	};
-	private static final String[] ICON_SUFFIXES = {
-		"Helmet", "Chestplate", "Leggings", "Boots"
+	private static final String[] BODY_ICON_SUFFIXES = {
+		"Chestplate", "Leggings", "Boots"
 	};
 	private static final String[] LAYER_STEMS = {
 		"layer_1", "layer_2"
@@ -42,16 +48,40 @@ public final class ArmorSetWriter {
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
 
+		boolean helmet3d = submission.files().containsKey(Model3dUtil.HELMET_MODEL_STEM);
+
 		Path iconsDir = PackPaths.armorIconsDir(contentsRoot);
 		Path layersDir = PackPaths.armorLayersDir(contentsRoot);
 		Path configsDir = PackPaths.configsDir(contentsRoot);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
 		Files.createDirectories(iconsDir);
 		Files.createDirectories(layersDir);
 		Files.createDirectories(configsDir);
 
 		List<Path> written = new ArrayList<>();
 
-		for (String stem : ICON_STEMS) {
+		if (helmet3d) {
+			Files.createDirectories(modelsDir);
+			Files.createDirectories(itemTexDir);
+			String helmetId = slug + "_helmet";
+			Path tex = itemTexDir.resolve(helmetId + ".png");
+			Files.write(tex, submission.requireFile(Model3dUtil.HELMET_TEXTURE_STEM));
+			written.add(tex);
+			byte[] model = Model3dUtil.normalizeModel(
+				submission.requireFile(Model3dUtil.HELMET_MODEL_STEM),
+				helmetId
+			);
+			Path modelPath = modelsDir.resolve(helmetId + ".json");
+			Files.write(modelPath, model);
+			written.add(modelPath);
+		} else {
+			Path out = iconsDir.resolve(slug + "_helmet.png");
+			Files.write(out, submission.requireFile("helmet"));
+			written.add(out);
+		}
+
+		for (String stem : BODY_ICON_STEMS) {
 			Path out = iconsDir.resolve(slug + "_" + stem + ".png");
 			Files.write(out, submission.requireFile(stem));
 			written.add(out);
@@ -65,14 +95,14 @@ public final class ArmorSetWriter {
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(
 			yamlPath,
-			buildYaml(submission),
+			buildYaml(submission, helmet3d),
 			StandardCharsets.UTF_8
 		);
 		written.add(yamlPath);
 		return written;
 	}
 
-	static String buildYaml(PackSubmission submission) {
+	static String buildYaml(PackSubmission submission, boolean helmet3d) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
 
@@ -87,12 +117,31 @@ public final class ArmorSetWriter {
 		sb.append("    use_color: false\n");
 		sb.append("items:\n");
 
-		for (int i = 0; i < ICON_STEMS.length; i++) {
-			String stem = ICON_STEMS[i];
+		String helmetId = slug + "_helmet";
+		sb.append("  ").append(helmetId).append(":\n");
+		sb.append("    display_name: \"").append(name).append(" Helmet\"\n");
+		sb.append("    permission: ").append(slug).append('\n');
+		sb.append("    resource:\n");
+		if (helmet3d) {
+			sb.append("      material: CARVED_PUMPKIN\n");
+			sb.append("      generate: false\n");
+			sb.append("      model_path: item/").append(helmetId).append('\n');
+		} else {
+			sb.append("      generate: true\n");
+			sb.append("      textures:\n");
+			sb.append("      - armor_icons/").append(slug).append("_helmet\n");
+			sb.append("    specific_properties:\n");
+			sb.append("      armor:\n");
+			sb.append("        slot: head\n");
+			sb.append("        custom_armor: ").append(slug).append('\n');
+		}
+
+		for (int i = 0; i < BODY_ICON_STEMS.length; i++) {
+			String stem = BODY_ICON_STEMS[i];
 			String itemId = slug + "_" + stem;
 			sb.append("  ").append(itemId).append(":\n");
 			sb.append("    display_name: \"").append(name).append(' ')
-				.append(ICON_SUFFIXES[i]).append("\"\n");
+				.append(BODY_ICON_SUFFIXES[i]).append("\"\n");
 			sb.append("    permission: ").append(slug).append('\n');
 			sb.append("    resource:\n");
 			sb.append("      generate: true\n");
@@ -100,7 +149,7 @@ public final class ArmorSetWriter {
 			sb.append("      - armor_icons/").append(slug).append('_').append(stem).append('\n');
 			sb.append("    specific_properties:\n");
 			sb.append("      armor:\n");
-			sb.append("        slot: ").append(ICON_SLOTS[i]).append('\n');
+			sb.append("        slot: ").append(BODY_ICON_SLOTS[i]).append('\n');
 			sb.append("        custom_armor: ").append(slug).append('\n');
 		}
 		return sb.toString();

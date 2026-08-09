@@ -1,5 +1,6 @@
 babylon_illusion:
-  name: "#E3DF4DBabylon"
+  name: "Babylon"
+  colour: "#e3df4d"
   set: illusion
   add-name: true
   permission: armourshop.babylon
@@ -9,7 +10,8 @@ babylon_illusion:
   boots: ia.tfmc_armor:babylon_boots
 
 babylon_mage:
-  name: "#E3DF4DBabylon"
+  name: "Babylon"
+  colour: "#e3df4d"
   set: mage
   add-name: true
   permission: armourshop.babylon

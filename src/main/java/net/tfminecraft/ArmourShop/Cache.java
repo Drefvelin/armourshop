@@ -16,4 +16,12 @@ public class Cache {
 	public static String iaContentsPath = "";
 	/** Absolute path to ArmourShop Categories/ (Step 8; may be empty). */
 	public static String categoriesPath = "";
+
+	/** GunsAndGadgets skins.yml (Step 15). */
+	public static String gunsSkinsYmlPath = "";
+
+	/** Daily force pull+reload at HH:mm server local; blank disables. */
+	public static String forceReloadTime = "06:00";
+	/** Seconds between iareload and iazip. */
+	public static int iaReloadDelaySeconds = 5;
 }

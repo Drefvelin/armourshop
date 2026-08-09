@@ -1,5 +1,6 @@
 valanaar_chainmail:
-  name: "#eb9d02Valanaar Iron"
+  name: "Valanaar Iron"
+  colour: "#eb9d02"
   set: iron
   add-name: true
   permission: armourshop.valanaar
@@ -9,7 +10,8 @@ valanaar_chainmail:
   boots: ia.tfmc_armor:valanaar_chainmail_boots
 
 valanaar_steel:
-  name: "#eb9d02Valanaar Steel"
+  name: "Valanaar Steel"
+  colour: "#eb9d02"
   set: steel
   add-name: true
   permission: armourshop.valanaar
@@ -19,7 +21,8 @@ valanaar_steel:
   boots: ia.tfmc_armor:valanaar_steel_boots
 
 valanaar_mage:
-  name: "#eb9d02Valanaar Mage"
+  name: "Valanaar Mage"
+  colour: "#eb9d02"
   set: mage
   add-name: true
   permission: armourshop.valanaar
@@ -29,7 +32,8 @@ valanaar_mage:
   boots: ia.tfmc_armor:valanaar_mage_boots
 
 valanaar_mage2:
-  name: "#eb9d02Valanaar Mage"
+  name: "Valanaar Mage"
+  colour: "#eb9d02"
   set: mage
   add-name: true
   permission: armourshop.valanaar

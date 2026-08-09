@@ -1,5 +1,10 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.writer.flat;
 
+
+import net.tfminecraft.ArmourShop.pack.model.PackKind;
+import net.tfminecraft.ArmourShop.pack.model.PackPaths;
+import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
+import net.tfminecraft.ArmourShop.pack.util.YamlUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

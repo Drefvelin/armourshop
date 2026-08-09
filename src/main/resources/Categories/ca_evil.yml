@@ -1,5 +1,6 @@
 yorimir_Warrior:
-  name: "#808080Yorimir"
+  name: "Yorimir"
+  colour: "#808080"
   set: mythril
   add-name: true
   permission: armourshop.evil
@@ -9,7 +10,8 @@ yorimir_Warrior:
   boots: ia.tfmc_armor:yorimir_boots
 
 yorimir_bloodmagic:
-  name: "#808080Yorimir"
+  name: "Yorimir"
+  colour: "#808080"
   set: bloodmagic
   add-name: true
   permission: armourshop.evil
@@ -19,7 +21,8 @@ yorimir_bloodmagic:
   boots: ia.tfmc_armor:yorimir_boots
 
 yorimir_necromancy:
-  name: "#808080Yorimir"
+  name: "Yorimir"
+  colour: "#808080"
   set: necromancy
   add-name: true
   permission: armourshop.evil
@@ -29,7 +32,8 @@ yorimir_necromancy:
   boots: ia.tfmc_armor:yorimir_boots
   
 benjamin_light:
-  name: "#808080Benjamin"
+  name: "Benjamin"
+  colour: "#808080"
   set: mythril
   add-name: true
   permission: armourshop.evil

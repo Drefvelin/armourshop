@@ -1,5 +1,6 @@
 ravoukar:
-  name: "#96544bRavoukar Soldier"
+  name: "Ravoukar Soldier"
+  colour: "#96544b"
   set: infantry
   add-name: true
   helmet: ia.tfmc_armor:ravoukar_helmet
@@ -7,7 +8,8 @@ ravoukar:
   leggings: ia.tfmc_armor:ravoukar_leggings
   boots: ia.tfmc_armor:ravoukar_boots
 ravoukar_tan:
-  name: "#96544bRavoukar Soldier"
+  name: "Ravoukar Soldier"
+  colour: "#96544b"
   set: infantry
   add-name: true
   helmet: ia.tfmc_armor:ravoukar_tan_helmet
@@ -15,7 +17,8 @@ ravoukar_tan:
   leggings: ia.tfmc_armor:ravoukar_tan_leggings
   boots: ia.tfmc_armor:ravoukar_tan_boots
 ravoukar_guard:
-  name: "#96544bRavoukar Guard"
+  name: "Ravoukar Guard"
+  colour: "#96544b"
   set: infantry
   add-name: true
   chestplate: ia.tfmc_armor:ravoukar_guard_chestplate

@@ -1,4 +1,4 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.model;
 
 import java.nio.file.Path;
 

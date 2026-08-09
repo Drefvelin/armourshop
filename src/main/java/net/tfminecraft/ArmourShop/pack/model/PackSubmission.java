@@ -1,4 +1,4 @@
-package net.tfminecraft.ArmourShop.pack;
+package net.tfminecraft.ArmourShop.pack.model;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -86,7 +86,7 @@ public final class PackSubmission {
 	public byte[] requireFile(String stem) {
 		byte[] data = files.get(stem);
 		if (data == null || data.length == 0) {
-			throw new IllegalArgumentException("Missing PNG for stem: " + stem);
+			throw new IllegalArgumentException("Missing file for stem: " + stem);
 		}
 		return data;
 	}

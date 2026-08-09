@@ -1,5 +1,6 @@
 dryad_exploration:
-  name: "§aDryad Exploration"
+  name: "Dryad Exploration"
+  colour: "§a"
   set: exploration
   scroll: m.loot.common_item_skin_scroll
   helmet: ia.tfmc_armor:dryad_exploration_helmet

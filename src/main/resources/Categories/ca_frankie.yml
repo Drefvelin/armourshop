@@ -1,5 +1,6 @@
 frankie_mage:
-  name: "#808080Frankie Mage"
+  name: "Frankie Mage"
+  colour: "#808080"
   set: mage
   add-name: true
   permission: armourshop.frankie_illusion
@@ -9,7 +10,8 @@ frankie_mage:
   boots: ia.tfmc_armor:frankie_boots
   
 frankie_mage_ill:
-  name: "#808080Frankie Mage Illusion"
+  name: "Frankie Mage Illusion"
+  colour: "#808080"
   set: illusion
   add-name: true
   permission: armourshop.frankie_illusion

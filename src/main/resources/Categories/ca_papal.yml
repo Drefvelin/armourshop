@@ -1,5 +1,6 @@
 papal_robes_iron:
-  name: "#dd51edPapal Robes"
+  name: "Papal Robes"
+  colour: "#dd51ed"
   set: iron
   add-name: true
   permission: armourshop.papal
@@ -9,7 +10,8 @@ papal_robes_iron:
   boots: ia.tfmc_armor:papal_robes_boots
 
 papal_robes_steel:
-  name: "#dd51edPapal Robes"
+  name: "Papal Robes"
+  colour: "#dd51ed"
   set: steel
   add-name: true
   permission: armourshop.papal
@@ -19,7 +21,8 @@ papal_robes_steel:
   boots: ia.tfmc_armor:papal_robes_boots
 
 papal_robes_abyssalite:
-  name: "#dd51edPapal Robes"
+  name: "Papal Robes"
+  colour: "#dd51ed"
   set: abyssalite
   add-name: true
   permission: armourshop.papal

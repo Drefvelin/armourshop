@@ -3,6 +3,7 @@ package net.tfminecraft.ArmourShop.managers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
+import net.tfminecraft.ArmourShop.pack.apply.PackPullRunner;
 import net.tfminecraft.ArmourShop.utils.ChatMessages;
 import net.tfminecraft.ArmourShop.utils.ExpiryFormat;
 import net.tfminecraft.ArmourShop.utils.Permissions;
@@ -53,7 +55,7 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			}
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
-				p.sendMessage("§a[ArmourShop] §cYou do not have access to this command");
+				p.sendMessage("\u00A7a[ArmourShop] \u00A7cYou do not have access to this command");
 			}
 			return true;
 		}
@@ -64,7 +66,100 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			return handleTokenCreate(sender);
 		}
 
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("token")
+			&& args[1].equalsIgnoreCase("delete")) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Usage: /armourshop token delete <code>");
+			return true;
+		}
+
+		if (args.length >= 3
+			&& args[0].equalsIgnoreCase("token")
+			&& args[1].equalsIgnoreCase("delete")) {
+			return handleTokenDelete(sender, args[2]);
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("listtokens")) {
+			return handleListTokens(sender);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("pack")
+			&& args[1].equalsIgnoreCase("pull")) {
+			return handlePackPull(sender);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("submission")
+			&& args[1].equalsIgnoreCase("delete")) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Usage: /armourshop submission delete <id>");
+			return true;
+		}
+
+		if (args.length >= 3
+			&& args[0].equalsIgnoreCase("submission")
+			&& args[1].equalsIgnoreCase("delete")) {
+			return handleSubmissionDelete(sender, args[2]);
+		}
+
 		return false;
+	}
+
+	private boolean handleSubmissionDelete(CommandSender sender, String submissionId) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Deleting submission…");
+		JavaPlugin plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			String result = net.tfminecraft.ArmourShop.pack.delete.SubmissionDeleteRunner
+				.run(submissionId);
+			net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.invalidate();
+			Bukkit.getScheduler().runTask(plugin, () ->
+				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+					+ ChatColor.YELLOW + result)
+			);
+		});
+		return true;
+	}
+
+	private boolean handlePackPull(CommandSender sender) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Pulling approved skins…");
+		boolean started = PackPullRunner.run(true, result -> {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.YELLOW + result.summaryLine());
+			if (result.busy || result.failed) {
+				return;
+			}
+			int shown = 0;
+			for (String line : result.messages) {
+				if (shown >= 8) {
+					sender.sendMessage(ChatColor.GRAY + "… "
+						+ (result.messages.size() - shown)
+						+ " more (see console)");
+					break;
+				}
+				sender.sendMessage(ChatColor.GRAY + line);
+				shown++;
+			}
+		});
+		if (!started) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.YELLOW + "Pack pull already running.");
+		}
+		return true;
 	}
 
 	private boolean handleTokenCreate(CommandSender sender) {
@@ -109,6 +204,104 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 		return true;
 	}
 
+	private boolean handleListTokens(CommandSender sender) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+
+		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Fetching active tokens…");
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			ProvinceSystemClient.ActiveCodesResult result =
+				ProvinceSystemClient.listActiveCodes();
+			Bukkit.getScheduler().runTask(plugin, () -> {
+				if (!result.ok) {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.RED
+						+ (result.error != null ? result.error : "Could not list tokens."));
+					return;
+				}
+				if (result.codes.isEmpty()) {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.YELLOW + "No active unused tokens.");
+					return;
+				}
+				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+					+ ChatColor.YELLOW + "Active tokens (" + result.codes.size() + "):");
+				for (ProvinceSystemClient.ActiveCode entry : result.codes) {
+					String owner = ownerLabel(entry);
+					if (sender instanceof Player) {
+						ChatMessages.sendTokenListLine((Player) sender, entry.code, owner);
+					} else {
+						sender.sendMessage(ChatColor.AQUA + entry.code
+							+ ChatColor.GRAY + " — "
+							+ ChatColor.YELLOW + owner);
+					}
+				}
+			});
+		});
+		return true;
+	}
+
+	private boolean handleTokenDelete(CommandSender sender, String codeArg) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+
+		String code = codeArg == null ? "" : codeArg.trim();
+		if (code.startsWith("\"") && code.endsWith("\"") && code.length() >= 2) {
+			code = code.substring(1, code.length() - 1).trim();
+		}
+		if (code.isEmpty()) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Usage: /armourshop token delete <code>");
+			return true;
+		}
+
+		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		final String toRevoke = code;
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			ProvinceSystemClient.SimpleResult result =
+				ProvinceSystemClient.revokeCode(toRevoke);
+			Bukkit.getScheduler().runTask(plugin, () -> {
+				if (!result.ok) {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.RED
+						+ (result.error != null ? result.error : "Could not delete token."));
+					return;
+				}
+				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+					+ ChatColor.YELLOW + "Deleted token "
+					+ ChatColor.AQUA + toRevoke);
+			});
+		});
+		return true;
+	}
+
+	private static String ownerLabel(ProvinceSystemClient.ActiveCode entry) {
+		if (entry.minecraftName != null && !entry.minecraftName.isBlank()) {
+			return entry.minecraftName.trim();
+		}
+		String uuid = entry.playerUuid == null ? "" : entry.playerUuid.trim();
+		if (uuid.isEmpty()) {
+			return "?";
+		}
+		try {
+			String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+			if (name != null && !name.isBlank()) {
+				return name;
+			}
+		} catch (IllegalArgumentException ignored) {
+			// fall through
+		}
+		return uuid;
+	}
+
 	@Override
 	public List<String> onTabComplete(
 		CommandSender sender,
@@ -122,19 +315,49 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			List<String> completions = new ArrayList<>();
-			if (Permissions.canCreateToken(sender)) {
+			if (Permissions.canCreateToken(sender) || Permissions.isAdmin(sender)) {
 				completions.add("token");
 			}
 			if (Permissions.isAdmin(sender)) {
 				completions.add("reload");
+				completions.add("pack");
+				completions.add("listtokens");
+				completions.add("submission");
 			}
 			return filter(completions, args[0]);
 		}
 
+		if (args.length == 2 && args[0].equalsIgnoreCase("token")) {
+			List<String> completions = new ArrayList<>();
+			if (Permissions.canCreateToken(sender)) {
+				completions.add("create");
+			}
+			if (Permissions.isAdmin(sender)) {
+				completions.add("delete");
+			}
+			return filter(completions, args[1]);
+		}
+
 		if (args.length == 2
-			&& args[0].equalsIgnoreCase("token")
-			&& Permissions.canCreateToken(sender)) {
-			return filter(Collections.singletonList("create"), args[1]);
+			&& args[0].equalsIgnoreCase("pack")
+			&& Permissions.isAdmin(sender)) {
+			return filter(Collections.singletonList("pull"), args[1]);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("submission")
+			&& Permissions.isAdmin(sender)) {
+			return filter(Collections.singletonList("delete"), args[1]);
+		}
+
+		if (args.length == 3
+			&& args[0].equalsIgnoreCase("submission")
+			&& args[1].equalsIgnoreCase("delete")
+			&& Permissions.isAdmin(sender)) {
+			List<String> ids = new ArrayList<>(
+				net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.snapshot()
+			);
+			return filter(ids, args[2]);
 		}
 
 		return Collections.emptyList();

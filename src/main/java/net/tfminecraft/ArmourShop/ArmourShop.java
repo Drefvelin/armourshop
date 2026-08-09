@@ -12,8 +12,12 @@ import net.tfminecraft.ArmourShop.loaders.ConfigLoader;
 import net.tfminecraft.ArmourShop.loaders.SkinSetLoader;
 import net.tfminecraft.ArmourShop.managers.CommandManager;
 import net.tfminecraft.ArmourShop.managers.LinkDiscordCommand;
+import net.tfminecraft.ArmourShop.managers.PluginNoticePoller;
 import net.tfminecraft.ArmourShop.managers.SkinManager;
 import net.tfminecraft.ArmourShop.managers.UnlinkDiscordCommand;
+import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
+import net.tfminecraft.ArmourShop.pack.apply.PackPullScheduler;
+import net.tfminecraft.ArmourShop.pack.reload.PendingReloadQueue;
 
 public class ArmourShop extends JavaPlugin{
 	public static ArmourShop plugin;
@@ -25,6 +29,10 @@ public class ArmourShop extends JavaPlugin{
 	
 	private final CommandManager commandManager = new CommandManager();
 	private final SkinManager skinManager = new SkinManager();
+	private PendingReloadQueue pendingReloadQueue;
+	private DeferredIaReloadService deferredIaReloadService;
+	private PluginNoticePoller pluginNoticePoller;
+	private PackPullScheduler packPullScheduler;
 	
 	@Override
 	public void onEnable() {
@@ -32,6 +40,11 @@ public class ArmourShop extends JavaPlugin{
 		createFolders();
 		createConfigs();
 		loadConfigs();
+		pendingReloadQueue = new PendingReloadQueue(this);
+		pendingReloadQueue.load();
+		deferredIaReloadService = new DeferredIaReloadService(this, pendingReloadQueue);
+		pluginNoticePoller = new PluginNoticePoller(this);
+		packPullScheduler = new PackPullScheduler(this);
 		registerListeners();
 		getCommand(commandManager.cmd1).setExecutor(commandManager);
 		getCommand(commandManager.cmd1).setTabCompleter(commandManager);
@@ -45,11 +58,38 @@ public class ArmourShop extends JavaPlugin{
 		} else {
 			getLogger().severe("Command unlinkdiscord missing from plugin.yml");
 		}
+		pluginNoticePoller.start();
+		packPullScheduler.start();
+		net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.invalidate();
+		if (!pendingReloadQueue.isEmpty()) {
+			getLogger().info("[ia-reload] " + pendingReloadQueue.size()
+				+ " pending submission(s) from previous session — forcing IA refresh");
+			deferredIaReloadService.requestFlush(true);
+		}
+	}
+
+	@Override
+	public void onDisable() {
+		if (pluginNoticePoller != null) {
+			pluginNoticePoller.stop();
+		}
+		if (packPullScheduler != null) {
+			packPullScheduler.stop();
+		}
+	}
+
+	public DeferredIaReloadService getDeferredIaReloadService() {
+		return deferredIaReloadService;
+	}
+
+	public PendingReloadQueue getPendingReloadQueue() {
+		return pendingReloadQueue;
 	}
 	
 	public void registerListeners() {
 		getServer().getPluginManager().registerEvents(commandManager, this);
 		getServer().getPluginManager().registerEvents(skinManager, this);
+		getServer().getPluginManager().registerEvents(deferredIaReloadService, this);
 	}
 	public void loadConfigs() {
 		configLoader.load(new File(getDataFolder(), "config.yml"));
