@@ -1,7 +1,7 @@
 start-points: [9, 18, 27, 36, 45, 14, 23, 32, 41, 50]
 item-start-points: [9, 10, 11, 12, 18, 19, 20, 21, 27, 28, 29, 30, 36, 37, 38, 39, 45, 46, 47, 48, 14, 15, 16, 17, 23, 24, 25, 26, 32, 33, 34, 35, 41, 42, 43, 44, 50, 51, 52, 53]
 
-# ProvinceSystem skins API (Discord link, codes, pack pull)
+# ProvinceSystem skins API (pack pull / apply / admin codes — not Discord link)
 skins-api:
   # No trailing slash
   base-url: "http://127.0.0.1:18001"

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Writes item_3d skins ({@code generate: false} + donor model).
+ * Writes item_3d / helmet_3d skins from web-normalized model JSON (passthrough).
  */
 public final class Item3dWriter {
 
@@ -83,12 +83,8 @@ public final class Item3dWriter {
 		Files.write(pngPath, submission.requireFile(Model3dUtil.TEXTURE_STEM));
 		written.add(pngPath);
 
-		byte[] normalized = Model3dUtil.normalizeModel(
-			submission.requireFile(Model3dUtil.MODEL_STEM),
-			slug
-		);
 		Path modelPath = modelsDir.resolve(slug + ".json");
-		Files.write(modelPath, normalized);
+		Files.write(modelPath, submission.requireFile(Model3dUtil.MODEL_STEM));
 		written.add(modelPath);
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");

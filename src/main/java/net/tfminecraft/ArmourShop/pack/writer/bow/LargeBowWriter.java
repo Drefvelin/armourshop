@@ -14,34 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Writes large_bow skins (generate: false + enlarged bow display + pull models).
+ * Writes large_bow skins from web-built thin models (passthrough).
  */
 public final class LargeBowWriter {
 
-	/** Locked display from TFMC longbow oak_1 (enlarged vs vanilla bow). */
-	private static final String DISPLAY_JSON =
-		"  \"display\": {\n"
-			+ "    \"thirdperson_righthand\": {\n"
-			+ "      \"rotation\": [ -80, 260, -40 ],\n"
-			+ "      \"translation\": [ -1, -2, 5.8 ],\n"
-			+ "      \"scale\": [ 1.8, 1.8, 0.9 ]\n"
-			+ "    },\n"
-			+ "    \"thirdperson_lefthand\": {\n"
-			+ "      \"rotation\": [ -80, -280, 40 ],\n"
-			+ "      \"translation\": [ -1, -2, 5.8 ],\n"
-			+ "      \"scale\": [ 1.8, 1.8, 0.9 ]\n"
-			+ "    },\n"
-			+ "    \"firstperson_righthand\": {\n"
-			+ "      \"rotation\": [ 0, -90, 25 ],\n"
-			+ "      \"translation\": [ 1.13, 3.2, 1.13 ],\n"
-			+ "      \"scale\": [ 1.3, 1.3, 0.68 ]\n"
-			+ "    },\n"
-			+ "    \"firstperson_lefthand\": {\n"
-			+ "      \"rotation\": [ 0, 90, -25 ],\n"
-			+ "      \"translation\": [ 1.13, 3.2, 1.13 ],\n"
-			+ "      \"scale\": [ 1.3, 1.3, 0.68 ]\n"
-			+ "    }\n"
-			+ "  }";
+	/** Stem prefix for frame model JSON ({@code model}, {@code model_0}, …). */
+	public static final String MODEL_STEM_PREFIX = "model";
 
 	private LargeBowWriter() {}
 
@@ -71,13 +49,11 @@ public final class LargeBowWriter {
 			Files.write(pngPath, png);
 			written.add(pngPath);
 
+			String modelStem = modelStemFor(stem);
+			byte[] modelJson = submission.requireFile(modelStem);
 			String modelName = slug + BowFrames.fileSuffix(stem) + ".json";
 			Path modelPath = modelsDir.resolve(modelName);
-			Files.writeString(
-				modelPath,
-				buildThinModel(slug, stem),
-				StandardCharsets.UTF_8
-			);
+			Files.write(modelPath, modelJson);
 			written.add(modelPath);
 		}
 
@@ -87,15 +63,21 @@ public final class LargeBowWriter {
 		return written;
 	}
 
-	static String buildThinModel(String slug, String stem) {
-		String tex = PackPaths.NAMESPACE + ":item/" + slug + BowFrames.fileSuffix(stem);
-		return "{\n"
-			+ "  \"parent\": \"minecraft:item/bow\",\n"
-			+ DISPLAY_JSON + ",\n"
-			+ "  \"textures\": {\n"
-			+ "    \"layer0\": \"" + tex + "\"\n"
-			+ "  }\n"
-			+ "}\n";
+	/** Map bow frame stem → pack submission model stem. */
+	public static String modelStemFor(String bowStem) {
+		if (BowFrames.STANDBY.equals(bowStem)) {
+			return MODEL_STEM_PREFIX;
+		}
+		if (BowFrames.PULL_0.equals(bowStem)) {
+			return MODEL_STEM_PREFIX + "_0";
+		}
+		if (BowFrames.PULL_1.equals(bowStem)) {
+			return MODEL_STEM_PREFIX + "_1";
+		}
+		if (BowFrames.PULL_2.equals(bowStem)) {
+			return MODEL_STEM_PREFIX + "_2";
+		}
+		throw new IllegalArgumentException("unknown bow stem: " + bowStem);
 	}
 
 	static String buildYaml(PackSubmission submission) {

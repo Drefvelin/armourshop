@@ -2,7 +2,7 @@ package net.tfminecraft.ArmourShop.pack.harness;
 
 
 import net.tfminecraft.ArmourShop.pack.model.BowFrames;
-import net.tfminecraft.ArmourShop.pack.model.GripPreset;
+import net.tfminecraft.ArmourShop.pack.model.GripY;
 import net.tfminecraft.ArmourShop.pack.model.PackKind;
 import net.tfminecraft.ArmourShop.pack.model.PackPaths;
 import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
@@ -63,9 +63,9 @@ public final class PackHarnessMain {
 		writeArmor(contents);
 		writeFlat(contents, "harness_item", "Harness Item", PackKind.ITEM, new Color(0x88, 0x44, 0xcc));
 		writeFlat(contents, "harness_handheld", "Harness Handheld", PackKind.HANDHELD, new Color(0xcc, 0x88, 0x22));
-		writeLarge(contents, "harness_large_bottom", GripPreset.BOTTOM, new Color(0x22, 0xaa, 0x66));
-		writeLarge(contents, "harness_large_middle", GripPreset.MIDDLE, new Color(0xaa, 0xaa, 0x22));
-		writeLarge(contents, "harness_large_top", GripPreset.TOP, new Color(0xaa, 0x44, 0x22));
+		writeLarge(contents, "harness_large_bottom", GripY.MIN, new Color(0x22, 0xaa, 0x66));
+		writeLarge(contents, "harness_large_middle", GripY.DEFAULT, new Color(0xaa, 0xaa, 0x22));
+		writeLarge(contents, "harness_large_top", GripY.MAX, new Color(0xaa, 0x44, 0x22));
 		writeBow(contents, "harness_bow", "Harness Bow", PackKind.BOW, 16, new Color(0xaa, 0x66, 0x22));
 		writeBow(contents, "harness_large_bow", "Harness Large Bow", PackKind.LARGE_BOW, 32, new Color(0x66, 0xaa, 0x22));
 		writeBow(contents, "harness_crossbow", "Harness Crossbow", PackKind.CROSSBOW, 16, new Color(0x22, 0x66, 0xaa));
@@ -110,22 +110,24 @@ public final class PackHarnessMain {
 	private static void writeLarge(
 		Path contents,
 		String slug,
-		GripPreset grip,
+		double gripY,
 		Color color
 	) throws Exception {
 		Map<String, byte[]> files = new LinkedHashMap<>();
 		files.put(LargeHandheldWriter.TEXTURE_STEM, PngUtil.solidPng(32, 32, color));
+		files.put(Model3dUtil.MODEL_STEM, largeHandheldModelJson(slug, gripY));
 		List<Path> written = LargeHandheldWriter.write(
 			contents,
 			new PackSubmission(
 				slug,
-				"Harness Large " + grip.id(),
+				"Harness Large " + GripY.format(gripY),
 				PackKind.LARGE_HANDHELD,
-				grip,
 				files
 			)
 		);
-		System.out.println("Wrote LARGE_HANDHELD " + grip.id() + " (" + written.size() + " paths)");
+		System.out.println(
+			"Wrote LARGE_HANDHELD grip=" + GripY.format(gripY) + " (" + written.size() + " paths)"
+		);
 	}
 
 	private static void writeBow(
@@ -157,6 +159,12 @@ public final class PackHarnessMain {
 				new PackSubmission(slug, name, PackKind.BOW, files)
 			);
 		} else if (kind == PackKind.LARGE_BOW) {
+			for (String stem : BowFrames.BOW_STEMS) {
+				files.put(
+					LargeBowWriter.modelStemFor(stem),
+					largeBowModelJson(slug, stem)
+				);
+			}
 			written = LargeBowWriter.write(
 				contents,
 				new PackSubmission(slug, name, PackKind.LARGE_BOW, files)
@@ -179,7 +187,7 @@ public final class PackHarnessMain {
 	) throws Exception {
 		Map<String, byte[]> files = new LinkedHashMap<>();
 		files.put(Model3dUtil.TEXTURE_STEM, PngUtil.solidPng(16, 16, color));
-		files.put(Model3dUtil.MODEL_STEM, minimalModelJson());
+		files.put(Model3dUtil.MODEL_STEM, normalizedModelJson(slug));
 		List<Path> written;
 		if (kind == PackKind.ITEM_3D) {
 			written = Item3dWriter.write(
@@ -200,7 +208,8 @@ public final class PackHarnessMain {
 	{
 		Map<String, byte[]> files = new LinkedHashMap<>();
 		files.put(Model3dUtil.TEXTURE_STEM, PngUtil.solidPng(16, 16, color));
-		files.put(Model3dUtil.MODEL_STEM, minimalModelJson());
+		files.put(Model3dUtil.MODEL_STEM, shieldIdleModelJson(slug));
+		files.put(ShieldWriter.MODEL_BLOCKING_STEM, shieldBlockingModelJson(slug));
 		List<Path> written = ShieldWriter.write(
 			contents,
 			new PackSubmission(slug, name, PackKind.SHIELD, files)
@@ -210,7 +219,11 @@ public final class PackHarnessMain {
 
 	private static void writeArmorHelmet3d(Path contents) throws Exception {
 		Map<String, byte[]> files = new LinkedHashMap<>();
-		files.put(Model3dUtil.HELMET_MODEL_STEM, minimalModelJson());
+		String packSlug = "harness_armor_h3d";
+		files.put(
+			Model3dUtil.HELMET_MODEL_STEM,
+			normalizedModelJson(packSlug + "_helmet")
+		);
 		files.put(Model3dUtil.HELMET_TEXTURE_STEM, PngUtil.solidPng(32, 32, new Color(0xff, 0xaa, 0x22)));
 		files.put("chestplate", PngUtil.solidPng(16, 16, new Color(0x33, 0x88, 0xee)));
 		files.put("leggings", PngUtil.solidPng(16, 16, new Color(0x22, 0x66, 0xcc)));
@@ -220,7 +233,7 @@ public final class PackHarnessMain {
 		List<Path> written = ArmorSetWriter.write(
 			contents,
 			new PackSubmission(
-				"harness_armor_h3d",
+				packSlug,
 				"Harness Armor 3D Helm",
 				PackKind.ARMOR_SET,
 				files
@@ -235,15 +248,18 @@ public final class PackHarnessMain {
 		Path skinsYml = harnessDir.resolve("skins.yml");
 		Files.writeString(skinsYml, "", StandardCharsets.UTF_8);
 
+		String slug = "harness_gun";
+		byte[] model = normalizedModelJson(slug);
 		Map<String, byte[]> files = new LinkedHashMap<>();
 		files.put(GunWriter.TEXTURE_STEM, PngUtil.solidPng(32, 32, new Color(0x66, 0x44, 0x22)));
-		files.put(GunWriter.CARRY_STEM, minimalModelJson());
-		files.put(GunWriter.RELOAD_STEM, minimalModelJson());
-		files.put(GunWriter.AIM_STEM, minimalModelJson());
+		files.put(GunWriter.CARRY_STEM, model);
+		files.put(GunWriter.RELOAD_STEM, model);
+		files.put(GunWriter.AIM_STEM, model);
+		files.put(GunWriter.AIM_CHARGED_STEM, model);
 		List<Path> written = GunWriter.write(
 			contents,
 			new PackSubmission(
-				"harness_gun",
+				slug,
 				"Harness Gun",
 				PackKind.GUN,
 				files
@@ -254,15 +270,85 @@ public final class PackHarnessMain {
 		System.out.println("Wrote GUN (" + written.size() + " files)");
 	}
 
-	private static byte[] minimalModelJson() {
+	private static byte[] normalizedModelJson(String textureId) {
 		return (
 			"{\n"
-				+ "  \"textures\": { \"0\": \"placeholder\" },\n"
+				+ "  \"textures\": { \"0\": \"tfmc_submissions:item/" + textureId + "\" },\n"
 				+ "  \"elements\": [],\n"
 				+ "  \"display\": {\n"
 				+ "    \"thirdperson_righthand\": { \"scale\": [0.5, 0.5, 0.5] },\n"
 				+ "    \"gui\": { \"rotation\": [30, 225, 0] }\n"
 				+ "  }\n"
+				+ "}\n"
+		).getBytes(StandardCharsets.UTF_8);
+	}
+
+	private static byte[] shieldIdleModelJson(String slug) {
+		return (
+			"{\n"
+				+ "  \"textures\": { \"0\": \"tfmc_submissions:item/" + slug + "\" },\n"
+				+ "  \"elements\": [],\n"
+				+ "  \"overrides\": [{\n"
+				+ "    \"predicate\": { \"blocking\": 1 },\n"
+				+ "    \"model\": \"tfmc_submissions:item/" + slug + "_blocking\"\n"
+				+ "  }],\n"
+				+ "  \"display\": {\n"
+				+ "    \"thirdperson_righthand\": {\n"
+				+ "      \"rotation\": [0, -90, 0],\n"
+				+ "      \"translation\": [2, -2, 1],\n"
+				+ "      \"scale\": [1.01, 1.01, 1.01]\n"
+				+ "    }\n"
+				+ "  }\n"
+				+ "}\n"
+		).getBytes(StandardCharsets.UTF_8);
+	}
+
+	private static byte[] shieldBlockingModelJson(String slug) {
+		return (
+			"{\n"
+				+ "  \"textures\": { \"0\": \"tfmc_submissions:item/" + slug + "\" },\n"
+				+ "  \"elements\": [],\n"
+				+ "  \"display\": {\n"
+				+ "    \"thirdperson_righthand\": {\n"
+				+ "      \"rotation\": [30, -35, 0],\n"
+				+ "      \"translation\": [1, -1, -1],\n"
+				+ "      \"scale\": [1.01, 1.01, 1.01]\n"
+				+ "    }\n"
+				+ "  }\n"
+				+ "}\n"
+		).getBytes(StandardCharsets.UTF_8);
+	}
+
+	private static byte[] largeHandheldModelJson(String slug, double gripY) {
+		String y = GripY.format(gripY);
+		return (
+			"{\n"
+				+ "  \"parent\": \"minecraft:item/handheld\",\n"
+				+ "  \"textures\": { \"layer0\": \"tfmc_submissions:item/" + slug + "\" },\n"
+				+ "  \"display\": {\n"
+				+ "    \"thirdperson_righthand\": {\n"
+				+ "      \"rotation\": [0, -90, 55],\n"
+				+ "      \"translation\": [0, " + y + ", 0.5],\n"
+				+ "      \"scale\": [1.5, 1.5, 1.5]\n"
+				+ "    }\n"
+				+ "  }\n"
+				+ "}\n"
+		).getBytes(StandardCharsets.UTF_8);
+	}
+
+	private static byte[] largeBowModelJson(String slug, String stem) {
+		String tex = "tfmc_submissions:item/" + slug + BowFrames.fileSuffix(stem);
+		return (
+			"{\n"
+				+ "  \"parent\": \"minecraft:item/bow\",\n"
+				+ "  \"display\": {\n"
+				+ "    \"thirdperson_righthand\": {\n"
+				+ "      \"rotation\": [-80, 260, -40],\n"
+				+ "      \"translation\": [-1, -2, 5.8],\n"
+				+ "      \"scale\": [1.8, 1.8, 0.9]\n"
+				+ "    }\n"
+				+ "  },\n"
+				+ "  \"textures\": { \"layer0\": \"" + tex + "\" }\n"
 				+ "}\n"
 		).getBytes(StandardCharsets.UTF_8);
 	}
@@ -274,9 +360,6 @@ public final class PackHarnessMain {
 		assertLarge(contents, "harness_large_bottom");
 		assertLarge(contents, "harness_large_middle");
 		assertLarge(contents, "harness_large_top");
-		assertFile(PackPaths.itemModelsDir(contents).resolve("grip_bottom.json"));
-		assertFile(PackPaths.itemModelsDir(contents).resolve("grip_middle.json"));
-		assertFile(PackPaths.itemModelsDir(contents).resolve("grip_top.json"));
 		assertBow(contents, "harness_bow", true);
 		assertLargeBow(contents, "harness_large_bow");
 		assertBow(contents, "harness_crossbow", true);
@@ -318,7 +401,12 @@ public final class PackHarnessMain {
 		assertContains(yaml, "generate: false");
 		assertContains(yaml, "model_path: item/" + slug);
 		assertFile(PackPaths.itemTexturesDir(contents).resolve(slug + ".png"));
-		assertFile(PackPaths.itemModelsDir(contents).resolve(slug + ".json"));
+		Path modelPath = PackPaths.itemModelsDir(contents).resolve(slug + ".json");
+		assertFile(modelPath);
+		String model = read(modelPath);
+		assertContains(model, "minecraft:item/handheld");
+		assertContains(model, "\"display\"");
+		assertContains(model, "1.5");
 	}
 
 	private static void assertBow(Path contents, String slug, boolean generateTrue)

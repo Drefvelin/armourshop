@@ -13,8 +13,9 @@ public final class PackSubmission {
 	private final String slug;
 	private final String displayName;
 	private final PackKind kind;
-	private final GripPreset gripPreset;
-	/** File stem → PNG bytes (e.g. helmet, chestplate, layer_1, texture). */
+	/** Optional legacy field; pack model JSON is built by ProvinceSystem. */
+	private final Double gripY;
+	/** File stem → PNG/JSON bytes (e.g. helmet, texture, model). */
 	private final Map<String, byte[]> files;
 
 	public PackSubmission(
@@ -30,7 +31,7 @@ public final class PackSubmission {
 		String slug,
 		String displayName,
 		PackKind kind,
-		GripPreset gripPreset,
+		Double gripY,
 		Map<String, byte[]> files
 	) {
 		this.slug = Objects.requireNonNull(slug, "slug").trim();
@@ -42,14 +43,8 @@ public final class PackSubmission {
 		if (this.displayName.isEmpty()) {
 			throw new IllegalArgumentException("displayName is required");
 		}
-		if (kind == PackKind.LARGE_HANDHELD) {
-			if (gripPreset == null) {
-				throw new IllegalArgumentException("gripPreset is required for LARGE_HANDHELD");
-			}
-			this.gripPreset = gripPreset;
-		} else {
-			this.gripPreset = gripPreset;
-		}
+		// gripY retained for API/history only; model JSON is web-built.
+		this.gripY = gripY == null ? null : GripY.clamp(gripY);
 		Map<String, byte[]> copy = new LinkedHashMap<>();
 		if (files != null) {
 			for (Map.Entry<String, byte[]> e : files.entrySet()) {
@@ -74,9 +69,9 @@ public final class PackSubmission {
 		return kind;
 	}
 
-	/** Null unless kind is LARGE_HANDHELD (then non-null). */
-	public GripPreset gripPreset() {
-		return gripPreset;
+	/** Optional; unused by pack writers (model JSON is web-built). */
+	public Double gripY() {
+		return gripY;
 	}
 
 	public Map<String, byte[]> files() {

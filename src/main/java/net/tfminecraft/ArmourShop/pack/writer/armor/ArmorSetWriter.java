@@ -68,12 +68,8 @@ public final class ArmorSetWriter {
 			Path tex = itemTexDir.resolve(helmetId + ".png");
 			Files.write(tex, submission.requireFile(Model3dUtil.HELMET_TEXTURE_STEM));
 			written.add(tex);
-			byte[] model = Model3dUtil.normalizeModel(
-				submission.requireFile(Model3dUtil.HELMET_MODEL_STEM),
-				helmetId
-			);
 			Path modelPath = modelsDir.resolve(helmetId + ".json");
-			Files.write(modelPath, model);
+			Files.write(modelPath, submission.requireFile(Model3dUtil.HELMET_MODEL_STEM));
 			written.add(modelPath);
 		} else {
 			Path out = iconsDir.resolve(slug + "_helmet.png");

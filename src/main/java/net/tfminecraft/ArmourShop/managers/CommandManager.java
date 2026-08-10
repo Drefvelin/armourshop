@@ -20,7 +20,6 @@ import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullRunner;
 import net.tfminecraft.ArmourShop.utils.ChatMessages;
-import net.tfminecraft.ArmourShop.utils.ExpiryFormat;
 import net.tfminecraft.ArmourShop.utils.Permissions;
 
 
@@ -63,7 +62,11 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 		if (args.length == 2
 			&& args[0].equalsIgnoreCase("token")
 			&& args[1].equalsIgnoreCase("create")) {
-			return handleTokenCreate(sender);
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.YELLOW + "Use "
+				+ ChatColor.AQUA + "/token create skin"
+				+ ChatColor.YELLOW + " (TFMCWeb) instead.");
+			return true;
 		}
 
 		if (args.length == 2
@@ -159,48 +162,6 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
 				+ ChatColor.YELLOW + "Pack pull already running.");
 		}
-		return true;
-	}
-
-	private boolean handleTokenCreate(CommandSender sender) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Players only.");
-			return true;
-		}
-
-		Player player = (Player) sender;
-		if (!Permissions.canCreateToken(player)) {
-			ChatMessages.error(player, "You do not have permission to create a skins token.");
-			return true;
-		}
-
-		String uuid = player.getUniqueId().toString();
-		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			ProvinceSystemClient.CodeResult result = ProvinceSystemClient.issueSkinsCode(uuid);
-			Bukkit.getScheduler().runTask(plugin, () -> {
-				if (!player.isOnline()) {
-					return;
-				}
-				if (!result.ok) {
-					ChatMessages.error(
-						player,
-						result.error != null ? result.error : "Could not create skins code."
-					);
-					return;
-				}
-				ChatMessages.sendCopyableCode(
-					player,
-					"Your skins upload code (click to copy):",
-					result.code
-				);
-				ChatMessages.info(player, "Redeem on the skins website.");
-				String expiry = ExpiryFormat.relativeLabel(result.expiresAt);
-				if (expiry != null) {
-					ChatMessages.info(player, expiry);
-				}
-			});
-		});
 		return true;
 	}
 
@@ -315,10 +276,8 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			List<String> completions = new ArrayList<>();
-			if (Permissions.canCreateToken(sender) || Permissions.isAdmin(sender)) {
-				completions.add("token");
-			}
 			if (Permissions.isAdmin(sender)) {
+				completions.add("token");
 				completions.add("reload");
 				completions.add("pack");
 				completions.add("listtokens");
@@ -329,9 +288,6 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 
 		if (args.length == 2 && args[0].equalsIgnoreCase("token")) {
 			List<String> completions = new ArrayList<>();
-			if (Permissions.canCreateToken(sender)) {
-				completions.add("create");
-			}
 			if (Permissions.isAdmin(sender)) {
 				completions.add("delete");
 			}

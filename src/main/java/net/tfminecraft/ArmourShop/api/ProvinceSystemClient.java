@@ -18,95 +18,12 @@ import java.util.Map;
 import net.tfminecraft.ArmourShop.Cache;
 
 /**
- * Minimal HTTP client for ProvinceSystem skins plugin routes.
+ * Minimal HTTP client for ProvinceSystem skins plugin routes (pack apply / admin codes).
  */
 public class ProvinceSystemClient {
 
 	private static final int TIMEOUT_MS = 8000;
 	private static final int DOWNLOAD_TIMEOUT_MS = 30000;
-
-	/** Shared result for link/start and skins code issue. */
-	public static final class CodeResult {
-		public final boolean ok;
-		public final boolean alreadyLinked;
-		public final String code;
-		public final String expiresAt;
-		public final String discordUsername;
-		public final String error;
-
-		private CodeResult(
-			boolean ok,
-			boolean alreadyLinked,
-			String code,
-			String expiresAt,
-			String discordUsername,
-			String error
-		) {
-			this.ok = ok;
-			this.alreadyLinked = alreadyLinked;
-			this.code = code;
-			this.expiresAt = expiresAt;
-			this.discordUsername = discordUsername;
-			this.error = error;
-		}
-
-		public static CodeResult success(String code, String expiresAt) {
-			return new CodeResult(true, false, code, expiresAt, null, null);
-		}
-
-		public static CodeResult alreadyLinked(String discordUsername) {
-			return new CodeResult(true, true, null, null, discordUsername, null);
-		}
-
-		public static CodeResult fail(String error) {
-			return new CodeResult(false, false, null, null, null, error);
-		}
-	}
-
-	/** One undelivered plugin notice from GET /plugin/notices. */
-	public static final class PluginNotice {
-		public final int id;
-		public final String type;
-		public final String playerUuid;
-		public final String discordUsername;
-		public final String createdAt;
-
-		public PluginNotice(
-			int id,
-			String type,
-			String playerUuid,
-			String discordUsername,
-			String createdAt
-		) {
-			this.id = id;
-			this.type = type;
-			this.playerUuid = playerUuid;
-			this.discordUsername = discordUsername;
-			this.createdAt = createdAt;
-		}
-	}
-
-	public static final class PluginNoticesResult {
-		public final boolean ok;
-		public final List<PluginNotice> notices;
-		public final String error;
-
-		private PluginNoticesResult(boolean ok, List<PluginNotice> notices, String error) {
-			this.ok = ok;
-			this.notices = notices == null
-				? Collections.emptyList()
-				: Collections.unmodifiableList(new ArrayList<>(notices));
-			this.error = error;
-		}
-
-		public static PluginNoticesResult success(List<PluginNotice> notices) {
-			return new PluginNoticesResult(true, notices, null);
-		}
-
-		public static PluginNoticesResult fail(String error) {
-			return new PluginNoticesResult(false, null, error);
-		}
-	}
 
 	/** Result for unlink (and similar ok/error POSTs). */
 	public static final class SimpleResult {
@@ -400,107 +317,6 @@ public class ProvinceSystemClient {
 		public static DownloadResult fail(String error) {
 			return new DownloadResult(false, null, error);
 		}
-	}
-
-	public static CodeResult startDiscordLink(String playerUuid, String minecraftName) {
-		String body = "{"
-			+ "\"player_uuid\":\"" + escapeJson(playerUuid) + "\","
-			+ "\"minecraft_name\":\"" + escapeJson(minecraftName == null ? "" : minecraftName) + "\""
-			+ "}";
-		return postForCode(
-			"/skins/discord/link/start",
-			body,
-			"API returned OK but no link code."
-		);
-	}
-
-	public static CodeResult issueSkinsCode(String playerUuid) {
-		String uuid = playerUuid == null ? "" : playerUuid.trim();
-		if (uuid.isEmpty()) {
-			return CodeResult.fail("player_uuid is required");
-		}
-		String body = "{\"player_uuid\":\"" + escapeJson(uuid) + "\"}";
-		return postForCode(
-			"/skins/codes",
-			body,
-			"API returned OK but no skins code."
-		);
-	}
-
-	public static SimpleResult unlinkDiscord(String playerUuid) {
-		String uuid = playerUuid == null ? "" : playerUuid.trim();
-		if (uuid.isEmpty()) {
-			return SimpleResult.fail("player_uuid is required");
-		}
-		String body = "{\"player_uuid\":\"" + escapeJson(uuid) + "\"}";
-		return postSimple("/skins/discord/link/unlink", body);
-	}
-
-	public static PluginNoticesResult listPluginNotices() {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return PluginNoticesResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
-		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/notices");
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return PluginNoticesResult.success(parsePluginNotices(response));
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return PluginNoticesResult.fail(
-					"Unauthorized (check skins-api.plugin-key). " + detail
-				);
-			}
-			return PluginNoticesResult.fail(detail);
-		} catch (Exception e) {
-			return PluginNoticesResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
-	}
-
-	public static SimpleResult ackPluginNotices(List<Integer> ids) {
-		if (ids == null || ids.isEmpty()) {
-			return SimpleResult.success();
-		}
-		StringBuilder sb = new StringBuilder("{\"ids\":[");
-		for (int i = 0; i < ids.size(); i++) {
-			if (i > 0) {
-				sb.append(',');
-			}
-			sb.append(ids.get(i).intValue());
-		}
-		sb.append("]}");
-		return postSimple("/skins/plugin/notices/ack", sb.toString());
 	}
 
 	public static ActiveCodesResult listActiveCodes() {
@@ -1036,73 +852,6 @@ public class ProvinceSystemClient {
 		}
 	}
 
-	private static CodeResult postForCode(String path, String jsonBody, String missingCodeMsg) {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return CodeResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
-		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + path);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setDoOutput(true);
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
-			connection.setFixedLengthStreamingMode(bytes.length);
-			try (OutputStream out = connection.getOutputStream()) {
-				out.write(bytes);
-			}
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				String already = jsonString(response, "already_linked");
-				if ("true".equalsIgnoreCase(already)) {
-					return CodeResult.alreadyLinked(jsonString(response, "discord_username"));
-				}
-				String code = jsonString(response, "code");
-				String expires = jsonString(response, "expires_at");
-				if (code == null || code.isEmpty()) {
-					return CodeResult.fail(missingCodeMsg);
-				}
-				return CodeResult.success(code, expires);
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return CodeResult.fail("Unauthorized (check skins-api.plugin-key). " + detail);
-			}
-			return CodeResult.fail(detail);
-		} catch (Exception e) {
-			return CodeResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
-	}
-
 	static List<ApprovedSubmission> parseApprovedSubmissions(String json) {
 		List<ApprovedSubmission> out = new ArrayList<>();
 		if (json == null || json.isEmpty()) {
@@ -1157,41 +906,6 @@ public class ProvinceSystemClient {
 				jsonString(obj, "minecraft_name"),
 				jsonString(obj, "created_at"),
 				jsonString(obj, "expires_at")
-			));
-		}
-		return out;
-	}
-
-	static List<PluginNotice> parsePluginNotices(String json) {
-		List<PluginNotice> out = new ArrayList<>();
-		if (json == null || json.isEmpty()) {
-			return out;
-		}
-		String array = jsonArrayBody(json, "notices");
-		if (array == null) {
-			return out;
-		}
-		for (String obj : splitJsonObjects(array)) {
-			String idRaw = jsonString(obj, "id");
-			if (idRaw == null || idRaw.isEmpty()) {
-				continue;
-			}
-			int id;
-			try {
-				id = Integer.parseInt(idRaw.trim());
-			} catch (NumberFormatException e) {
-				continue;
-			}
-			String uuid = jsonString(obj, "player_uuid");
-			if (uuid == null || uuid.isEmpty()) {
-				continue;
-			}
-			out.add(new PluginNotice(
-				id,
-				jsonString(obj, "type"),
-				uuid,
-				jsonString(obj, "discord_username"),
-				jsonString(obj, "created_at")
 			));
 		}
 		return out;

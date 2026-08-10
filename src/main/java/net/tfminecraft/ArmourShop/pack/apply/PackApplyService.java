@@ -2,7 +2,6 @@ package net.tfminecraft.ArmourShop.pack.apply;
 
 
 import net.tfminecraft.ArmourShop.pack.model.BowFrames;
-import net.tfminecraft.ArmourShop.pack.model.GripPreset;
 import net.tfminecraft.ArmourShop.pack.model.PackKind;
 import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
 import net.tfminecraft.ArmourShop.pack.util.Model3dUtil;
@@ -303,6 +302,25 @@ public final class PackApplyService {
 		}
 		String name = filename.trim();
 		if ("bow".equals(kind) || "large_bow".equals(kind) || "crossbow".equals(kind)) {
+			if ("large_bow".equals(kind) && name.endsWith(".json")) {
+				if (name.equals(slug + ".json")) {
+					return LargeBowWriter.MODEL_STEM_PREFIX;
+				}
+				String prefix = slug + "_";
+				if (name.startsWith(prefix) && name.endsWith(".json")) {
+					String suffix = name.substring(prefix.length(), name.length() - 5);
+					if ("0".equals(suffix)) {
+						return LargeBowWriter.MODEL_STEM_PREFIX + "_0";
+					}
+					if ("1".equals(suffix)) {
+						return LargeBowWriter.MODEL_STEM_PREFIX + "_1";
+					}
+					if ("2".equals(suffix)) {
+						return LargeBowWriter.MODEL_STEM_PREFIX + "_2";
+					}
+				}
+				return null;
+			}
 			if (name.equals(slug + ".png")) {
 				return BowFrames.STANDBY;
 			}
@@ -335,11 +353,15 @@ public final class PackApplyService {
 				String suffix = name.substring(prefix.length(), name.length() - 5);
 				if (GunWriter.CARRY_STEM.equals(suffix)
 					|| GunWriter.RELOAD_STEM.equals(suffix)
-					|| GunWriter.AIM_STEM.equals(suffix)) {
+					|| GunWriter.AIM_STEM.equals(suffix)
+					|| GunWriter.AIM_CHARGED_STEM.equals(suffix)) {
 					return suffix;
 				}
 			}
 			return null;
+		}
+		if ("shield".equals(kind) && name.equals(slug + "_blocking.json")) {
+			return ShieldWriter.MODEL_BLOCKING_STEM;
 		}
 		if (name.equals(slug + ".json")) {
 			return Model3dUtil.MODEL_STEM;
@@ -372,16 +394,12 @@ public final class PackApplyService {
 				if (!files.containsKey(LargeHandheldWriter.TEXTURE_STEM)) {
 					throw new IllegalStateException("missing texture");
 				}
-				GripPreset grip = GripPreset.fromId(sub.gripPreset);
+				if (!files.containsKey(Model3dUtil.MODEL_STEM)) {
+					throw new IllegalStateException("missing model");
+				}
 				LargeHandheldWriter.write(
 					contentsRoot,
-					new PackSubmission(
-						slug,
-						display,
-						PackKind.LARGE_HANDHELD,
-						grip,
-						files
-					)
+					new PackSubmission(slug, display, PackKind.LARGE_HANDHELD, files)
 				);
 				return;
 			case "bow":
@@ -393,6 +411,12 @@ public final class PackApplyService {
 				return;
 			case "large_bow":
 				requireStems(files, BowFrames.BOW_STEMS);
+				requireStems(files, new String[]{
+					LargeBowWriter.MODEL_STEM_PREFIX,
+					LargeBowWriter.MODEL_STEM_PREFIX + "_0",
+					LargeBowWriter.MODEL_STEM_PREFIX + "_1",
+					LargeBowWriter.MODEL_STEM_PREFIX + "_2"
+				});
 				LargeBowWriter.write(
 					contentsRoot,
 					new PackSubmission(slug, display, PackKind.LARGE_BOW, files)
@@ -414,6 +438,9 @@ public final class PackApplyService {
 				return;
 			case "shield":
 				requireModel3d(files);
+				if (!files.containsKey(ShieldWriter.MODEL_BLOCKING_STEM)) {
+					throw new IllegalStateException("missing model_blocking");
+				}
 				ShieldWriter.write(
 					contentsRoot,
 					new PackSubmission(slug, display, PackKind.SHIELD, files)
@@ -448,6 +475,9 @@ public final class PackApplyService {
 			if (!files.containsKey(stem)) {
 				throw new IllegalStateException("missing stem: " + stem);
 			}
+		}
+		if (!files.containsKey(GunWriter.AIM_CHARGED_STEM)) {
+			throw new IllegalStateException("missing stem: aim_charged");
 		}
 	}
 

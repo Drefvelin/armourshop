@@ -12,35 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
- * Writes shield skins: idle model + blocking clone with locked round display Δ.
+ * Writes shield skins from web-built idle + blocking model JSON (passthrough).
  */
 public final class ShieldWriter {
 
-	/**
-	 * Round-shield idle→blocking display deltas (absolute replacement tabs from
-	 * wooden_round_shield → wooden_round_shield_blocking). Applied onto donor
-	 * display after clone; tabs not listed are left as in the idle model.
-	 */
-	private static final Map<String, float[][]> ROUND_BLOCKING_DISPLAY = Map.of(
-		"thirdperson_righthand", new float[][]{
-			{30, -35, 0}, {1, -1, -1}, {1.01f, 1.01f, 1.01f}
-		},
-		"thirdperson_lefthand", new float[][]{
-			{30, -35, 0}, {1, -1, -1}, {1.01f, 1.01f, 1.01f}
-		},
-		"firstperson_righthand", new float[][]{
-			{10, 0, 15}, {-3, 0, 1}, {0.78f, 0.78f, 0.78f}
-		},
-		"firstperson_lefthand", new float[][]{
-			{10, 0, 15}, {-3, 0, 1}, {0.78f, 0.78f, 0.78f}
-		}
-	);
+	public static final String MODEL_BLOCKING_STEM = "model_blocking";
 
 	private ShieldWriter() {}
 
@@ -69,65 +47,18 @@ public final class ShieldWriter {
 		Files.write(pngPath, submission.requireFile(Model3dUtil.TEXTURE_STEM));
 		written.add(pngPath);
 
-		byte[] idleNormalized = Model3dUtil.normalizeModel(
-			submission.requireFile(Model3dUtil.MODEL_STEM),
-			slug
-		);
-		JsonObject idle = Model3dUtil.parseObject(idleNormalized);
-		applyBlockingOverrides(idle, slug);
-
 		Path idlePath = modelsDir.resolve(slug + ".json");
-		Files.write(idlePath, Model3dUtil.toBytes(idle));
+		Files.write(idlePath, submission.requireFile(Model3dUtil.MODEL_STEM));
 		written.add(idlePath);
 
-		JsonObject blocking = Model3dUtil.parseObject(idleNormalized);
-		applyRoundBlockingDisplay(blocking);
-		blocking.remove("overrides");
 		Path blockingPath = modelsDir.resolve(slug + "_blocking.json");
-		Files.write(blockingPath, Model3dUtil.toBytes(blocking));
+		Files.write(blockingPath, submission.requireFile(MODEL_BLOCKING_STEM));
 		written.add(blockingPath);
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(yamlPath, buildYaml(submission), StandardCharsets.UTF_8);
 		written.add(yamlPath);
 		return written;
-	}
-
-	static void applyBlockingOverrides(JsonObject idle, String slug) {
-		JsonArray overrides = new JsonArray();
-		JsonObject entry = new JsonObject();
-		JsonObject predicate = new JsonObject();
-		predicate.addProperty("blocking", 1);
-		entry.add("predicate", predicate);
-		entry.addProperty(
-			"model",
-			PackPaths.NAMESPACE + ":item/" + slug + "_blocking"
-		);
-		overrides.add(entry);
-		idle.add("overrides", overrides);
-	}
-
-	static void applyRoundBlockingDisplay(JsonObject model) {
-		JsonObject display = model.has("display") && model.get("display").isJsonObject()
-			? model.getAsJsonObject("display")
-			: new JsonObject();
-		for (Map.Entry<String, float[][]> e : ROUND_BLOCKING_DISPLAY.entrySet()) {
-			float[][] rtsv = e.getValue();
-			JsonObject tab = new JsonObject();
-			tab.add("rotation", floatArray(rtsv[0]));
-			tab.add("translation", floatArray(rtsv[1]));
-			tab.add("scale", floatArray(rtsv[2]));
-			display.add(e.getKey(), tab);
-		}
-		model.add("display", display);
-	}
-
-	private static JsonArray floatArray(float[] values) {
-		JsonArray arr = new JsonArray();
-		for (float v : values) {
-			arr.add(v);
-		}
-		return arr;
 	}
 
 	static String buildYaml(PackSubmission submission) {

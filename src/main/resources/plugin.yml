@@ -5,30 +5,14 @@ version: 1.0
 author: Drefvelin
 
 depend: [TLibs, ItemsAdder]
-softdepend: [MMOItems, MythicLib, LuckPerms]
+softdepend: [MMOItems, MythicLib, LuckPerms, TFMCWeb]
 
 commands:
   armourshop:
-      usage: /<command> | /<command> reload | /<command> token create | /<command> token delete <code> | /<command> listtokens | /<command> pack pull
-      description: Open ArmourShop, reload, manage skins tokens, or pull approved packs
-  linkdiscord:
-      usage: /linkdiscord
-      description: Get a code to link your Discord account for skin submissions
-      permission: armourshop.linkdiscord
-      permission-message: You do not have permission to link Discord.
-  unlinkdiscord:
-      usage: /unlinkdiscord
-      description: Unlink Discord from this Minecraft account
-      permission: armourshop.linkdiscord
-      permission-message: You do not have permission to unlink Discord.
+      usage: /<command> | /<command> reload | /<command> token delete <code> | /<command> listtokens | /<command> pack pull | /<command> submission delete <id>
+      description: Open ArmourShop, reload, admin token tools, or pull approved packs
 
 permissions:
   armourshop.admin:
     description: Admin perms for ArmourShop (reload, listtokens, token delete, pack pull)
     default: false
-  armourshop.token.create:
-    description: Create a skins upload code via /armourshop token create
-    default: false
-  armourshop.linkdiscord:
-    description: Use /linkdiscord and /unlinkdiscord for Discord binding
-    default: true

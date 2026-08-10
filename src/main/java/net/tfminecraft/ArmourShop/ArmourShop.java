@@ -11,10 +11,7 @@ import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.loaders.ConfigLoader;
 import net.tfminecraft.ArmourShop.loaders.SkinSetLoader;
 import net.tfminecraft.ArmourShop.managers.CommandManager;
-import net.tfminecraft.ArmourShop.managers.LinkDiscordCommand;
-import net.tfminecraft.ArmourShop.managers.PluginNoticePoller;
 import net.tfminecraft.ArmourShop.managers.SkinManager;
-import net.tfminecraft.ArmourShop.managers.UnlinkDiscordCommand;
 import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullScheduler;
 import net.tfminecraft.ArmourShop.pack.reload.PendingReloadQueue;
@@ -31,7 +28,6 @@ public class ArmourShop extends JavaPlugin{
 	private final SkinManager skinManager = new SkinManager();
 	private PendingReloadQueue pendingReloadQueue;
 	private DeferredIaReloadService deferredIaReloadService;
-	private PluginNoticePoller pluginNoticePoller;
 	private PackPullScheduler packPullScheduler;
 	
 	@Override
@@ -43,22 +39,10 @@ public class ArmourShop extends JavaPlugin{
 		pendingReloadQueue = new PendingReloadQueue(this);
 		pendingReloadQueue.load();
 		deferredIaReloadService = new DeferredIaReloadService(this, pendingReloadQueue);
-		pluginNoticePoller = new PluginNoticePoller(this);
 		packPullScheduler = new PackPullScheduler(this);
 		registerListeners();
 		getCommand(commandManager.cmd1).setExecutor(commandManager);
 		getCommand(commandManager.cmd1).setTabCompleter(commandManager);
-		if (getCommand("linkdiscord") != null) {
-			getCommand("linkdiscord").setExecutor(new LinkDiscordCommand());
-		} else {
-			getLogger().severe("Command linkdiscord missing from plugin.yml");
-		}
-		if (getCommand("unlinkdiscord") != null) {
-			getCommand("unlinkdiscord").setExecutor(new UnlinkDiscordCommand());
-		} else {
-			getLogger().severe("Command unlinkdiscord missing from plugin.yml");
-		}
-		pluginNoticePoller.start();
 		packPullScheduler.start();
 		net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.invalidate();
 		if (!pendingReloadQueue.isEmpty()) {
@@ -66,13 +50,15 @@ public class ArmourShop extends JavaPlugin{
 				+ " pending submission(s) from previous session — forcing IA refresh");
 			deferredIaReloadService.requestFlush(true);
 		}
+		if (getServer().getPluginManager().getPlugin("TFMCWeb") == null) {
+			getLogger().warning(
+				"TFMCWeb not found — Discord link /token / Survival gate live on TFMCWeb only"
+			);
+		}
 	}
 
 	@Override
 	public void onDisable() {
-		if (pluginNoticePoller != null) {
-			pluginNoticePoller.stop();
-		}
 		if (packPullScheduler != null) {
 			packPullScheduler.stop();
 		}

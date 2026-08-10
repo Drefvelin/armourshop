@@ -15,11 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Writes gun skins: shared texture + carry/reload/aim models as IA items
- * (STONE_HOE / STONE_HOE / CROSSBOW) and appends GaG {@code skins.yml} with
- * {@code ia.tfmc_submissions:} ids.
- * Aim is one CROSSBOW item; {@code {slug}_aim_charged.json} is a copy of the
- * aim model so the loaded crossbow state uses the same look.
+ * Writes gun skins from web-normalized models (passthrough) + GaG skins.yml.
  */
 public final class GunWriter {
 
@@ -27,6 +23,7 @@ public final class GunWriter {
 	public static final String CARRY_STEM = "carry";
 	public static final String RELOAD_STEM = "reload";
 	public static final String AIM_STEM = "aim";
+	public static final String AIM_CHARGED_STEM = "aim_charged";
 
 	/** IA loaded-with-arrow suffix for the aim CROSSBOW item. */
 	public static final String AIM_CHARGED_SUFFIX = "_charged";
@@ -68,26 +65,16 @@ public final class GunWriter {
 		Files.write(pngPath, submission.requireFile(TEXTURE_STEM));
 		written.add(pngPath);
 
-		byte[] aimNormalized = null;
 		for (String stem : MODEL_STEMS) {
-			byte[] normalized = Model3dUtil.normalizeModel(
-				submission.requireFile(stem),
-				slug
-			);
 			Path modelPath = modelsDir.resolve(slug + "_" + stem + ".json");
-			Files.write(modelPath, normalized);
+			Files.write(modelPath, submission.requireFile(stem));
 			written.add(modelPath);
-			if (AIM_STEM.equals(stem)) {
-				aimNormalized = normalized;
-			}
 		}
-		if (aimNormalized != null) {
-			Path chargedPath = modelsDir.resolve(
-				slug + "_" + AIM_STEM + AIM_CHARGED_SUFFIX + ".json"
-			);
-			Files.write(chargedPath, aimNormalized);
-			written.add(chargedPath);
-		}
+		Path chargedPath = modelsDir.resolve(
+			slug + "_" + AIM_STEM + AIM_CHARGED_SUFFIX + ".json"
+		);
+		Files.write(chargedPath, submission.requireFile(AIM_CHARGED_STEM));
+		written.add(chargedPath);
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(yamlPath, buildYaml(submission), StandardCharsets.UTF_8);

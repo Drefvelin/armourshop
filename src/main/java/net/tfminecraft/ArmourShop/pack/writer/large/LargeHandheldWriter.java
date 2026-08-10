@@ -1,22 +1,19 @@
 package net.tfminecraft.ArmourShop.pack.writer.large;
 
-
-import net.tfminecraft.ArmourShop.pack.model.GripPreset;
 import net.tfminecraft.ArmourShop.pack.model.PackKind;
 import net.tfminecraft.ArmourShop.pack.model.PackPaths;
 import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
+import net.tfminecraft.ArmourShop.pack.util.Model3dUtil;
 import net.tfminecraft.ArmourShop.pack.util.YamlUtil;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Writes large_handheld skins (generate: false + grip template parent).
+ * Writes large_handheld skins from web-built thin model JSON (passthrough).
  */
 public final class LargeHandheldWriter {
 
@@ -32,10 +29,6 @@ public final class LargeHandheldWriter {
 				"LargeHandheldWriter requires LARGE_HANDHELD, got " + submission.kind()
 			);
 		}
-		GripPreset grip = submission.gripPreset();
-		if (grip == null) {
-			throw new IllegalArgumentException("gripPreset is required");
-		}
 
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
@@ -48,54 +41,19 @@ public final class LargeHandheldWriter {
 		Files.createDirectories(configsDir);
 
 		List<Path> written = new ArrayList<>();
-		written.addAll(ensureGripTemplates(contentsRoot));
 
 		Path pngPath = itemTexDir.resolve(slug + ".png");
 		Files.write(pngPath, submission.requireFile(TEXTURE_STEM));
 		written.add(pngPath);
 
 		Path thinModel = modelsDir.resolve(slug + ".json");
-		Files.writeString(thinModel, buildThinModel(slug, grip), StandardCharsets.UTF_8);
+		Files.write(thinModel, submission.requireFile(Model3dUtil.MODEL_STEM));
 		written.add(thinModel);
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(yamlPath, buildYaml(submission), StandardCharsets.UTF_8);
 		written.add(yamlPath);
 		return written;
-	}
-
-	/**
-	 * Copy grip templates from classpath into the namespace models folder if missing.
-	 */
-	public static List<Path> ensureGripTemplates(Path contentsRoot) throws IOException {
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
-		Files.createDirectories(modelsDir);
-		List<Path> ensured = new ArrayList<>();
-		for (GripPreset grip : GripPreset.values()) {
-			Path dest = modelsDir.resolve(grip.modelFileName());
-			if (!Files.isRegularFile(dest)) {
-				String resource = "pack/grip_templates/" + grip.modelFileName();
-				try (InputStream in = LargeHandheldWriter.class
-					.getClassLoader()
-					.getResourceAsStream(resource)) {
-					if (in == null) {
-						throw new IOException("Missing classpath resource: " + resource);
-					}
-					Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
-				}
-			}
-			ensured.add(dest);
-		}
-		return ensured;
-	}
-
-	static String buildThinModel(String slug, GripPreset grip) {
-		return "{\n"
-			+ "  \"parent\": \"" + grip.parentModelPath() + "\",\n"
-			+ "  \"textures\": {\n"
-			+ "    \"layer0\": \"" + PackPaths.NAMESPACE + ":item/" + slug + "\"\n"
-			+ "  }\n"
-			+ "}\n";
 	}
 
 	static String buildYaml(PackSubmission submission) {

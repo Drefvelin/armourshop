@@ -116,6 +116,11 @@ public final class PackSubmissionRemover {
 				itemTex.resolve(BowFrames.textureFileName(s, stem)),
 				removed
 			);
+			// large_bow frame models (and any stray pull models)
+			deleteQuiet(
+				models.resolve(s + BowFrames.fileSuffix(stem) + ".json"),
+				removed
+			);
 		}
 		deleteQuiet(itemTex.resolve(s + "_arrow.png"), removed);
 	}

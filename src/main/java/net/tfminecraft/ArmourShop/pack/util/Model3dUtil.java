@@ -13,6 +13,8 @@ import com.google.gson.JsonParser;
 
 /**
  * Shared helpers for donor Blockbench models ({@code generate: false}).
+ * Texture rewrite for pack apply is owned by ProvinceSystem pack_models;
+ * writers place web-built JSON as-is. {@link #normalizeModel} is tooling-only.
  */
 public final class Model3dUtil {
 
