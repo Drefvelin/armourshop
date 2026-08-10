@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullRunner;
+import net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService;
 import net.tfminecraft.ArmourShop.utils.ChatMessages;
 import net.tfminecraft.ArmourShop.utils.Permissions;
 
@@ -94,6 +95,12 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 2
+			&& args[0].equalsIgnoreCase("catalog")
+			&& args[1].equalsIgnoreCase("sync")) {
+			return handleCatalogSync(sender);
+		}
+
+		if (args.length == 2
 			&& args[0].equalsIgnoreCase("submission")
 			&& args[1].equalsIgnoreCase("delete")) {
 			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
@@ -105,6 +112,20 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			&& args[0].equalsIgnoreCase("submission")
 			&& args[1].equalsIgnoreCase("delete")) {
 			return handleSubmissionDelete(sender, args[2]);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("skin")
+			&& args[1].equalsIgnoreCase("delete")) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Usage: /armourshop skin delete <id>");
+			return true;
+		}
+
+		if (args.length >= 3
+			&& args[0].equalsIgnoreCase("skin")
+			&& args[1].equalsIgnoreCase("delete")) {
+			return handleSkinDelete(sender, args[2]);
 		}
 
 		return false;
@@ -123,6 +144,27 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			String result = net.tfminecraft.ArmourShop.pack.delete.SubmissionDeleteRunner
 				.run(submissionId);
 			net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.invalidate();
+			Bukkit.getScheduler().runTask(plugin, () ->
+				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+					+ ChatColor.YELLOW + result)
+			);
+		});
+		return true;
+	}
+
+	private boolean handleSkinDelete(CommandSender sender, String skinId) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Deleting staff skin…");
+		JavaPlugin plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			String result = net.tfminecraft.ArmourShop.pack.delete.SkinDeleteRunner
+				.run(skinId);
+			net.tfminecraft.ArmourShop.pack.delete.DeletableStaffSkinCache.invalidate();
 			Bukkit.getScheduler().runTask(plugin, () ->
 				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
 					+ ChatColor.YELLOW + result)
@@ -162,6 +204,33 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
 				+ ChatColor.YELLOW + "Pack pull already running.");
 		}
+		return true;
+	}
+
+	private boolean handleCatalogSync(CommandSender sender) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Syncing catalog to ProvinceSystem…");
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			ProvinceSystemClient.CatalogPushResult result = CatalogSyncService.pushNow();
+			Bukkit.getScheduler().runTask(plugin, () -> {
+				if (result.ok) {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.YELLOW + "Catalog synced: categories="
+						+ result.categories
+						+ " skin_sets=" + result.skinSets
+						+ " scrolls=" + result.scrolls);
+				} else {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.RED + "Catalog sync failed: " + result.error);
+				}
+			});
+		});
 		return true;
 	}
 
@@ -280,8 +349,10 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 				completions.add("token");
 				completions.add("reload");
 				completions.add("pack");
+				completions.add("catalog");
 				completions.add("listtokens");
 				completions.add("submission");
+				completions.add("skin");
 			}
 			return filter(completions, args[0]);
 		}
@@ -297,11 +368,23 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 		if (args.length == 2
 			&& args[0].equalsIgnoreCase("pack")
 			&& Permissions.isAdmin(sender)) {
-			return filter(Collections.singletonList("pull"), args[1]);
+			return filter(List.of("pull"), args[1]);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("catalog")
+			&& Permissions.isAdmin(sender)) {
+			return filter(List.of("sync"), args[1]);
 		}
 
 		if (args.length == 2
 			&& args[0].equalsIgnoreCase("submission")
+			&& Permissions.isAdmin(sender)) {
+			return filter(Collections.singletonList("delete"), args[1]);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("skin")
 			&& Permissions.isAdmin(sender)) {
 			return filter(Collections.singletonList("delete"), args[1]);
 		}
@@ -312,6 +395,16 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			&& Permissions.isAdmin(sender)) {
 			List<String> ids = new ArrayList<>(
 				net.tfminecraft.ArmourShop.pack.delete.DeletableSubmissionCache.snapshot()
+			);
+			return filter(ids, args[2]);
+		}
+
+		if (args.length == 3
+			&& args[0].equalsIgnoreCase("skin")
+			&& args[1].equalsIgnoreCase("delete")
+			&& Permissions.isAdmin(sender)) {
+			List<String> ids = new ArrayList<>(
+				net.tfminecraft.ArmourShop.pack.delete.DeletableStaffSkinCache.snapshot()
 			);
 			return filter(ids, args[2]);
 		}

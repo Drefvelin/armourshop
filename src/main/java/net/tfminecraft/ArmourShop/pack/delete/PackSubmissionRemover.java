@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import net.tfminecraft.ArmourShop.Cache;
 
 /**
- * Deletes tfmc_submissions pack files for a slug (best-effort deleteIfExists).
+ * Deletes pack files for a slug under a given ItemsAdder namespace (best-effort).
  */
 public final class PackSubmissionRemover {
 
@@ -26,10 +26,8 @@ public final class PackSubmissionRemover {
 	private PackSubmissionRemover() {}
 
 	/**
-	 * Removes pack files for a submission. For armor_set, deletes files for each
-	 * per-tier pack slug ({@code slug_tier}) plus a legacy bare-slug attempt (for
-	 * submissions written before per-tier packs existed). Non-armor kinds are
-	 * unchanged (single bare-slug pack).
+	 * Removes pack files for a submission under the player namespace
+	 * ({@link PackPaths#NAMESPACE}).
 	 */
 	public static List<Path> remove(
 		Path contentsRoot,
@@ -38,9 +36,29 @@ public final class PackSubmissionRemover {
 		List<String> tiers,
 		Logger log
 	) throws IOException {
+		return remove(contentsRoot, PackPaths.NAMESPACE, kind, slug, tiers, log);
+	}
+
+	/**
+	 * Removes pack files for a submission. For armor_set, deletes files for each
+	 * per-tier pack slug ({@code slug_tier}) plus a legacy bare-slug attempt (for
+	 * submissions written before per-tier packs existed). Non-armor kinds are
+	 * unchanged (single bare-slug pack).
+	 */
+	public static List<Path> remove(
+		Path contentsRoot,
+		String namespace,
+		String kind,
+		String slug,
+		List<String> tiers,
+		Logger log
+	) throws IOException {
 		if (contentsRoot == null) {
 			throw new IllegalArgumentException("contentsRoot is null");
 		}
+		String ns = namespace == null || namespace.isBlank()
+			? PackPaths.NAMESPACE
+			: namespace.trim();
 		String k = kind == null ? "" : kind.trim().toLowerCase(Locale.ROOT);
 		String s = slug == null ? "" : slug.trim();
 		if (s.isEmpty()) {
@@ -55,19 +73,19 @@ public final class PackSubmissionRemover {
 				if (tier == null || tier.isBlank()) {
 					continue;
 				}
-				removeArmorPack(contentsRoot, s + "_" + tier.trim(), removed);
+				removeArmorPack(contentsRoot, ns, s + "_" + tier.trim(), removed);
 			}
 			// legacy: submissions written before per-tier packs used the bare slug
-			removeArmorPack(contentsRoot, s, removed);
+			removeArmorPack(contentsRoot, ns, s, removed);
 		} else if ("gun".equals(k)) {
-			removed.addAll(GunWriter.remove(contentsRoot, s, gunsSkinsYmlOrNull()));
+			removed.addAll(GunWriter.remove(contentsRoot, ns, s, gunsSkinsYmlOrNull()));
 		} else {
-			removeNonArmorPack(contentsRoot, s, removed);
+			removeNonArmorPack(contentsRoot, ns, s, removed);
 		}
 
 		if (log != null) {
 			log.info("[pack-delete] removed " + removed.size()
-				+ " path(s) for slug=" + s + " kind=" + k
+				+ " path(s) for slug=" + s + " kind=" + k + " ns=" + ns
 				+ (tiers != null && !tiers.isEmpty() ? " tiers=" + tiers : ""));
 		}
 		return removed;
@@ -81,12 +99,15 @@ public final class PackSubmissionRemover {
 		return remove(contentsRoot, kind, slug, List.of(), log);
 	}
 
-	private static void removeArmorPack(Path contentsRoot, String packSlug, List<Path> removed)
-		throws IOException
-	{
-		Path configs = PackPaths.configsDir(contentsRoot);
-		Path icons = PackPaths.armorIconsDir(contentsRoot);
-		Path layers = PackPaths.armorLayersDir(contentsRoot);
+	private static void removeArmorPack(
+		Path contentsRoot,
+		String namespace,
+		String packSlug,
+		List<Path> removed
+	) throws IOException {
+		Path configs = PackPaths.configsDir(contentsRoot, namespace);
+		Path icons = PackPaths.armorIconsDir(contentsRoot, namespace);
+		Path layers = PackPaths.armorLayersDir(contentsRoot, namespace);
 
 		deleteQuiet(configs.resolve(packSlug + ".yml"), removed);
 		for (String stem : ARMOR_ICON_STEMS) {
@@ -96,16 +117,25 @@ public final class PackSubmissionRemover {
 		deleteQuiet(layers.resolve(packSlug + "_layer_2.png"), removed);
 		// 3D helmet assets (when present)
 		String helmetId = packSlug + "_helmet";
-		deleteQuiet(PackPaths.itemTexturesDir(contentsRoot).resolve(helmetId + ".png"), removed);
-		deleteQuiet(PackPaths.itemModelsDir(contentsRoot).resolve(helmetId + ".json"), removed);
+		deleteQuiet(
+			PackPaths.itemTexturesDir(contentsRoot, namespace).resolve(helmetId + ".png"),
+			removed
+		);
+		deleteQuiet(
+			PackPaths.itemModelsDir(contentsRoot, namespace).resolve(helmetId + ".json"),
+			removed
+		);
 	}
 
-	private static void removeNonArmorPack(Path contentsRoot, String s, List<Path> removed)
-		throws IOException
-	{
-		Path configs = PackPaths.configsDir(contentsRoot);
-		Path itemTex = PackPaths.itemTexturesDir(contentsRoot);
-		Path models = PackPaths.itemModelsDir(contentsRoot);
+	private static void removeNonArmorPack(
+		Path contentsRoot,
+		String namespace,
+		String s,
+		List<Path> removed
+	) throws IOException {
+		Path configs = PackPaths.configsDir(contentsRoot, namespace);
+		Path itemTex = PackPaths.itemTexturesDir(contentsRoot, namespace);
+		Path models = PackPaths.itemModelsDir(contentsRoot, namespace);
 
 		deleteQuiet(configs.resolve(s + ".yml"), removed);
 		deleteQuiet(itemTex.resolve(s + ".png"), removed);

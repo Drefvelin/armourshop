@@ -55,6 +55,7 @@ public class ArmourShop extends JavaPlugin{
 				"TFMCWeb not found — Discord link /token / Survival gate live on TFMCWeb only"
 			);
 		}
+		net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService.pushAsync(this);
 	}
 
 	@Override
@@ -111,6 +112,7 @@ public class ArmourShop extends JavaPlugin{
 	
 	public void reload() {
 		loadConfigs();
+		net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService.pushAsync(this);
 	}
 	public void reloadMessage(Player p) {
 		p.sendMessage(ChatColor.GREEN + "[ArmourShop]" + ChatColor.YELLOW + " Reloading plugin...");

@@ -40,6 +40,16 @@ public final class GunWriter {
 		String baseSet,
 		Path skinsYml
 	) throws IOException {
+		return write(contentsRoot, submission, baseSet, skinsYml, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> write(
+		Path contentsRoot,
+		PackSubmission submission,
+		String baseSet,
+		Path skinsYml,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.GUN) {
 			throw new IllegalArgumentException(
 				"GunWriter requires GUN, got " + submission.kind()
@@ -51,10 +61,11 @@ public final class GunWriter {
 
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
+		String ns = requireNs(namespace);
 
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
-		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
-		Path configsDir = PackPaths.configsDir(contentsRoot);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot, ns);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot, ns);
+		Path configsDir = PackPaths.configsDir(contentsRoot, ns);
 		Files.createDirectories(modelsDir);
 		Files.createDirectories(itemTexDir);
 		Files.createDirectories(configsDir);
@@ -77,19 +88,34 @@ public final class GunWriter {
 		written.add(chargedPath);
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");
-		Files.writeString(yamlPath, buildYaml(submission), StandardCharsets.UTF_8);
+		Files.writeString(yamlPath, buildYaml(submission, ns), StandardCharsets.UTF_8);
 		written.add(yamlPath);
 
-		GunsSkinsYml.upsert(skinsYml, slug, baseSet);
+		GunsSkinsYml.upsert(skinsYml, slug, baseSet, ns);
 		return List.copyOf(written);
 	}
 
 	/**
-	 * Best-effort delete of gun pack files and skins.yml key.
+	 * Best-effort delete of gun pack files and skins.yml key (player namespace).
 	 */
 	public static List<Path> remove(Path contentsRoot, String slug, Path skinsYml)
 		throws IOException
 	{
+		return remove(contentsRoot, PackPaths.NAMESPACE, slug, skinsYml);
+	}
+
+	/**
+	 * Best-effort delete of gun pack files under {@code namespace} and skins.yml key.
+	 */
+	public static List<Path> remove(
+		Path contentsRoot,
+		String namespace,
+		String slug,
+		Path skinsYml
+	) throws IOException {
+		String ns = namespace == null || namespace.isBlank()
+			? PackPaths.NAMESPACE
+			: namespace.trim();
 		String s = slug == null ? "" : slug.trim().toLowerCase(Locale.ROOT);
 		if (s.isEmpty()) {
 			throw new IllegalArgumentException("slug is blank");
@@ -97,14 +123,14 @@ public final class GunWriter {
 		List<Path> removed = new ArrayList<>();
 
 		deleteQuiet(
-			PackPaths.configsDir(contentsRoot).resolve(s + ".yml"),
+			PackPaths.configsDir(contentsRoot, ns).resolve(s + ".yml"),
 			removed
 		);
 		deleteQuiet(
-			PackPaths.itemTexturesDir(contentsRoot).resolve(s + ".png"),
+			PackPaths.itemTexturesDir(contentsRoot, ns).resolve(s + ".png"),
 			removed
 		);
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot, ns);
 		for (String stem : MODEL_STEMS) {
 			deleteQuiet(modelsDir.resolve(s + "_" + stem + ".json"), removed);
 		}
@@ -119,11 +145,15 @@ public final class GunWriter {
 	}
 
 	static String buildYaml(PackSubmission submission) {
+		return buildYaml(submission, PackPaths.NAMESPACE);
+	}
+
+	static String buildYaml(PackSubmission submission, String namespace) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
 		StringBuilder sb = new StringBuilder();
 		sb.append("info:\n");
-		sb.append("  namespace: ").append(PackPaths.NAMESPACE).append('\n');
+		sb.append("  namespace: ").append(requireNs(namespace)).append('\n');
 		sb.append("items:\n");
 		appendItem(sb, slug, name, CARRY_STEM, "STONE_HOE");
 		appendItem(sb, slug, name, RELOAD_STEM, "STONE_HOE");
@@ -152,5 +182,12 @@ public final class GunWriter {
 		if (Files.deleteIfExists(path)) {
 			removed.add(path);
 		}
+	}
+
+	private static String requireNs(String namespace) {
+		if (namespace == null || namespace.isBlank()) {
+			throw new IllegalArgumentException("namespace is required");
+		}
+		return namespace.trim();
 	}
 }

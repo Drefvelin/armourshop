@@ -72,17 +72,22 @@ public final class PackPullRunner {
 					}
 
 					boolean lpSucceeded = false;
-					UUID uuid = parseUuid(sub.playerUuid);
-					if (uuid == null) {
-						lpFail++;
-						log.warning("[lp] invalid uuid for " + sub.id + ": " + sub.playerUuid);
-						messages.add("lp fail " + sub.slug + ": invalid uuid");
-					} else if (LuckPermsGrant.grantSubmission(uuid, sub.slug, log)) {
-						lpOk++;
+					if (sub.staff) {
+						// Staff curated skins use scroll consume — no submission LP.
 						lpSucceeded = true;
 					} else {
-						lpFail++;
-						messages.add("lp fail " + sub.slug);
+						UUID uuid = parseUuid(sub.playerUuid);
+						if (uuid == null) {
+							lpFail++;
+							log.warning("[lp] invalid uuid for " + sub.id + ": " + sub.playerUuid);
+							messages.add("lp fail " + sub.slug + ": invalid uuid");
+						} else if (LuckPermsGrant.grantSubmission(uuid, sub.slug, log)) {
+							lpOk++;
+							lpSucceeded = true;
+						} else {
+							lpFail++;
+							messages.add("lp fail " + sub.slug);
+						}
 					}
 
 					if (shopSucceeded && lpSucceeded && sub.id != null && !sub.id.isBlank()) {

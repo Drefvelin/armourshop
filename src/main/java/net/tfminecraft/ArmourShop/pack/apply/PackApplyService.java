@@ -3,6 +3,7 @@ package net.tfminecraft.ArmourShop.pack.apply;
 
 import net.tfminecraft.ArmourShop.pack.model.BowFrames;
 import net.tfminecraft.ArmourShop.pack.model.PackKind;
+import net.tfminecraft.ArmourShop.pack.model.PackPaths;
 import net.tfminecraft.ArmourShop.pack.model.PackSubmission;
 import net.tfminecraft.ArmourShop.pack.util.Model3dUtil;
 import net.tfminecraft.ArmourShop.pack.writer.armor.ArmorSetWriter;
@@ -255,11 +256,14 @@ public final class PackApplyService {
 				);
 			}
 		}
+		String ns = sub.resolveNamespace();
+		Map<String, byte[]> packFiles = rewriteModelFiles(files, ns);
 		String packSlug = sub.id + "_" + tier;
 		String display = sub.displayNameForTier(tier);
 		ArmorSetWriter.write(
 			contentsRoot,
-			new PackSubmission(packSlug, display, PackKind.ARMOR_SET, files)
+			new PackSubmission(packSlug, display, PackKind.ARMOR_SET, packFiles),
+			ns
 		);
 	}
 
@@ -379,39 +383,44 @@ public final class PackApplyService {
 		String display = sub.displayName == null || sub.displayName.isBlank()
 			? slug
 			: sub.displayName;
+		String ns = sub.resolveNamespace();
+		Map<String, byte[]> packFiles = rewriteModelFiles(files, ns);
 
 		switch (kind) {
 			case "handheld":
-				if (!files.containsKey(FlatItemWriter.TEXTURE_STEM)) {
+				if (!packFiles.containsKey(FlatItemWriter.TEXTURE_STEM)) {
 					throw new IllegalStateException("missing texture");
 				}
 				FlatItemWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.HANDHELD, files)
+					new PackSubmission(slug, display, PackKind.HANDHELD, packFiles),
+					ns
 				);
 				return;
 			case "large_handheld":
-				if (!files.containsKey(LargeHandheldWriter.TEXTURE_STEM)) {
+				if (!packFiles.containsKey(LargeHandheldWriter.TEXTURE_STEM)) {
 					throw new IllegalStateException("missing texture");
 				}
-				if (!files.containsKey(Model3dUtil.MODEL_STEM)) {
+				if (!packFiles.containsKey(Model3dUtil.MODEL_STEM)) {
 					throw new IllegalStateException("missing model");
 				}
 				LargeHandheldWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.LARGE_HANDHELD, files)
+					new PackSubmission(slug, display, PackKind.LARGE_HANDHELD, packFiles),
+					ns
 				);
 				return;
 			case "bow":
-				requireStems(files, BowFrames.BOW_STEMS);
+				requireStems(packFiles, BowFrames.BOW_STEMS);
 				BowWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.BOW, files)
+					new PackSubmission(slug, display, PackKind.BOW, packFiles),
+					ns
 				);
 				return;
 			case "large_bow":
-				requireStems(files, BowFrames.BOW_STEMS);
-				requireStems(files, new String[]{
+				requireStems(packFiles, BowFrames.BOW_STEMS);
+				requireStems(packFiles, new String[]{
 					LargeBowWriter.MODEL_STEM_PREFIX,
 					LargeBowWriter.MODEL_STEM_PREFIX + "_0",
 					LargeBowWriter.MODEL_STEM_PREFIX + "_1",
@@ -419,52 +428,99 @@ public final class PackApplyService {
 				});
 				LargeBowWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.LARGE_BOW, files)
+					new PackSubmission(slug, display, PackKind.LARGE_BOW, packFiles),
+					ns
 				);
 				return;
 			case "crossbow":
-				requireStems(files, BowFrames.CROSSBOW_STEMS);
+				requireStems(packFiles, BowFrames.CROSSBOW_STEMS);
 				BowWriter.writeCrossbow(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.CROSSBOW, files)
+					new PackSubmission(slug, display, PackKind.CROSSBOW, packFiles),
+					ns
 				);
 				return;
 			case "item_3d":
-				requireModel3d(files);
+				requireModel3d(packFiles);
 				Item3dWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.ITEM_3D, files)
+					new PackSubmission(slug, display, PackKind.ITEM_3D, packFiles),
+					ns
 				);
 				return;
 			case "shield":
-				requireModel3d(files);
-				if (!files.containsKey(ShieldWriter.MODEL_BLOCKING_STEM)) {
+				requireModel3d(packFiles);
+				if (!packFiles.containsKey(ShieldWriter.MODEL_BLOCKING_STEM)) {
 					throw new IllegalStateException("missing model_blocking");
 				}
 				ShieldWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.SHIELD, files)
+					new PackSubmission(slug, display, PackKind.SHIELD, packFiles),
+					ns
 				);
 				return;
 			case "helmet_3d":
-				requireModel3d(files);
+				requireModel3d(packFiles);
 				Item3dWriter.writeHelmet3d(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.HELMET_3D, files)
+					new PackSubmission(slug, display, PackKind.HELMET_3D, packFiles),
+					ns
 				);
 				return;
 			case "gun":
-				requireGun(files);
+				requireGun(packFiles);
 				GunWriter.write(
 					contentsRoot,
-					new PackSubmission(slug, display, PackKind.GUN, files),
+					new PackSubmission(slug, display, PackKind.GUN, packFiles),
 					sub.baseSet,
-					requireGunsSkinsYml()
+					requireGunsSkinsYml(),
+					ns
 				);
 				return;
 			default:
 				throw new IllegalStateException("unsupported kind: " + kind);
 		}
+	}
+
+	/** Rewrite player-ns prefixes in model JSON when writing a staff namespace. */
+	static Map<String, byte[]> rewriteModelFiles(
+		Map<String, byte[]> files,
+		String namespace
+	) {
+		if (files == null || files.isEmpty()) {
+			return files;
+		}
+		if (namespace == null
+			|| namespace.isBlank()
+			|| PackPaths.NAMESPACE.equals(namespace.trim())) {
+			return files;
+		}
+		Map<String, byte[]> out = new LinkedHashMap<>();
+		for (Map.Entry<String, byte[]> e : files.entrySet()) {
+			String stem = e.getKey();
+			byte[] data = e.getValue();
+			if (data != null && isModelStem(stem)) {
+				out.put(stem, Model3dUtil.rewriteNamespacePrefix(data, namespace));
+			} else {
+				out.put(stem, data);
+			}
+		}
+		return out;
+	}
+
+	private static boolean isModelStem(String stem) {
+		if (stem == null) {
+			return false;
+		}
+		String s = stem.trim().toLowerCase(Locale.ROOT);
+		return Model3dUtil.MODEL_STEM.equals(s)
+			|| Model3dUtil.HELMET_MODEL_STEM.equals(s)
+			|| ShieldWriter.MODEL_BLOCKING_STEM.equals(s)
+			|| s.startsWith("model")
+			|| GunWriter.CARRY_STEM.equals(s)
+			|| GunWriter.RELOAD_STEM.equals(s)
+			|| GunWriter.AIM_STEM.equals(s)
+			|| GunWriter.AIM_CHARGED_STEM.equals(s);
 	}
 
 	private static void requireGun(Map<String, byte[]> files) {

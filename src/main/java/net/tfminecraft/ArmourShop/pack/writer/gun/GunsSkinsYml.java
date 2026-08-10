@@ -27,6 +27,15 @@ public final class GunsSkinsYml {
 	public static void upsert(Path skinsYml, String slug, String baseSet)
 		throws IOException
 	{
+		upsert(skinsYml, slug, baseSet, PackPaths.NAMESPACE);
+	}
+
+	public static void upsert(
+		Path skinsYml,
+		String slug,
+		String baseSet,
+		String namespace
+	) throws IOException {
 		if (skinsYml == null) {
 			throw new IllegalArgumentException("skinsYml is null");
 		}
@@ -37,7 +46,9 @@ public final class GunsSkinsYml {
 			Files.createDirectories(parent);
 		}
 
-		String ns = PackPaths.NAMESPACE;
+		String ns = namespace == null || namespace.isBlank()
+			? PackPaths.NAMESPACE
+			: namespace.trim();
 		String existing = Files.isRegularFile(skinsYml)
 			? Files.readString(skinsYml, StandardCharsets.UTF_8)
 			: "";

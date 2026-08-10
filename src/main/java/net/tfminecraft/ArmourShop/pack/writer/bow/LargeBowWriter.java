@@ -26,6 +26,14 @@ public final class LargeBowWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> write(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.LARGE_BOW) {
 			throw new IllegalArgumentException(
 				"LargeBowWriter requires LARGE_BOW, got " + submission.kind()
@@ -34,10 +42,11 @@ public final class LargeBowWriter {
 
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
+		String ns = requireNs(namespace);
 
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
-		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
-		Path configsDir = PackPaths.configsDir(contentsRoot);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot, ns);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot, ns);
+		Path configsDir = PackPaths.configsDir(contentsRoot, ns);
 		Files.createDirectories(modelsDir);
 		Files.createDirectories(itemTexDir);
 		Files.createDirectories(configsDir);
@@ -58,7 +67,7 @@ public final class LargeBowWriter {
 		}
 
 		Path yamlPath = configsDir.resolve(slug + ".yml");
-		Files.writeString(yamlPath, buildYaml(submission), StandardCharsets.UTF_8);
+		Files.writeString(yamlPath, buildYaml(submission, ns), StandardCharsets.UTF_8);
 		written.add(yamlPath);
 		return written;
 	}
@@ -81,11 +90,15 @@ public final class LargeBowWriter {
 	}
 
 	static String buildYaml(PackSubmission submission) {
+		return buildYaml(submission, PackPaths.NAMESPACE);
+	}
+
+	static String buildYaml(PackSubmission submission, String namespace) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
 		StringBuilder sb = new StringBuilder();
 		sb.append("info:\n");
-		sb.append("  namespace: ").append(PackPaths.NAMESPACE).append('\n');
+		sb.append("  namespace: ").append(requireNs(namespace)).append('\n');
 		sb.append("items:\n");
 		sb.append("  ").append(slug).append(":\n");
 		sb.append("    display_name: \"").append(name).append("\"\n");
@@ -95,5 +108,12 @@ public final class LargeBowWriter {
 		sb.append("      generate: false\n");
 		sb.append("      model_path: item/").append(slug).append('\n');
 		return sb.toString();
+	}
+
+	private static String requireNs(String namespace) {
+		if (namespace == null || namespace.isBlank()) {
+			throw new IllegalArgumentException("namespace is required");
+		}
+		return namespace.trim();
 	}
 }

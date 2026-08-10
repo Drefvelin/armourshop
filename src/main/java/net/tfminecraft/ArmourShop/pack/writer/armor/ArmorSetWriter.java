@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Writes an armor_set into tfmc_submissions (YAML + PNGs; optional 3D helmet).
+ * Writes an armor_set into an IA pack namespace (YAML + PNGs; optional 3D helmet).
  */
 public final class ArmorSetWriter {
 
@@ -39,6 +39,14 @@ public final class ArmorSetWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> write(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.ARMOR_SET) {
 			throw new IllegalArgumentException(
 				"ArmorSetWriter requires ARMOR_SET, got " + submission.kind()
@@ -47,14 +55,15 @@ public final class ArmorSetWriter {
 
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
+		String ns = requireNs(namespace);
 
 		boolean helmet3d = submission.files().containsKey(Model3dUtil.HELMET_MODEL_STEM);
 
-		Path iconsDir = PackPaths.armorIconsDir(contentsRoot);
-		Path layersDir = PackPaths.armorLayersDir(contentsRoot);
-		Path configsDir = PackPaths.configsDir(contentsRoot);
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
-		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
+		Path iconsDir = PackPaths.armorIconsDir(contentsRoot, ns);
+		Path layersDir = PackPaths.armorLayersDir(contentsRoot, ns);
+		Path configsDir = PackPaths.configsDir(contentsRoot, ns);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot, ns);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot, ns);
 		Files.createDirectories(iconsDir);
 		Files.createDirectories(layersDir);
 		Files.createDirectories(configsDir);
@@ -91,7 +100,7 @@ public final class ArmorSetWriter {
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(
 			yamlPath,
-			buildYaml(submission, helmet3d),
+			buildYaml(submission, helmet3d, ns),
 			StandardCharsets.UTF_8
 		);
 		written.add(yamlPath);
@@ -99,12 +108,17 @@ public final class ArmorSetWriter {
 	}
 
 	static String buildYaml(PackSubmission submission, boolean helmet3d) {
+		return buildYaml(submission, helmet3d, PackPaths.NAMESPACE);
+	}
+
+	static String buildYaml(PackSubmission submission, boolean helmet3d, String namespace) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
+		String ns = requireNs(namespace);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("info:\n");
-		sb.append("  namespace: ").append(PackPaths.NAMESPACE).append('\n');
+		sb.append("  namespace: ").append(ns).append('\n');
 		sb.append("armors_rendering:\n");
 		sb.append("  ").append(slug).append(":\n");
 		sb.append("    color: '#ffffff'\n");
@@ -149,5 +163,12 @@ public final class ArmorSetWriter {
 			sb.append("        custom_armor: ").append(slug).append('\n');
 		}
 		return sb.toString();
+	}
+
+	private static String requireNs(String namespace) {
+		if (namespace == null || namespace.isBlank()) {
+			throw new IllegalArgumentException("namespace is required");
+		}
+		return namespace.trim();
 	}
 }

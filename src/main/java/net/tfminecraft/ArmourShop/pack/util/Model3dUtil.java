@@ -55,6 +55,27 @@ public final class Model3dUtil {
 		return (GSON.toJson(root) + "\n").getBytes(StandardCharsets.UTF_8);
 	}
 
+	/**
+	 * Replace player-pack namespace prefixes in model JSON when writing staff packs.
+	 * No-op when {@code targetNamespace} is already {@link PackPaths#NAMESPACE}.
+	 */
+	public static byte[] rewriteNamespacePrefix(byte[] modelJson, String targetNamespace) {
+		if (modelJson == null || modelJson.length == 0) {
+			return modelJson;
+		}
+		String ns = targetNamespace == null ? "" : targetNamespace.trim();
+		if (ns.isEmpty() || PackPaths.NAMESPACE.equals(ns)) {
+			return modelJson;
+		}
+		String text = new String(modelJson, StandardCharsets.UTF_8);
+		String from = PackPaths.NAMESPACE + ":";
+		String to = ns + ":";
+		if (!text.contains(from)) {
+			return modelJson;
+		}
+		return text.replace(from, to).getBytes(StandardCharsets.UTF_8);
+	}
+
 	public static JsonObject parseObject(byte[] modelJson) {
 		String text = new String(modelJson, StandardCharsets.UTF_8);
 		return JsonParser.parseString(text).getAsJsonObject();

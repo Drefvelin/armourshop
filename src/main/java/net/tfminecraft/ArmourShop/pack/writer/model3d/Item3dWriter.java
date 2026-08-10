@@ -23,6 +23,14 @@ public final class Item3dWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> write(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.ITEM_3D) {
 			throw new IllegalArgumentException(
 				"Item3dWriter requires ITEM_3D, got " + submission.kind()
@@ -32,7 +40,8 @@ public final class Item3dWriter {
 			contentsRoot,
 			submission,
 			"PAPER",
-			null
+			null,
+			namespace
 		);
 	}
 
@@ -42,6 +51,14 @@ public final class Item3dWriter {
 	public static List<Path> writeHelmet3d(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return writeHelmet3d(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> writeHelmet3d(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.HELMET_3D) {
 			throw new IllegalArgumentException(
 				"writeHelmet3d requires HELMET_3D, got " + submission.kind()
@@ -51,7 +68,8 @@ public final class Item3dWriter {
 			contentsRoot,
 			submission,
 			"PAPER",
-			"head"
+			"head",
+			namespace
 		);
 	}
 
@@ -67,12 +85,25 @@ public final class Item3dWriter {
 		String material,
 		String armorSlot
 	) throws IOException {
+		return writeModelItem(
+			contentsRoot, submission, material, armorSlot, PackPaths.NAMESPACE
+		);
+	}
+
+	static List<Path> writeModelItem(
+		Path contentsRoot,
+		PackSubmission submission,
+		String material,
+		String armorSlot,
+		String namespace
+	) throws IOException {
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
+		String ns = requireNs(namespace);
 
-		Path modelsDir = PackPaths.itemModelsDir(contentsRoot);
-		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
-		Path configsDir = PackPaths.configsDir(contentsRoot);
+		Path modelsDir = PackPaths.itemModelsDir(contentsRoot, ns);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot, ns);
+		Path configsDir = PackPaths.configsDir(contentsRoot, ns);
 		Files.createDirectories(modelsDir);
 		Files.createDirectories(itemTexDir);
 		Files.createDirectories(configsDir);
@@ -90,7 +121,7 @@ public final class Item3dWriter {
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(
 			yamlPath,
-			buildYaml(submission, material, armorSlot),
+			buildYaml(submission, material, armorSlot, ns),
 			StandardCharsets.UTF_8
 		);
 		written.add(yamlPath);
@@ -102,11 +133,20 @@ public final class Item3dWriter {
 		String material,
 		String armorSlot
 	) {
+		return buildYaml(submission, material, armorSlot, PackPaths.NAMESPACE);
+	}
+
+	static String buildYaml(
+		PackSubmission submission,
+		String material,
+		String armorSlot,
+		String namespace
+	) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
 		StringBuilder sb = new StringBuilder();
 		sb.append("info:\n");
-		sb.append("  namespace: ").append(PackPaths.NAMESPACE).append('\n');
+		sb.append("  namespace: ").append(requireNs(namespace)).append('\n');
 		sb.append("items:\n");
 		sb.append("  ").append(slug).append(":\n");
 		sb.append("    display_name: \"").append(name).append("\"\n");
@@ -121,5 +161,12 @@ public final class Item3dWriter {
 			sb.append("        slot: ").append(armorSlot.trim()).append('\n');
 		}
 		return sb.toString();
+	}
+
+	private static String requireNs(String namespace) {
+		if (namespace == null || namespace.isBlank()) {
+			throw new IllegalArgumentException("namespace is required");
+		}
+		return namespace.trim();
 	}
 }

@@ -23,6 +23,14 @@ public final class BowWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> write(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.BOW) {
 			throw new IllegalArgumentException(
 				"BowWriter requires BOW, got " + submission.kind()
@@ -32,7 +40,8 @@ public final class BowWriter {
 			contentsRoot,
 			submission,
 			"BOW",
-			BowFrames.BOW_STEMS
+			BowFrames.BOW_STEMS,
+			namespace
 		);
 	}
 
@@ -42,6 +51,14 @@ public final class BowWriter {
 	public static List<Path> writeCrossbow(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
+		return writeCrossbow(contentsRoot, submission, PackPaths.NAMESPACE);
+	}
+
+	public static List<Path> writeCrossbow(
+		Path contentsRoot,
+		PackSubmission submission,
+		String namespace
+	) throws IOException {
 		if (submission.kind() != PackKind.CROSSBOW) {
 			throw new IllegalArgumentException(
 				"writeCrossbow requires CROSSBOW, got " + submission.kind()
@@ -51,7 +68,8 @@ public final class BowWriter {
 			contentsRoot,
 			submission,
 			"CROSSBOW",
-			BowFrames.CROSSBOW_STEMS
+			BowFrames.CROSSBOW_STEMS,
+			namespace
 		);
 	}
 
@@ -61,11 +79,24 @@ public final class BowWriter {
 		String material,
 		String[] stems
 	) throws IOException {
+		return writeGenerateTrue(
+			contentsRoot, submission, material, stems, PackPaths.NAMESPACE
+		);
+	}
+
+	static List<Path> writeGenerateTrue(
+		Path contentsRoot,
+		PackSubmission submission,
+		String material,
+		String[] stems,
+		String namespace
+	) throws IOException {
 		String slug = submission.slug();
 		YamlUtil.validateSlug(slug);
+		String ns = requireNs(namespace);
 
-		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot);
-		Path configsDir = PackPaths.configsDir(contentsRoot);
+		Path itemTexDir = PackPaths.itemTexturesDir(contentsRoot, ns);
+		Path configsDir = PackPaths.configsDir(contentsRoot, ns);
 		Files.createDirectories(itemTexDir);
 		Files.createDirectories(configsDir);
 
@@ -86,7 +117,7 @@ public final class BowWriter {
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(
 			yamlPath,
-			buildYaml(submission, material),
+			buildYaml(submission, material, ns),
 			StandardCharsets.UTF_8
 		);
 		written.add(yamlPath);
@@ -94,11 +125,15 @@ public final class BowWriter {
 	}
 
 	static String buildYaml(PackSubmission submission, String material) {
+		return buildYaml(submission, material, PackPaths.NAMESPACE);
+	}
+
+	static String buildYaml(PackSubmission submission, String material, String namespace) {
 		String slug = submission.slug();
 		String name = YamlUtil.escapeDoubleQuoted(submission.displayName());
 		StringBuilder sb = new StringBuilder();
 		sb.append("info:\n");
-		sb.append("  namespace: ").append(PackPaths.NAMESPACE).append('\n');
+		sb.append("  namespace: ").append(requireNs(namespace)).append('\n');
 		sb.append("items:\n");
 		sb.append("  ").append(slug).append(":\n");
 		sb.append("    display_name: \"").append(name).append("\"\n");
@@ -109,5 +144,12 @@ public final class BowWriter {
 		sb.append("      textures:\n");
 		sb.append("      - item/").append(slug).append('\n');
 		return sb.toString();
+	}
+
+	private static String requireNs(String namespace) {
+		if (namespace == null || namespace.isBlank()) {
+			throw new IllegalArgumentException("namespace is required");
+		}
+		return namespace.trim();
 	}
 }

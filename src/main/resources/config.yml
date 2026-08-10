@@ -17,3 +17,14 @@ pack-apply:
   force-reload-time: "06:00"
   # Seconds to wait after /iareload before /iazip
   ia-reload-delay-seconds: 5
+
+# Scrolls offered to staff skins UI (synced to ProvinceSystem catalog)
+scrolls:
+  - id: m.loot.common_item_skin_scroll
+    label: Common
+  - id: m.loot.rare_item_skin_scroll
+    label: Rare
+  - id: m.loot.epic_item_skin_scroll
+    label: Epic
+  - id: m.loot.legendary_item_skin_scroll
+    label: Legendary

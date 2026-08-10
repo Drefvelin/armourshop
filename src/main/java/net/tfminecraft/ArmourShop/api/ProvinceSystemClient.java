@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.tfminecraft.ArmourShop.Cache;
+import net.tfminecraft.ArmourShop.pack.model.PackPaths;
 
 /**
  * Minimal HTTP client for ProvinceSystem skins plugin routes (pack apply / admin codes).
@@ -114,6 +115,12 @@ public class ProvinceSystemClient {
 		public final List<String> nameColours;
 		public final List<String> nameStyles;
 		public final List<String> files;
+		/** Staff curated lane (auto-approved; lands in tfmc_armorshop + category). */
+		public final boolean staff;
+		public final String category;
+		public final String scroll;
+		public final Map<String, String> tierScrolls;
+		public final String iaNamespace;
 
 		public ApprovedSubmission(
 			String id,
@@ -144,7 +151,12 @@ public class ProvinceSystemClient {
 				addName,
 				nameColours,
 				nameStyles,
-				files
+				files,
+				false,
+				null,
+				null,
+				null,
+				null
 			);
 		}
 
@@ -163,6 +175,50 @@ public class ProvinceSystemClient {
 			List<String> nameColours,
 			List<String> nameStyles,
 			List<String> files
+		) {
+			this(
+				id,
+				playerUuid,
+				slug,
+				kind,
+				displayName,
+				gripPreset,
+				baseSet,
+				tiers,
+				helmet3dTiers,
+				tierAliases,
+				addName,
+				nameColours,
+				nameStyles,
+				files,
+				false,
+				null,
+				null,
+				null,
+				null
+			);
+		}
+
+		public ApprovedSubmission(
+			String id,
+			String playerUuid,
+			String slug,
+			String kind,
+			String displayName,
+			String gripPreset,
+			String baseSet,
+			List<String> tiers,
+			List<String> helmet3dTiers,
+			Map<String, String> tierAliases,
+			boolean addName,
+			List<String> nameColours,
+			List<String> nameStyles,
+			List<String> files,
+			boolean staff,
+			String category,
+			String scroll,
+			Map<String, String> tierScrolls,
+			String iaNamespace
 		) {
 			this.id = id;
 			this.playerUuid = playerUuid;
@@ -215,6 +271,36 @@ public class ProvinceSystemClient {
 			this.files = files == null
 				? Collections.emptyList()
 				: Collections.unmodifiableList(new ArrayList<>(files));
+			this.staff = staff;
+			this.category = category == null || category.isBlank() ? null : category.trim();
+			this.scroll = scroll == null || scroll.isBlank() ? null : scroll.trim();
+			Map<String, String> scrolls = new LinkedHashMap<>();
+			if (tierScrolls != null) {
+				for (Map.Entry<String, String> e : tierScrolls.entrySet()) {
+					if (e.getKey() == null || e.getValue() == null) {
+						continue;
+					}
+					String k = e.getKey().trim().toLowerCase(Locale.ROOT);
+					String v = e.getValue().trim();
+					if (!k.isEmpty() && !v.isEmpty()) {
+						scrolls.put(k, v);
+					}
+				}
+			}
+			this.tierScrolls = Collections.unmodifiableMap(scrolls);
+			this.iaNamespace = iaNamespace == null || iaNamespace.isBlank()
+				? null
+				: iaNamespace.trim();
+		}
+
+		/** IA pack namespace for this submission. */
+		public String resolveNamespace() {
+			if (iaNamespace != null && !iaNamespace.isBlank()) {
+				return iaNamespace.trim();
+			}
+			return staff
+				? PackPaths.STAFF_NAMESPACE
+				: PackPaths.NAMESPACE;
 		}
 
 		public boolean isHelmet3dTier(String tier) {
@@ -511,6 +597,116 @@ public class ProvinceSystemClient {
 		}
 	}
 
+	/** Result of PUT /skins/plugin/catalog. */
+	public static final class CatalogPushResult {
+		public final boolean ok;
+		public final int categories;
+		public final int skinSets;
+		public final int scrolls;
+		public final String updatedAt;
+		public final String error;
+
+		private CatalogPushResult(
+			boolean ok,
+			int categories,
+			int skinSets,
+			int scrolls,
+			String updatedAt,
+			String error
+		) {
+			this.ok = ok;
+			this.categories = categories;
+			this.skinSets = skinSets;
+			this.scrolls = scrolls;
+			this.updatedAt = updatedAt;
+			this.error = error;
+		}
+
+		public static CatalogPushResult success(
+			int categories,
+			int skinSets,
+			int scrolls,
+			String updatedAt
+		) {
+			return new CatalogPushResult(true, categories, skinSets, scrolls, updatedAt, null);
+		}
+
+		public static CatalogPushResult fail(String error) {
+			return new CatalogPushResult(false, 0, 0, 0, null, error);
+		}
+	}
+
+	/**
+	 * PUT /skins/plugin/catalog — full-replace categories + scrolls snapshot.
+	 */
+	public static CatalogPushResult pushCatalog(String jsonBody) {
+		String base = Cache.skinsApiBaseUrl;
+		String key = Cache.skinsPluginKey;
+		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
+			return CatalogPushResult.fail(
+				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
+			);
+		}
+		if (jsonBody == null || jsonBody.isBlank()) {
+			return CatalogPushResult.fail("Catalog payload is empty.");
+		}
+
+		HttpURLConnection connection = null;
+		try {
+			@SuppressWarnings("deprecation")
+			URL url = new URL(base + "/skins/plugin/catalog");
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("PUT");
+			connection.setConnectTimeout(TIMEOUT_MS);
+			connection.setReadTimeout(TIMEOUT_MS);
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("X-Plugin-Key", key);
+			connection.setRequestProperty("Accept", "application/json");
+
+			byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
+			connection.setFixedLengthStreamingMode(bytes.length);
+			try (OutputStream out = connection.getOutputStream()) {
+				out.write(bytes);
+			}
+
+			int status = connection.getResponseCode();
+			String response = readBody(
+				status >= 200 && status < 300
+					? connection.getInputStream()
+					: connection.getErrorStream()
+			);
+
+			if (status == 200) {
+				return CatalogPushResult.success(
+					jsonInt(response, "categories"),
+					jsonInt(response, "skin_sets"),
+					jsonInt(response, "scrolls"),
+					jsonString(response, "updated_at")
+				);
+			}
+
+			String detail = jsonString(response, "detail");
+			if (detail == null || detail.isEmpty()) {
+				detail = response == null || response.isEmpty()
+					? ("HTTP " + status)
+					: response;
+			}
+			if (status == 401) {
+				return CatalogPushResult.fail(
+					"Unauthorized (check skins-api.plugin-key). " + detail
+				);
+			}
+			return CatalogPushResult.fail(detail);
+		} catch (Exception e) {
+			return CatalogPushResult.fail("Could not reach skins API: " + e.getMessage());
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}
+	}
+
 	/** One submission from GET /plugin/submissions/{id}. */
 	public static final class PluginSubmission {
 		public final String id;
@@ -522,6 +718,9 @@ public class ProvinceSystemClient {
 		public final String baseSet;
 		/** Armor tier list (1-6). Empty for non-armor kinds. */
 		public final List<String> tiers;
+		public final boolean staff;
+		public final String category;
+		public final String iaNamespace;
 
 		public PluginSubmission(
 			String id,
@@ -531,7 +730,10 @@ public class ProvinceSystemClient {
 			String displayName,
 			String status,
 			String baseSet,
-			List<String> tiers
+			List<String> tiers,
+			boolean staff,
+			String category,
+			String iaNamespace
 		) {
 			this.id = id;
 			this.playerUuid = playerUuid;
@@ -550,6 +752,18 @@ public class ProvinceSystemClient {
 				tierList = List.of(baseSet.trim());
 			}
 			this.tiers = Collections.unmodifiableList(tierList);
+			this.staff = staff;
+			this.category = category;
+			this.iaNamespace = iaNamespace;
+		}
+
+		public String resolveNamespace() {
+			if (iaNamespace != null && !iaNamespace.isBlank()) {
+				return iaNamespace.trim();
+			}
+			return staff
+				? PackPaths.STAFF_NAMESPACE
+				: PackPaths.NAMESPACE;
 		}
 	}
 
@@ -616,7 +830,10 @@ public class ProvinceSystemClient {
 					jsonString(response, "display_name"),
 					jsonString(response, "status"),
 					jsonString(response, "base_set"),
-					jsonStringArray(response, "tiers")
+					jsonStringArray(response, "tiers"),
+					jsonTruthy(response, "staff"),
+					jsonString(response, "category"),
+					jsonString(response, "ia_namespace")
 				));
 			}
 			String detail = jsonString(response, "detail");
@@ -675,8 +892,17 @@ public class ProvinceSystemClient {
 		}
 	}
 
-	/** GET /plugin/submissions/deletable — ids for tab-complete. */
+	/** GET /plugin/submissions/deletable — player-lane ids for tab-complete. */
 	public static DeletableListResult listDeletableSubmissionIds() {
+		return listDeletableIds("/skins/plugin/submissions/deletable", "submissions");
+	}
+
+	/** GET /plugin/skins/deletable — staff-lane ids for tab-complete. */
+	public static DeletableListResult listDeletableStaffSkinIds() {
+		return listDeletableIds("/skins/plugin/skins/deletable", "skins");
+	}
+
+	private static DeletableListResult listDeletableIds(String path, String arrayKey) {
 		String base = Cache.skinsApiBaseUrl;
 		String key = Cache.skinsPluginKey;
 		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
@@ -687,7 +913,7 @@ public class ProvinceSystemClient {
 		HttpURLConnection connection = null;
 		try {
 			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/submissions/deletable");
+			URL url = new URL(base + path);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setConnectTimeout(TIMEOUT_MS);
@@ -703,7 +929,7 @@ public class ProvinceSystemClient {
 			);
 			if (status == 200) {
 				List<String> ids = new ArrayList<>();
-				String array = jsonArrayBody(response, "submissions");
+				String array = jsonArrayBody(response, arrayKey);
 				if (array != null && !array.isBlank()) {
 					for (String obj : splitJsonObjects(array)) {
 						String sid = jsonString(obj, "id");
@@ -880,7 +1106,12 @@ public class ProvinceSystemClient {
 				"true".equalsIgnoreCase(jsonString(obj, "add_name")),
 				jsonStringArray(obj, "name_colours"),
 				jsonStringArray(obj, "name_styles"),
-				jsonStringArray(obj, "files")
+				jsonStringArray(obj, "files"),
+				jsonTruthy(obj, "staff"),
+				jsonString(obj, "category"),
+				jsonString(obj, "scroll"),
+				jsonStringMap(obj, "tier_scrolls"),
+				jsonString(obj, "ia_namespace")
 			));
 		}
 		return out;
@@ -1218,6 +1449,25 @@ public class ProvinceSystemClient {
 			i++;
 		}
 		return json.substring(start, i).trim();
+	}
+
+	/** True for JSON boolean true or string "true". */
+	static boolean jsonTruthy(String json, String key) {
+		String raw = jsonString(json, key);
+		return raw != null && "true".equalsIgnoreCase(raw.trim());
+	}
+
+	/** Extract a top-level JSON integer field. */
+	static int jsonInt(String json, String key) {
+		String raw = jsonString(json, key);
+		if (raw == null || raw.isBlank()) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(raw.trim());
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 
 	static String escapeJson(String raw) {

@@ -3,6 +3,8 @@ package net.tfminecraft.ArmourShop;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.tfminecraft.ArmourShop.objects.ScrollOption;
+
 public class Cache {
 	public static List<Integer> points = new ArrayList<>();
 	public static List<Integer> itemPoints = new ArrayList<>();
@@ -24,4 +26,7 @@ public class Cache {
 	public static String forceReloadTime = "06:00";
 	/** Seconds between iareload and iazip. */
 	public static int iaReloadDelaySeconds = 5;
+
+	/** Scroll ids+labels from config.yml (staff skins catalog). */
+	public static List<ScrollOption> scrolls = new ArrayList<>();
 }
