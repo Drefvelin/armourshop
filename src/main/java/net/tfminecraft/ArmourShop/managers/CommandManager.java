@@ -20,6 +20,7 @@ import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullRunner;
 import net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService;
+import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
 import net.tfminecraft.ArmourShop.utils.ChatMessages;
 import net.tfminecraft.ArmourShop.utils.Permissions;
 
@@ -92,6 +93,12 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			&& args[0].equalsIgnoreCase("pack")
 			&& args[1].equalsIgnoreCase("pull")) {
 			return handlePackPull(sender);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("pack")
+			&& args[1].equalsIgnoreCase("sync")) {
+			return handlePackSync(sender);
 		}
 
 		if (args.length == 2
@@ -204,6 +211,35 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
 				+ ChatColor.YELLOW + "Pack pull already running.");
 		}
+		return true;
+	}
+
+	private boolean handlePackSync(CommandSender sender) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+
+		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
+		sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Syncing pending-reload queue from ProvinceSystem…");
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			DeferredIaReloadService.SyncResult sync =
+				plugin.getDeferredIaReloadService().syncQueueFromWebsite(plugin.getLogger());
+			Bukkit.getScheduler().runTask(plugin, () -> {
+				if (!sync.ok) {
+					sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+						+ ChatColor.RED + "Pack sync failed: "
+						+ (sync.error != null ? sync.error : "unknown error"));
+					return;
+				}
+				sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+					+ ChatColor.YELLOW + "Pending-reload synced: "
+					+ sync.before + " → " + sync.after
+					+ " id(s) (approved, not yet applied).");
+			});
+		});
 		return true;
 	}
 
@@ -368,7 +404,7 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 		if (args.length == 2
 			&& args[0].equalsIgnoreCase("pack")
 			&& Permissions.isAdmin(sender)) {
-			return filter(List.of("pull"), args[1]);
+			return filter(List.of("pull", "sync"), args[1]);
 		}
 
 		if (args.length == 2

@@ -100,6 +100,22 @@ public final class PendingReloadQueue {
 		}
 	}
 
+	/** Replace queue contents with website pending-apply ids (may be empty). */
+	public void replaceAll(Collection<String> submissionIds) {
+		synchronized (lock) {
+			ids.clear();
+			if (submissionIds != null) {
+				for (String id : submissionIds) {
+					if (id == null || id.isBlank()) {
+						continue;
+					}
+					ids.add(id.trim());
+				}
+			}
+			saveUnlocked();
+		}
+	}
+
 	private File file() {
 		return new File(plugin.getDataFolder(), FILE_NAME);
 	}

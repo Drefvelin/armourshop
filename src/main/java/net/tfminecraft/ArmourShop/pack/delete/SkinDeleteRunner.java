@@ -88,8 +88,9 @@ public final class SkinDeleteRunner {
 		ArmourShop plugin = JavaPlugin.getPlugin(ArmourShop.class);
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			plugin.reload();
-			plugin.getPendingReloadQueue().enqueue(List.of(id));
-			plugin.getDeferredIaReloadService().requestFlush(false);
+			// Do not enqueue revoked ids (website sync would drop them and they
+			// can never be marked applied). Still refresh IA so pack files clear.
+			plugin.getDeferredIaReloadService().requestFlush(false, true);
 		});
 
 		String label = sub.displayName != null && !sub.displayName.isBlank()
