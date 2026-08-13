@@ -40,7 +40,7 @@ public final class GunWriter {
 		String baseSet,
 		Path skinsYml
 	) throws IOException {
-		return write(contentsRoot, submission, baseSet, skinsYml, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, baseSet, skinsYml, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -101,7 +101,7 @@ public final class GunWriter {
 	public static List<Path> remove(Path contentsRoot, String slug, Path skinsYml)
 		throws IOException
 	{
-		return remove(contentsRoot, PackPaths.NAMESPACE, slug, skinsYml);
+		return remove(contentsRoot, PackPaths.playerNamespace(), slug, skinsYml);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public final class GunWriter {
 		Path skinsYml
 	) throws IOException {
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		String s = slug == null ? "" : slug.trim().toLowerCase(Locale.ROOT);
 		if (s.isEmpty()) {
@@ -145,7 +145,7 @@ public final class GunWriter {
 	}
 
 	static String buildYaml(PackSubmission submission) {
-		return buildYaml(submission, PackPaths.NAMESPACE);
+		return buildYaml(submission, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(PackSubmission submission, String namespace) {

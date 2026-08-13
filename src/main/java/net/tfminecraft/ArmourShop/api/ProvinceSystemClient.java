@@ -1,12 +1,5 @@
 package net.tfminecraft.ArmourShop.api;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,16 +8,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.tfminecraft.ArmourShop.Cache;
 import net.tfminecraft.ArmourShop.pack.model.PackPaths;
 
 /**
- * Minimal HTTP client for ProvinceSystem skins plugin routes (pack apply / admin codes).
+ * Skins plugin routes via TFMCWeb {@link GatewayClient}.
  */
 public class ProvinceSystemClient {
 
-	private static final int TIMEOUT_MS = 8000;
-	private static final int DOWNLOAD_TIMEOUT_MS = 30000;
 
 	/** Result for unlink (and similar ok/error POSTs). */
 	public static final class SimpleResult {
@@ -300,7 +290,7 @@ public class ProvinceSystemClient {
 			}
 			return staff
 				? PackPaths.STAFF_NAMESPACE
-				: PackPaths.NAMESPACE;
+				: PackPaths.playerNamespace();
 		}
 
 		public boolean isHelmet3dTier(String tier) {
@@ -406,55 +396,11 @@ public class ProvinceSystemClient {
 	}
 
 	public static ActiveCodesResult listActiveCodes() {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return ActiveCodesResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = getJson("/skins/plugin/codes/active");
+		if (!raw.ok) {
+			return ActiveCodesResult.fail(raw.error);
 		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/codes/active");
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return ActiveCodesResult.success(parseActiveCodes(response));
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return ActiveCodesResult.fail(
-					"Unauthorized (check skins-api.plugin-key). " + detail
-				);
-			}
-			return ActiveCodesResult.fail(detail);
-		} catch (Exception e) {
-			return ActiveCodesResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+		return ActiveCodesResult.success(parseActiveCodes(raw.body));
 	}
 
 	public static SimpleResult revokeCode(String code) {
@@ -467,53 +413,11 @@ public class ProvinceSystemClient {
 	}
 
 	public static ListResult listApproved() {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return ListResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = getJson("/skins/plugin/approved");
+		if (!raw.ok) {
+			return ListResult.fail(raw.error);
 		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/approved");
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return ListResult.success(parseApprovedSubmissions(response));
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return ListResult.fail("Unauthorized (check skins-api.plugin-key). " + detail);
-			}
-			return ListResult.fail(detail);
-		} catch (Exception e) {
-			return ListResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+		return ListResult.success(parseApprovedSubmissions(raw.body));
 	}
 
 	/**
@@ -540,61 +444,15 @@ public class ProvinceSystemClient {
 			return AppliedResult.success(Collections.emptyList());
 		}
 
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return AppliedResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = GatewayClient.request(
+			"POST",
+			"/skins/plugin/applied",
+			sb.toString()
+		);
+		if (!raw.ok) {
+			return AppliedResult.fail(raw.error);
 		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/applied");
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setDoOutput(true);
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			byte[] bytes = sb.toString().getBytes(StandardCharsets.UTF_8);
-			connection.setFixedLengthStreamingMode(bytes.length);
-			try (OutputStream out = connection.getOutputStream()) {
-				out.write(bytes);
-			}
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return AppliedResult.success(jsonStringArray(response, "applied"));
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return AppliedResult.fail("Unauthorized (check skins-api.plugin-key). " + detail);
-			}
-			return AppliedResult.fail(detail);
-		} catch (Exception e) {
-			return AppliedResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+		return AppliedResult.success(jsonStringArray(raw.body, "applied"));
 	}
 
 	/** Result of PUT /skins/plugin/catalog. */
@@ -640,81 +498,23 @@ public class ProvinceSystemClient {
 	 * PUT /skins/plugin/catalog — full-replace categories + scrolls snapshot.
 	 */
 	public static CatalogPushResult pushCatalog(String jsonBody) {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return CatalogPushResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
-		}
 		if (jsonBody == null || jsonBody.isBlank()) {
 			return CatalogPushResult.fail("Catalog payload is empty.");
 		}
-
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/catalog");
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("PUT");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setDoOutput(true);
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
-			connection.setFixedLengthStreamingMode(bytes.length);
-			try (OutputStream out = connection.getOutputStream()) {
-				out.write(bytes);
-			}
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return CatalogPushResult.success(
-					jsonInt(response, "categories"),
-					jsonInt(response, "skin_sets"),
-					jsonInt(response, "scrolls"),
-					jsonString(response, "updated_at")
-				);
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return CatalogPushResult.fail(
-					"Unauthorized (check skins-api.plugin-key). " + detail
-				);
-			}
-			return CatalogPushResult.fail(detail);
-		} catch (Exception e) {
-			return CatalogPushResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
+		GatewayClient.Result raw = GatewayClient.request(
+			"PUT",
+			"/skins/plugin/catalog",
+			jsonBody
+		);
+		if (!raw.ok) {
+			return CatalogPushResult.fail(raw.error);
 		}
-	}
-
-	/**
-	 * PUT /skins/plugin/player-meta — upsert resolved skin-upload entitlements.
-	 */
-	public static SimpleResult pushPlayerMeta(String jsonBody) {
-		if (jsonBody == null || jsonBody.isBlank()) {
-			return SimpleResult.fail("Player meta payload is empty.");
-		}
-		return putSimple("/skins/plugin/player-meta", jsonBody);
+		return CatalogPushResult.success(
+			jsonInt(raw.body, "categories"),
+			jsonInt(raw.body, "skin_sets"),
+			jsonInt(raw.body, "scrolls"),
+			jsonString(raw.body, "updated_at")
+		);
 	}
 
 	/** One submission from GET /plugin/submissions/{id}. */
@@ -773,7 +573,7 @@ public class ProvinceSystemClient {
 			}
 			return staff
 				? PackPaths.STAFF_NAMESPACE
-				: PackPaths.NAMESPACE;
+				: PackPaths.playerNamespace();
 		}
 	}
 
@@ -802,74 +602,29 @@ public class ProvinceSystemClient {
 		if (id.isEmpty()) {
 			return PluginSubmissionResult.fail("submission id is required");
 		}
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return PluginSubmissionResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = getJson("/skins/plugin/submissions/" + id);
+		if (!raw.ok) {
+			return PluginSubmissionResult.fail(raw.error);
 		}
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + "/skins/plugin/submissions/" + id);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-			if (status == 200) {
-				String sid = jsonString(response, "id");
-				String slug = jsonString(response, "slug");
-				if (sid == null || sid.isBlank() || slug == null || slug.isBlank()) {
-					return PluginSubmissionResult.fail("submission response missing id/slug");
-				}
-				return PluginSubmissionResult.success(new PluginSubmission(
-					sid,
-					jsonString(response, "player_uuid"),
-					slug,
-					jsonString(response, "kind"),
-					jsonString(response, "display_name"),
-					jsonString(response, "status"),
-					jsonString(response, "base_set"),
-					jsonStringArray(response, "tiers"),
-					jsonTruthy(response, "staff"),
-					jsonString(response, "category"),
-					jsonString(response, "ia_namespace")
-				));
-			}
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return PluginSubmissionResult.fail(
-					"Unauthorized (check skins-api.plugin-key). " + detail
-				);
-			}
-			if (status == 404) {
-				return PluginSubmissionResult.fail("Submission not found");
-			}
-			return PluginSubmissionResult.fail(detail);
-		} catch (Exception e) {
-			return PluginSubmissionResult.fail(
-				"Could not reach skins API: " + e.getMessage()
-			);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
+		String response = raw.body;
+		String sid = jsonString(response, "id");
+		String slug = jsonString(response, "slug");
+		if (sid == null || sid.isBlank() || slug == null || slug.isBlank()) {
+			return PluginSubmissionResult.fail("submission response missing id/slug");
 		}
+		return PluginSubmissionResult.success(new PluginSubmission(
+			sid,
+			jsonString(response, "player_uuid"),
+			slug,
+			jsonString(response, "kind"),
+			jsonString(response, "display_name"),
+			jsonString(response, "status"),
+			jsonString(response, "base_set"),
+			jsonStringArray(response, "tiers"),
+			jsonTruthy(response, "staff"),
+			jsonString(response, "category"),
+			jsonString(response, "ia_namespace")
+		));
 	}
 
 	public static SimpleResult revokeSubmission(String submissionId) {
@@ -913,59 +668,21 @@ public class ProvinceSystemClient {
 	}
 
 	private static DeletableListResult listDeletableIds(String path, String arrayKey) {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return DeletableListResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = getJson(path);
+		if (!raw.ok) {
+			return DeletableListResult.fail(raw.error);
 		}
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + path);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-			if (status == 200) {
-				List<String> ids = new ArrayList<>();
-				String array = jsonArrayBody(response, arrayKey);
-				if (array != null && !array.isBlank()) {
-					for (String obj : splitJsonObjects(array)) {
-						String sid = jsonString(obj, "id");
-						if (sid != null && !sid.isBlank()) {
-							ids.add(sid.trim());
-						}
-					}
+		List<String> ids = new ArrayList<>();
+		String array = jsonArrayBody(raw.body, arrayKey);
+		if (array != null && !array.isBlank()) {
+			for (String obj : splitJsonObjects(array)) {
+				String sid = jsonString(obj, "id");
+				if (sid != null && !sid.isBlank()) {
+					ids.add(sid.trim());
 				}
-				return DeletableListResult.success(ids);
-			}
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			return DeletableListResult.fail(detail);
-		} catch (Exception e) {
-			return DeletableListResult.fail(
-				"Could not reach skins API: " + e.getMessage()
-			);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
 			}
 		}
+		return DeletableListResult.success(ids);
 	}
 
 	public static DownloadResult downloadSubmissionFile(String submissionId, String filename) {
@@ -978,56 +695,19 @@ public class ProvinceSystemClient {
 			return DownloadResult.fail("invalid filename");
 		}
 
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return DownloadResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		String path = "/skins/plugin/submissions/"
+			+ id
+			+ "/files/"
+			+ java.net.URLEncoder.encode(name, StandardCharsets.UTF_8)
+				.replace("+", "%20");
+		GatewayClient.BytesDownload dl = GatewayClient.download(path);
+		if (!dl.ok) {
+			return DownloadResult.fail(dl.error);
 		}
-
-		HttpURLConnection connection = null;
-		try {
-			String path = "/skins/plugin/submissions/"
-				+ id
-				+ "/files/"
-				+ java.net.URLEncoder.encode(name, StandardCharsets.UTF_8)
-					.replace("+", "%20");
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + path);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(DOWNLOAD_TIMEOUT_MS);
-			connection.setRequestProperty("X-Plugin-Key", key);
-
-			int status = connection.getResponseCode();
-			if (status == 200) {
-				byte[] data = readBytes(connection.getInputStream());
-				if (data == null || data.length == 0) {
-					return DownloadResult.fail("Empty file: " + name);
-				}
-				return DownloadResult.success(data);
-			}
-
-			String response = readBody(connection.getErrorStream());
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return DownloadResult.fail("Unauthorized (check skins-api.plugin-key). " + detail);
-			}
-			return DownloadResult.fail(detail);
-		} catch (Exception e) {
-			return DownloadResult.fail("Could not download file: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
+		if (dl.data == null || dl.data.length == 0) {
+			return DownloadResult.fail("Empty file: " + name);
 		}
+		return DownloadResult.success(dl.data);
 	}
 
 	private static SimpleResult postSimple(String path, String jsonBody) {
@@ -1039,61 +719,16 @@ public class ProvinceSystemClient {
 	}
 
 	private static SimpleResult requestSimple(String method, String path, String jsonBody) {
-		String base = Cache.skinsApiBaseUrl;
-		String key = Cache.skinsPluginKey;
-		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
-			return SimpleResult.fail(
-				"Skins API is not configured (skins-api.base-url / plugin-key in config.yml)."
-			);
+		GatewayClient.Result raw = GatewayClient.request(method, path, jsonBody);
+		if (raw.ok) {
+			return SimpleResult.success();
 		}
+		return SimpleResult.fail(raw.error);
+	}
 
-		HttpURLConnection connection = null;
-		try {
-			@SuppressWarnings("deprecation")
-			URL url = new URL(base + path);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod(method);
-			connection.setConnectTimeout(TIMEOUT_MS);
-			connection.setReadTimeout(TIMEOUT_MS);
-			connection.setDoOutput(true);
-			connection.setRequestProperty("Content-Type", "application/json");
-			connection.setRequestProperty("X-Plugin-Key", key);
-			connection.setRequestProperty("Accept", "application/json");
-
-			byte[] bytes = jsonBody.getBytes(StandardCharsets.UTF_8);
-			connection.setFixedLengthStreamingMode(bytes.length);
-			try (OutputStream out = connection.getOutputStream()) {
-				out.write(bytes);
-			}
-
-			int status = connection.getResponseCode();
-			String response = readBody(
-				status >= 200 && status < 300
-					? connection.getInputStream()
-					: connection.getErrorStream()
-			);
-
-			if (status == 200) {
-				return SimpleResult.success();
-			}
-
-			String detail = jsonString(response, "detail");
-			if (detail == null || detail.isEmpty()) {
-				detail = response == null || response.isEmpty()
-					? ("HTTP " + status)
-					: response;
-			}
-			if (status == 401) {
-				return SimpleResult.fail("Unauthorized (check skins-api.plugin-key). " + detail);
-			}
-			return SimpleResult.fail(detail);
-		} catch (Exception e) {
-			return SimpleResult.fail("Could not reach skins API: " + e.getMessage());
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+	/** GET JSON body via TFMCWeb gateway. */
+	private static GatewayClient.Result getJson(String path) {
+		return GatewayClient.request("GET", path, null);
 	}
 
 	static List<ApprovedSubmission> parseApprovedSubmissions(String json) {
@@ -1386,35 +1021,6 @@ public class ProvinceSystemClient {
 			}
 		}
 		return out;
-	}
-
-	private static String readBody(InputStream stream) throws Exception {
-		if (stream == null) {
-			return "";
-		}
-		StringBuilder sb = new StringBuilder();
-		try (BufferedReader in = new BufferedReader(
-			new InputStreamReader(stream, StandardCharsets.UTF_8)
-		)) {
-			String line;
-			while ((line = in.readLine()) != null) {
-				sb.append(line);
-			}
-		}
-		return sb.toString();
-	}
-
-	private static byte[] readBytes(InputStream stream) throws Exception {
-		if (stream == null) {
-			return new byte[0];
-		}
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte[] buf = new byte[8192];
-		int n;
-		while ((n = stream.read(buf)) >= 0) {
-			out.write(buf, 0, n);
-		}
-		return out.toByteArray();
 	}
 
 	/** Extract a JSON string field value (simple, no nested objects). */

@@ -37,7 +37,7 @@ public final class PackSubmissionRemover {
 		List<String> tiers,
 		Logger log
 	) throws IOException {
-		return remove(contentsRoot, PackPaths.NAMESPACE, kind, slug, tiers, log);
+		return remove(contentsRoot, PackPaths.playerNamespace(), kind, slug, tiers, log);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public final class PackSubmissionRemover {
 			throw new IllegalArgumentException("contentsRoot is null");
 		}
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		String k = kind == null ? "" : kind.trim().toLowerCase(Locale.ROOT);
 		String s = slug == null ? "" : slug.trim();

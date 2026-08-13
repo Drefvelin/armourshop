@@ -23,7 +23,7 @@ public final class BowWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -51,7 +51,7 @@ public final class BowWriter {
 	public static List<Path> writeCrossbow(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return writeCrossbow(contentsRoot, submission, PackPaths.NAMESPACE);
+		return writeCrossbow(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> writeCrossbow(
@@ -80,7 +80,7 @@ public final class BowWriter {
 		String[] stems
 	) throws IOException {
 		return writeGenerateTrue(
-			contentsRoot, submission, material, stems, PackPaths.NAMESPACE
+			contentsRoot, submission, material, stems, PackPaths.playerNamespace()
 		);
 	}
 
@@ -125,7 +125,7 @@ public final class BowWriter {
 	}
 
 	static String buildYaml(PackSubmission submission, String material) {
-		return buildYaml(submission, material, PackPaths.NAMESPACE);
+		return buildYaml(submission, material, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(PackSubmission submission, String material, String namespace) {

@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.tfminecraft.ArmourShop.entitlements.PlayerMetaSyncService;
 import net.tfminecraft.ArmourShop.loaders.BaseSetLoader;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.loaders.ConfigLoader;
@@ -15,7 +14,6 @@ import net.tfminecraft.ArmourShop.loaders.PermissionGroupsLoader;
 import net.tfminecraft.ArmourShop.loaders.SkinSetLoader;
 import net.tfminecraft.ArmourShop.managers.CommandManager;
 import net.tfminecraft.ArmourShop.managers.BookSignSkinListener;
-import net.tfminecraft.ArmourShop.managers.PlayerJoinMetaListener;
 import net.tfminecraft.ArmourShop.managers.SkinManager;
 import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullScheduler;
@@ -33,7 +31,6 @@ public class ArmourShop extends JavaPlugin{
 	private final CommandManager commandManager = new CommandManager();
 	private final SkinManager skinManager = new SkinManager();
 	private final BookSignSkinListener bookSignSkinListener = new BookSignSkinListener();
-	private final PlayerJoinMetaListener playerJoinMetaListener = new PlayerJoinMetaListener();
 	private PendingReloadQueue pendingReloadQueue;
 	private DeferredIaReloadService deferredIaReloadService;
 	private PackPullScheduler packPullScheduler;
@@ -86,7 +83,6 @@ public class ArmourShop extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(skinManager, this);
 		getServer().getPluginManager().registerEvents(bookSignSkinListener, this);
 		getServer().getPluginManager().registerEvents(deferredIaReloadService, this);
-		getServer().getPluginManager().registerEvents(playerJoinMetaListener, this);
 	}
 	public void loadConfigs() {
 		configLoader.load(new File(getDataFolder(), "config.yml"));
@@ -125,7 +121,6 @@ public class ArmourShop extends JavaPlugin{
 	public void reload() {
 		loadConfigs();
 		net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService.pushAsync(this);
-		PlayerMetaSyncService.pushAllOnlineAsync();
 		DeferredIaReloadService reloadService = getDeferredIaReloadService();
 		if (reloadService == null) {
 			return;

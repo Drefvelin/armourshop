@@ -37,7 +37,7 @@ public final class Model3dUtil {
 		}
 		String text = new String(modelJson, StandardCharsets.UTF_8);
 		JsonObject root = JsonParser.parseString(text).getAsJsonObject();
-		String texPath = PackPaths.NAMESPACE + ":item/" + textureId;
+		String texPath = PackPaths.playerNamespace() + ":item/" + textureId;
 		JsonObject textures = root.has("textures") && root.get("textures").isJsonObject()
 			? root.getAsJsonObject("textures")
 			: new JsonObject();

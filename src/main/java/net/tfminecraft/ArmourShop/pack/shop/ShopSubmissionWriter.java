@@ -62,7 +62,7 @@ public final class ShopSubmissionWriter {
 		List<String> colours = sub.nameColours == null ? List.of() : sub.nameColours;
 		List<String> styles = sub.nameStyles == null ? List.of() : sub.nameStyles;
 		boolean addName = sub.addName;
-		String ns = PackPaths.NAMESPACE;
+		String ns = PackPaths.playerNamespace();
 
 		if ("armor_set".equals(kind)) {
 			List<String> tiers = sub.tiers != null && !sub.tiers.isEmpty()
@@ -404,7 +404,7 @@ public final class ShopSubmissionWriter {
 		FileConfiguration config = loadOrEmpty(file);
 		String root = rootKey;
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		config.set(root + ".name", display);
 		writeColour(config, root, colours);
@@ -437,7 +437,7 @@ public final class ShopSubmissionWriter {
 		FileConfiguration config = loadOrEmpty(file);
 		String root = slug;
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		config.set(root + ".name", display);
 		writeColour(config, root, colours);

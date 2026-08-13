@@ -27,7 +27,7 @@ public final class GunsSkinsYml {
 	public static void upsert(Path skinsYml, String slug, String baseSet)
 		throws IOException
 	{
-		upsert(skinsYml, slug, baseSet, PackPaths.NAMESPACE);
+		upsert(skinsYml, slug, baseSet, PackPaths.playerNamespace());
 	}
 
 	public static void upsert(
@@ -47,7 +47,7 @@ public final class GunsSkinsYml {
 		}
 
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		String existing = Files.isRegularFile(skinsYml)
 			? Files.readString(skinsYml, StandardCharsets.UTF_8)

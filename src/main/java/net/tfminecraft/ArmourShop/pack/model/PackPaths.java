@@ -7,14 +7,41 @@ import java.nio.file.Path;
  */
 public final class PackPaths {
 
+	/** Main-realm player submissions namespace (legacy / default). */
 	public static final String NAMESPACE = "tfmc_submissions";
 	public static final String STAFF_NAMESPACE = "tfmc_armorshop";
 
 	private PackPaths() {}
 
-	/** `{contents}/tfmc_submissions` */
+	/**
+	 * Player pack namespace for this box's realm.
+	 * {@code main} → {@link #NAMESPACE}; otherwise {@code tfmc_submissions_<realm>}.
+	 */
+	public static String playerNamespace() {
+		String realm = currentRealm();
+		if (realm == null || realm.isBlank() || "main".equals(realm)) {
+			return NAMESPACE;
+		}
+		return NAMESPACE + "_" + realm;
+	}
+
+	private static String currentRealm() {
+		try {
+			Class<?> cls = Class.forName("net.tfminecraft.TFMCWeb.TFMCWeb");
+			Object realm = cls.getMethod("getRealmId").invoke(null);
+			if (realm == null) {
+				return "main";
+			}
+			String text = String.valueOf(realm).trim().toLowerCase();
+			return text.isEmpty() ? "main" : text;
+		} catch (Throwable ignored) {
+			return "main";
+		}
+	}
+
+	/** `{contents}/tfmc_submissions` (or realm-scoped player namespace). */
 	public static Path namespaceRoot(Path contentsRoot) {
-		return namespaceRoot(contentsRoot, NAMESPACE);
+		return namespaceRoot(contentsRoot, playerNamespace());
 	}
 
 	public static Path namespaceRoot(Path contentsRoot, String namespace) {
@@ -22,7 +49,7 @@ public final class PackPaths {
 	}
 
 	public static Path configsDir(Path contentsRoot) {
-		return configsDir(contentsRoot, NAMESPACE);
+		return configsDir(contentsRoot, playerNamespace());
 	}
 
 	public static Path configsDir(Path contentsRoot, String namespace) {
@@ -30,7 +57,7 @@ public final class PackPaths {
 	}
 
 	public static Path assetsRoot(Path contentsRoot) {
-		return assetsRoot(contentsRoot, NAMESPACE);
+		return assetsRoot(contentsRoot, playerNamespace());
 	}
 
 	public static Path assetsRoot(Path contentsRoot, String namespace) {
@@ -42,7 +69,7 @@ public final class PackPaths {
 	}
 
 	public static Path texturesRoot(Path contentsRoot) {
-		return texturesRoot(contentsRoot, NAMESPACE);
+		return texturesRoot(contentsRoot, playerNamespace());
 	}
 
 	public static Path texturesRoot(Path contentsRoot, String namespace) {
@@ -50,7 +77,7 @@ public final class PackPaths {
 	}
 
 	public static Path armorIconsDir(Path contentsRoot) {
-		return armorIconsDir(contentsRoot, NAMESPACE);
+		return armorIconsDir(contentsRoot, playerNamespace());
 	}
 
 	public static Path armorIconsDir(Path contentsRoot, String namespace) {
@@ -58,7 +85,7 @@ public final class PackPaths {
 	}
 
 	public static Path armorLayersDir(Path contentsRoot) {
-		return armorLayersDir(contentsRoot, NAMESPACE);
+		return armorLayersDir(contentsRoot, playerNamespace());
 	}
 
 	public static Path armorLayersDir(Path contentsRoot, String namespace) {
@@ -66,7 +93,7 @@ public final class PackPaths {
 	}
 
 	public static Path itemTexturesDir(Path contentsRoot) {
-		return itemTexturesDir(contentsRoot, NAMESPACE);
+		return itemTexturesDir(contentsRoot, playerNamespace());
 	}
 
 	public static Path itemTexturesDir(Path contentsRoot, String namespace) {
@@ -74,7 +101,7 @@ public final class PackPaths {
 	}
 
 	public static Path itemModelsDir(Path contentsRoot) {
-		return itemModelsDir(contentsRoot, NAMESPACE);
+		return itemModelsDir(contentsRoot, playerNamespace());
 	}
 
 	public static Path itemModelsDir(Path contentsRoot, String namespace) {

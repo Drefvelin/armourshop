@@ -26,7 +26,7 @@ public final class BookWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -72,7 +72,7 @@ public final class BookWriter {
 		throws IOException
 	{
 		String ns = namespace == null || namespace.isBlank()
-			? PackPaths.NAMESPACE
+			? PackPaths.playerNamespace()
 			: namespace.trim();
 		String s = slug == null ? "" : slug.trim().toLowerCase(Locale.ROOT);
 		if (s.isEmpty()) {

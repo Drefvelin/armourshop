@@ -24,7 +24,7 @@ public final class FlatItemWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -61,7 +61,7 @@ public final class FlatItemWriter {
 	}
 
 	static String buildYaml(PackSubmission submission) {
-		return buildYaml(submission, PackPaths.NAMESPACE);
+		return buildYaml(submission, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(PackSubmission submission, String namespace) {

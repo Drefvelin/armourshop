@@ -23,7 +23,7 @@ public final class Item3dWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -51,7 +51,7 @@ public final class Item3dWriter {
 	public static List<Path> writeHelmet3d(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return writeHelmet3d(contentsRoot, submission, PackPaths.NAMESPACE);
+		return writeHelmet3d(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> writeHelmet3d(
@@ -86,7 +86,7 @@ public final class Item3dWriter {
 		String armorSlot
 	) throws IOException {
 		return writeModelItem(
-			contentsRoot, submission, material, armorSlot, PackPaths.NAMESPACE
+			contentsRoot, submission, material, armorSlot, PackPaths.playerNamespace()
 		);
 	}
 
@@ -133,7 +133,7 @@ public final class Item3dWriter {
 		String material,
 		String armorSlot
 	) {
-		return buildYaml(submission, material, armorSlot, PackPaths.NAMESPACE);
+		return buildYaml(submission, material, armorSlot, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(

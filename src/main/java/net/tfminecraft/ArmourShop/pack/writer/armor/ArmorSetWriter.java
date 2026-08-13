@@ -39,7 +39,7 @@ public final class ArmorSetWriter {
 	public static List<Path> write(Path contentsRoot, PackSubmission submission)
 		throws IOException
 	{
-		return write(contentsRoot, submission, PackPaths.NAMESPACE);
+		return write(contentsRoot, submission, PackPaths.playerNamespace());
 	}
 
 	public static List<Path> write(
@@ -108,7 +108,7 @@ public final class ArmorSetWriter {
 	}
 
 	static String buildYaml(PackSubmission submission, boolean helmet3d) {
-		return buildYaml(submission, helmet3d, PackPaths.NAMESPACE);
+		return buildYaml(submission, helmet3d, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(PackSubmission submission, boolean helmet3d, String namespace) {

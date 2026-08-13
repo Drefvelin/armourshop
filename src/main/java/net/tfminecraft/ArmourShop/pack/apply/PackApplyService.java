@@ -517,7 +517,7 @@ public final class PackApplyService {
 		}
 		if (namespace == null
 			|| namespace.isBlank()
-			|| PackPaths.NAMESPACE.equals(namespace.trim())) {
+			|| PackPaths.playerNamespace().equals(namespace.trim())) {
 			return files;
 		}
 		Map<String, byte[]> out = new LinkedHashMap<>();
