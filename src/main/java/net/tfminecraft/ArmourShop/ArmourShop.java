@@ -2,15 +2,20 @@ package net.tfminecraft.ArmourShop;
 
 import java.io.File;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.tfminecraft.ArmourShop.entitlements.PlayerMetaSyncService;
 import net.tfminecraft.ArmourShop.loaders.BaseSetLoader;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
 import net.tfminecraft.ArmourShop.loaders.ConfigLoader;
+import net.tfminecraft.ArmourShop.loaders.PermissionGroupsLoader;
 import net.tfminecraft.ArmourShop.loaders.SkinSetLoader;
 import net.tfminecraft.ArmourShop.managers.CommandManager;
+import net.tfminecraft.ArmourShop.managers.BookSignSkinListener;
+import net.tfminecraft.ArmourShop.managers.PlayerJoinMetaListener;
 import net.tfminecraft.ArmourShop.managers.SkinManager;
 import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullScheduler;
@@ -23,9 +28,12 @@ public class ArmourShop extends JavaPlugin{
 	private final CategoryLoader categoryLoader = new CategoryLoader();
 	private final BaseSetLoader baseSetLoader = new BaseSetLoader();
 	private final ConfigLoader configLoader = new ConfigLoader();
+	private final PermissionGroupsLoader permissionGroupsLoader = new PermissionGroupsLoader();
 	
 	private final CommandManager commandManager = new CommandManager();
 	private final SkinManager skinManager = new SkinManager();
+	private final BookSignSkinListener bookSignSkinListener = new BookSignSkinListener();
+	private final PlayerJoinMetaListener playerJoinMetaListener = new PlayerJoinMetaListener();
 	private PendingReloadQueue pendingReloadQueue;
 	private DeferredIaReloadService deferredIaReloadService;
 	private PackPullScheduler packPullScheduler;
@@ -76,12 +84,15 @@ public class ArmourShop extends JavaPlugin{
 	public void registerListeners() {
 		getServer().getPluginManager().registerEvents(commandManager, this);
 		getServer().getPluginManager().registerEvents(skinManager, this);
+		getServer().getPluginManager().registerEvents(bookSignSkinListener, this);
 		getServer().getPluginManager().registerEvents(deferredIaReloadService, this);
+		getServer().getPluginManager().registerEvents(playerJoinMetaListener, this);
 	}
 	public void loadConfigs() {
 		configLoader.load(new File(getDataFolder(), "config.yml"));
 		categoryLoader.load(new File(getDataFolder(), "categories.yml"));
 		baseSetLoader.load(new File(getDataFolder(), "base-sets.yml"));
+		permissionGroupsLoader.load(new File(getDataFolder(), "permission-groups.yml"));
 		File folder = new File(getDataFolder(), "Categories");
     	for (final File file : folder.listFiles()) {
     		if(!file.isDirectory()) {
@@ -100,6 +111,7 @@ public class ArmourShop extends JavaPlugin{
 				"categories.yml",
 				"config.yml",
 				"base-sets.yml",
+				"permission-groups.yml",
 				};
 		for(String s : files) {
 			File newConfigFile = new File(getDataFolder(), s);
@@ -113,6 +125,23 @@ public class ArmourShop extends JavaPlugin{
 	public void reload() {
 		loadConfigs();
 		net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService.pushAsync(this);
+		PlayerMetaSyncService.pushAllOnlineAsync();
+		DeferredIaReloadService reloadService = getDeferredIaReloadService();
+		if (reloadService == null) {
+			return;
+		}
+		// Refresh pending-reload queue from website (same as /armourshop pack sync).
+		Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+			DeferredIaReloadService.SyncResult sync =
+				reloadService.syncQueueFromWebsite(getLogger());
+			if (sync != null && sync.ok) {
+				getLogger().info("[reload] pending-reload synced from website: "
+					+ sync.before + " → " + sync.after);
+			} else if (sync != null && !sync.ok) {
+				getLogger().warning("[reload] pending-reload sync failed: "
+					+ (sync.error != null ? sync.error : "unknown"));
+			}
+		});
 	}
 	public void reloadMessage(Player p) {
 		p.sendMessage(ChatColor.GREEN + "[ArmourShop]" + ChatColor.YELLOW + " Reloading plugin...");

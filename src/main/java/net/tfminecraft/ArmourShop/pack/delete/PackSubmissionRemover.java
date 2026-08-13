@@ -3,6 +3,7 @@ package net.tfminecraft.ArmourShop.pack.delete;
 
 import net.tfminecraft.ArmourShop.pack.model.BowFrames;
 import net.tfminecraft.ArmourShop.pack.model.PackPaths;
+import net.tfminecraft.ArmourShop.pack.writer.flat.BookWriter;
 import net.tfminecraft.ArmourShop.pack.writer.gun.GunWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -79,6 +80,8 @@ public final class PackSubmissionRemover {
 			removeArmorPack(contentsRoot, ns, s, removed);
 		} else if ("gun".equals(k)) {
 			removed.addAll(GunWriter.remove(contentsRoot, ns, s, gunsSkinsYmlOrNull()));
+		} else if ("book".equals(k)) {
+			removed.addAll(BookWriter.remove(contentsRoot, ns, s));
 		} else {
 			removeNonArmorPack(contentsRoot, ns, s, removed);
 		}

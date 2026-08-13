@@ -581,6 +581,10 @@ knives:
   item:
     - tools.iron_hunting_knife
 
+books:
+  item:
+    - books.LETTER
+
 minor health:
   item:
     - consumables.minor_health_potion

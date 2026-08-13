@@ -10,7 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.Cache;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
+import net.tfminecraft.ArmourShop.entitlements.PermissionGroupService;
 import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
+import net.tfminecraft.ArmourShop.objects.PermissionGroupDefinition;
 import net.tfminecraft.ArmourShop.objects.ScrollOption;
 import net.tfminecraft.ArmourShop.objects.SkinCategory;
 import net.tfminecraft.ArmourShop.objects.SkinSet;
@@ -22,9 +24,9 @@ public final class CatalogSyncService {
 
 	private CatalogSyncService() {}
 
-	/** Build payload from in-memory categories + Cache.scrolls. */
+	/** Build payload from in-memory categories + Cache.scrolls + entitlements. */
 	public static String buildPayloadJson() {
-		StringBuilder sb = new StringBuilder(512);
+		StringBuilder sb = new StringBuilder(768);
 		sb.append("{\"categories\":[");
 		boolean firstCat = true;
 		for (SkinCategory cat : CategoryLoader.get()) {
@@ -73,7 +75,63 @@ public final class CatalogSyncService {
 				sb.append(",\"label\":\"").append(escape(scroll.getLabel())).append("\"}");
 			}
 		}
-		sb.append("]}");
+		sb.append("],\"entitlements\":{");
+		sb.append("\"defaults\":{");
+		sb.append("\"name_colour_stops\":")
+			.append(PermissionGroupService.getDefaultNameColourStops());
+		sb.append(",\"max_3d_pair_bytes\":")
+			.append(PermissionGroupService.getDefaultMax3dPairBytes());
+		sb.append(",\"skin_token_cooldown_days\":")
+			.append(PermissionGroupService.getDefaultSkinTokenCooldownDays());
+		sb.append(",\"skin_kinds\":");
+		appendStringArray(sb, PermissionGroupService.getDefaultSkinKinds());
+		sb.append(",\"allow_armor_3d_helmet\":")
+			.append(PermissionGroupService.getDefaultAllowArmor3dHelmet());
+		sb.append("},\"groups\":[");
+		boolean firstGroup = true;
+		List<PermissionGroupDefinition> groups = Cache.permissionGroups;
+		if (groups != null) {
+			for (PermissionGroupDefinition group : groups) {
+				if (group == null || group.getId() == null || group.getId().isBlank()) {
+					continue;
+				}
+				if (!firstGroup) {
+					sb.append(',');
+				}
+				firstGroup = false;
+				String display = group.getDisplayName() == null
+					? group.getId()
+					: group.getDisplayName();
+				sb.append("{\"id\":\"").append(escape(group.getId())).append('"');
+				sb.append(",\"tier\":").append(group.getTier());
+				sb.append(",\"permission\":\"")
+					.append(escape(group.getPermission() == null ? "" : group.getPermission()))
+					.append('"');
+				sb.append(",\"display_name\":\"").append(escape(display)).append('"');
+				sb.append(",\"name_colour_stops\":").append(
+					PermissionGroupService.groupPerkOrDefault(
+						group, PermissionGroupDefinition.KEY_NAME_COLOUR_STOPS
+					)
+				);
+				sb.append(",\"max_3d_pair_bytes\":").append(
+					PermissionGroupService.groupPerkOrDefault(
+						group, PermissionGroupDefinition.KEY_MAX_3D_PAIR_BYTES
+					)
+				);
+				sb.append(",\"skin_token_cooldown_days\":").append(
+					PermissionGroupService.groupPerkOrDefault(
+						group, PermissionGroupDefinition.KEY_SKIN_TOKEN_COOLDOWN_DAYS
+					)
+				);
+				sb.append(",\"skin_kinds\":");
+				appendStringArray(sb, group.getSkinKinds());
+				sb.append(",\"allow_armor_3d_helmet\":").append(
+					PermissionGroupService.groupAllowArmor3dHelmetOrDefault(group)
+				);
+				sb.append('}');
+			}
+		}
+		sb.append("]}}");
 		return sb.toString();
 	}
 
@@ -109,6 +167,24 @@ public final class CatalogSyncService {
 		if (plugin != null) {
 			pushAsync(plugin);
 		}
+	}
+
+	private static void appendStringArray(StringBuilder sb, List<String> values) {
+		sb.append('[');
+		boolean first = true;
+		if (values != null) {
+			for (String value : values) {
+				if (value == null || value.isBlank()) {
+					continue;
+				}
+				if (!first) {
+					sb.append(',');
+				}
+				first = false;
+				sb.append('"').append(escape(value.trim().toLowerCase())).append('"');
+			}
+		}
+		sb.append(']');
 	}
 
 	private static String escape(String raw) {

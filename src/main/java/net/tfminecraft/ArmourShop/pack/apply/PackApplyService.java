@@ -9,6 +9,7 @@ import net.tfminecraft.ArmourShop.pack.util.Model3dUtil;
 import net.tfminecraft.ArmourShop.pack.writer.armor.ArmorSetWriter;
 import net.tfminecraft.ArmourShop.pack.writer.bow.BowWriter;
 import net.tfminecraft.ArmourShop.pack.writer.bow.LargeBowWriter;
+import net.tfminecraft.ArmourShop.pack.writer.flat.BookWriter;
 import net.tfminecraft.ArmourShop.pack.writer.flat.FlatItemWriter;
 import net.tfminecraft.ArmourShop.pack.writer.gun.GunWriter;
 import net.tfminecraft.ArmourShop.pack.writer.large.LargeHandheldWriter;
@@ -305,6 +306,17 @@ public final class PackApplyService {
 			return null;
 		}
 		String name = filename.trim();
+		if ("book".equals(kind)) {
+			String prefix = slug + "_";
+			if (name.startsWith(prefix) && name.endsWith(".png")) {
+				String suffix = name.substring(prefix.length(), name.length() - 4);
+				if (BookWriter.UNSIGNED_STEM.equals(suffix)
+					|| BookWriter.SIGNED_STEM.equals(suffix)) {
+					return suffix;
+				}
+			}
+			return null;
+		}
 		if ("bow".equals(kind) || "large_bow".equals(kind) || "crossbow".equals(kind)) {
 			if ("large_bow".equals(kind) && name.endsWith(".json")) {
 				if (name.equals(slug + ".json")) {
@@ -474,6 +486,19 @@ public final class PackApplyService {
 					new PackSubmission(slug, display, PackKind.GUN, packFiles),
 					sub.baseSet,
 					requireGunsSkinsYml(),
+					ns
+				);
+				return;
+			case "book":
+				if (!packFiles.containsKey(BookWriter.UNSIGNED_STEM)) {
+					throw new IllegalStateException("missing unsigned");
+				}
+				if (!packFiles.containsKey(BookWriter.SIGNED_STEM)) {
+					throw new IllegalStateException("missing signed");
+				}
+				BookWriter.write(
+					contentsRoot,
+					new PackSubmission(slug, display, PackKind.BOOK, packFiles),
 					ns
 				);
 				return;

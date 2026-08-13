@@ -14,5 +14,6 @@ public enum PackKind {
 	ITEM_3D,
 	SHIELD,
 	HELMET_3D,
-	GUN
+	GUN,
+	BOOK
 }

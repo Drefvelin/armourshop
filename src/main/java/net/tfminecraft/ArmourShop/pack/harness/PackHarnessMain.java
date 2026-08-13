@@ -11,6 +11,7 @@ import net.tfminecraft.ArmourShop.pack.util.PngUtil;
 import net.tfminecraft.ArmourShop.pack.writer.armor.ArmorSetWriter;
 import net.tfminecraft.ArmourShop.pack.writer.bow.BowWriter;
 import net.tfminecraft.ArmourShop.pack.writer.bow.LargeBowWriter;
+import net.tfminecraft.ArmourShop.pack.writer.flat.BookWriter;
 import net.tfminecraft.ArmourShop.pack.writer.flat.FlatItemWriter;
 import net.tfminecraft.ArmourShop.pack.writer.gun.GunWriter;
 import net.tfminecraft.ArmourShop.pack.writer.large.LargeHandheldWriter;
@@ -74,6 +75,7 @@ public final class PackHarnessMain {
 		writeShield(contents, "harness_shield", "Harness Shield", new Color(0x44, 0x88, 0x44));
 		writeArmorHelmet3d(contents);
 		writeGun(contents);
+		writeBook(contents);
 	}
 
 	private static void writeArmor(Path contents) throws Exception {
@@ -270,6 +272,24 @@ public final class PackHarnessMain {
 		System.out.println("Wrote GUN (" + written.size() + " files)");
 	}
 
+	private static void writeBook(Path contents) throws Exception {
+		String slug = "harness_book";
+		Map<String, byte[]> files = new LinkedHashMap<>();
+		files.put(
+			BookWriter.UNSIGNED_STEM,
+			PngUtil.solidPng(16, 16, new Color(0x88, 0x55, 0x22))
+		);
+		files.put(
+			BookWriter.SIGNED_STEM,
+			PngUtil.solidPng(16, 16, new Color(0x55, 0x88, 0x33))
+		);
+		List<Path> written = BookWriter.write(
+			contents,
+			new PackSubmission(slug, "Harness Book", PackKind.BOOK, files)
+		);
+		System.out.println("Wrote BOOK (" + written.size() + " files)");
+	}
+
 	private static byte[] normalizedModelJson(String textureId) {
 		return (
 			"{\n"
@@ -370,6 +390,7 @@ public final class PackHarnessMain {
 		assertShield(contents, "harness_shield");
 		assertArmorHelmet3d(contents);
 		assertGun(contents);
+		assertBook(contents);
 	}
 
 	private static void assertArmor(Path contents) throws Exception {
@@ -497,6 +518,21 @@ public final class PackHarnessMain {
 		assertContains(skins, "ia.tfmc_submissions:" + slug + "_reload");
 		assertContains(skins, "ia.tfmc_submissions:" + slug + "_aim");
 		assertContains(skins, "rifle");
+	}
+
+	private static void assertBook(Path contents) throws Exception {
+		String slug = "harness_book";
+		assertFile(PackPaths.itemTexturesDir(contents).resolve(slug + "_unsigned.png"));
+		assertFile(PackPaths.itemTexturesDir(contents).resolve(slug + "_signed.png"));
+		String yaml = read(PackPaths.configsDir(contents).resolve(slug + ".yml"));
+		assertContains(yaml, "  " + slug + ":");
+		assertContains(yaml, "  " + slug + "_signed:");
+		assertContains(yaml, "material: WRITABLE_BOOK");
+		assertContains(yaml, "material: WRITTEN_BOOK");
+		assertContains(yaml, "item/" + slug + "_unsigned");
+		assertContains(yaml, "item/" + slug + "_signed");
+		assertContains(yaml, "generate: true");
+		assertContains(yaml, "parent: item/generated");
 	}
 
 	private static String read(Path path) throws Exception {

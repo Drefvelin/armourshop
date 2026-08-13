@@ -221,7 +221,8 @@ public final class ShopSubmissionWriter {
 			|| "item_3d".equals(kind)
 			|| "shield".equals(kind)
 			|| "helmet_3d".equals(kind)
-			|| "gun".equals(kind);
+			|| "gun".equals(kind)
+			|| "book".equals(kind);
 	}
 
 	/**

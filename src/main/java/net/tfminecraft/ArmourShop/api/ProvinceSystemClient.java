@@ -707,6 +707,16 @@ public class ProvinceSystemClient {
 		}
 	}
 
+	/**
+	 * PUT /skins/plugin/player-meta — upsert resolved skin-upload entitlements.
+	 */
+	public static SimpleResult pushPlayerMeta(String jsonBody) {
+		if (jsonBody == null || jsonBody.isBlank()) {
+			return SimpleResult.fail("Player meta payload is empty.");
+		}
+		return putSimple("/skins/plugin/player-meta", jsonBody);
+	}
+
 	/** One submission from GET /plugin/submissions/{id}. */
 	public static final class PluginSubmission {
 		public final String id;
@@ -1021,6 +1031,14 @@ public class ProvinceSystemClient {
 	}
 
 	private static SimpleResult postSimple(String path, String jsonBody) {
+		return requestSimple("POST", path, jsonBody);
+	}
+
+	private static SimpleResult putSimple(String path, String jsonBody) {
+		return requestSimple("PUT", path, jsonBody);
+	}
+
+	private static SimpleResult requestSimple(String method, String path, String jsonBody) {
 		String base = Cache.skinsApiBaseUrl;
 		String key = Cache.skinsPluginKey;
 		if (base == null || base.isEmpty() || key == null || key.isEmpty()) {
@@ -1034,7 +1052,7 @@ public class ProvinceSystemClient {
 			@SuppressWarnings("deprecation")
 			URL url = new URL(base + path);
 			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
+			connection.setRequestMethod(method);
 			connection.setConnectTimeout(TIMEOUT_MS);
 			connection.setReadTimeout(TIMEOUT_MS);
 			connection.setDoOutput(true);
