@@ -303,7 +303,7 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 						ChatMessages.sendTokenListLine((Player) sender, entry.code, owner);
 					} else {
 						sender.sendMessage(ChatColor.AQUA + entry.code
-							+ ChatColor.GRAY + " — "
+							+ ChatColor.GRAY + " - "
 							+ ChatColor.YELLOW + owner);
 					}
 				}

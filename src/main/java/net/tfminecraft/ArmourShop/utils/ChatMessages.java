@@ -71,7 +71,7 @@ public final class ChatMessages {
 		TextComponent line = new TextComponent(code);
 		line.setColor(net.md_5.bungee.api.ChatColor.AQUA);
 
-		TextComponent sep = new TextComponent(" — ");
+		TextComponent sep = new TextComponent(" - ");
 		sep.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 
 		TextComponent ownerComp = new TextComponent(owner);

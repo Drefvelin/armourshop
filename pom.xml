@@ -12,10 +12,9 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Same layout as Workspace/guides (Guidebook) -->
-        <tfmc.refs>D:/Documents/TFMC/ReferenceLibs</tfmc.refs>
-        <tfmc.builds>D:/Documents/TFMC/Builds/ArmourShop</tfmc.builds>
-        <tfmc.tlibs>D:/Documents/TFMC/Builds/TLibs</tfmc.tlibs>
+        <tfmc.refs>D:/Dokumenter/My Plugins/Reference Libs</tfmc.refs>
+        <tfmc.builds>D:/Dokumenter/My Plugins/TFMC/ArmourShop</tfmc.builds>
+        <tfmc.tlibs>D:/Dokumenter/My Plugins/TFMC/TLibs</tfmc.tlibs>
     </properties>
 
     <dependencies>
@@ -82,7 +81,7 @@
             <artifactId>GunsAndGadgets</artifactId>
             <version>1.0.3</version>
             <scope>system</scope>
-            <systemPath>D:/Documents/TFMC/Builds/GunsAndGadgets/gunsandgadgets-1.0.3.jar</systemPath>
+            <systemPath>D:/Dokumenter/My Plugins/TFMC/GunsAndGadgets/gunsandgadgets-1.0.3.jar</systemPath>
         </dependency>
     </dependencies>
 
