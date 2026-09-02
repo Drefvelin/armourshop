@@ -231,7 +231,7 @@ public class InventoryManager {
 			String value = id.split("\\(")[1].replace(")", "");
 			SkinData gunskin = SkinLoader.getByString(value);
 			if(gunskin == null) {
-				System.out.println("no skin called "+value);
+				ArmourShop.plugin.getLogger().warning("No gunskin called " + value);
 				i = new ItemStack(Material.DIRT, 1);
 			} else {
 				i = gunskin.parseModel(SkinState.CARRY);
