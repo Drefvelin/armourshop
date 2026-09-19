@@ -17,6 +17,7 @@ import dev.lone.itemsadder.api.CustomStack;
 import net.tfminecraft.ArmourShop.ArmourShop;
 
 /**
+ * Preserve custom item metadata when saving unsigned pages.
  * When a player signs an ItemsAdder book skin ({@code slug}), swap the stack to
  * {@code slug_signed} while keeping pages, title, author, display name, lore, and PDC.
  */
@@ -24,6 +25,7 @@ public final class BookSignSkinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignBook(PlayerEditBookEvent event) {
+		BookEditSkinPreserver.preserve(event);
 		if (!event.isSigning()) {
 			return;
 		}
