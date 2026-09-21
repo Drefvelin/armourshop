@@ -41,12 +41,13 @@ public final class Item3dWriter {
 			submission,
 			"PAPER",
 			null,
+			false,
 			namespace
 		);
 	}
 
 	/**
-	 * Writes standalone helmet_3d skins (wearable head, {@code set: helmets}).
+	 * Writes standalone helmet_3d skins as an unplaceable carved pumpkin hat.
 	 */
 	public static List<Path> writeHelmet3d(Path contentsRoot, PackSubmission submission)
 		throws IOException
@@ -67,8 +68,9 @@ public final class Item3dWriter {
 		return writeModelItem(
 			contentsRoot,
 			submission,
-			"PAPER",
-			"head",
+			"CARVED_PUMPKIN",
+			null,
+			true,
 			namespace
 		);
 	}
@@ -78,15 +80,17 @@ public final class Item3dWriter {
 	 *
 	 * @param material IA material name
 	 * @param armorSlot if non-null, adds armor slot specific_properties (e.g. {@code head})
+	 * @param hat when true, appends {@code behaviours.hat} so a carved pumpkin cannot be placed
 	 */
 	static List<Path> writeModelItem(
 		Path contentsRoot,
 		PackSubmission submission,
 		String material,
-		String armorSlot
+		String armorSlot,
+		boolean hat
 	) throws IOException {
 		return writeModelItem(
-			contentsRoot, submission, material, armorSlot, PackPaths.playerNamespace()
+			contentsRoot, submission, material, armorSlot, hat, PackPaths.playerNamespace()
 		);
 	}
 
@@ -95,6 +99,7 @@ public final class Item3dWriter {
 		PackSubmission submission,
 		String material,
 		String armorSlot,
+		boolean hat,
 		String namespace
 	) throws IOException {
 		String slug = submission.slug();
@@ -121,7 +126,7 @@ public final class Item3dWriter {
 		Path yamlPath = configsDir.resolve(slug + ".yml");
 		Files.writeString(
 			yamlPath,
-			buildYaml(submission, material, armorSlot, ns),
+			buildYaml(submission, material, armorSlot, hat, ns),
 			StandardCharsets.UTF_8
 		);
 		written.add(yamlPath);
@@ -131,15 +136,17 @@ public final class Item3dWriter {
 	static String buildYaml(
 		PackSubmission submission,
 		String material,
-		String armorSlot
+		String armorSlot,
+		boolean hat
 	) {
-		return buildYaml(submission, material, armorSlot, PackPaths.playerNamespace());
+		return buildYaml(submission, material, armorSlot, hat, PackPaths.playerNamespace());
 	}
 
 	static String buildYaml(
 		PackSubmission submission,
 		String material,
 		String armorSlot,
+		boolean hat,
 		String namespace
 	) {
 		String slug = submission.slug();
@@ -159,6 +166,10 @@ public final class Item3dWriter {
 			sb.append("    specific_properties:\n");
 			sb.append("      armor:\n");
 			sb.append("        slot: ").append(armorSlot.trim()).append('\n');
+		}
+		if (hat) {
+			sb.append("    behaviours:\n");
+			sb.append("      hat: true\n");
 		}
 		return sb.toString();
 	}

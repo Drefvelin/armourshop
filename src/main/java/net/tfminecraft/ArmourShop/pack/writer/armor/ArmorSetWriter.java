@@ -136,6 +136,8 @@ public final class ArmorSetWriter {
 			sb.append("      material: CARVED_PUMPKIN\n");
 			sb.append("      generate: false\n");
 			sb.append("      model_path: item/").append(helmetId).append('\n');
+			sb.append("    behaviours:\n");
+			sb.append("      hat: true\n");
 		} else {
 			sb.append("      generate: true\n");
 			sb.append("      textures:\n");

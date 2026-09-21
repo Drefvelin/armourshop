@@ -457,14 +457,23 @@ public final class PackHarnessMain {
 		assertContains(model, "1.8");
 	}
 
-	private static void assertModel3d(Path contents, String slug, boolean headSlot)
+	private static void assertModel3d(Path contents, String slug, boolean hat)
 		throws Exception
 	{
 		String yaml = read(PackPaths.configsDir(contents).resolve(slug + ".yml"));
 		assertContains(yaml, "generate: false");
 		assertContains(yaml, "model_path: item/" + slug);
-		if (headSlot) {
-			assertContains(yaml, "slot: head");
+		if (hat) {
+			assertContains(yaml, "material: CARVED_PUMPKIN");
+			assertContains(yaml, "hat: true");
+			if (yaml.contains("slot: head")) {
+				fail("3D hat must not use an armor head slot: " + slug);
+			}
+		} else {
+			assertContains(yaml, "material: PAPER");
+			if (yaml.contains("hat: true")) {
+				fail("item_3d must not use hat behaviour: " + slug);
+			}
 		}
 		assertFile(PackPaths.itemTexturesDir(contents).resolve(slug + ".png"));
 		String model = read(PackPaths.itemModelsDir(contents).resolve(slug + ".json"));
@@ -488,6 +497,8 @@ public final class PackHarnessMain {
 		String slug = "harness_armor_h3d";
 		String yaml = read(PackPaths.configsDir(contents).resolve(slug + ".yml"));
 		assertContains(yaml, "generate: false");
+		assertContains(yaml, "material: CARVED_PUMPKIN");
+		assertContains(yaml, "hat: true");
 		assertContains(yaml, "model_path: item/" + slug + "_helmet");
 		assertFile(PackPaths.itemTexturesDir(contents).resolve(slug + "_helmet.png"));
 		assertFile(PackPaths.itemModelsDir(contents).resolve(slug + "_helmet.json"));
