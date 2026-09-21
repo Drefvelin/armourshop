@@ -9,7 +9,7 @@ softdepend: [MMOItems, MythicLib, LuckPerms]
 
 commands:
   armourshop:
-      usage: /<command> | /<command> reload | /<command> token delete <code> | /<command> listtokens | /<command> pack pull | /<command> catalog sync | /<command> submission delete <id> | /<command> skin delete <id>
+      usage: /<command> | /<command> reload | /<command> token delete <code> | /<command> listtokens | /<command> pack pull | /<command> catalog sync | /<command> submission delete <id> | /<command> skin delete <id> | /<command> model apply <category_id> <skin_id>
       description: Open ArmourShop, reload, admin token tools, or pull approved packs
 
 permissions:

@@ -17,17 +17,15 @@ import dev.lone.itemsadder.api.CustomStack;
 import net.tfminecraft.ArmourShop.ArmourShop;
 
 /**
- * When a player signs an ItemsAdder book skin ({@code slug}), swap the stack to
- * {@code slug_signed} while keeping pages, title, author, display name, lore, and PDC.
+ * When a player edits or signs an ItemsAdder book skin ({@code slug}), put the
+ * stack back as {@code slug} (edit) or {@code slug_signed} (sign). Pages, title,
+ * author, display name, lore, and PDC are copied onto that skin. Vanilla's
+ * edit-book save otherwise replaces the stack with a plain book and quill.
  */
 public final class BookSignSkinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignBook(PlayerEditBookEvent event) {
-		if (!event.isSigning()) {
-			return;
-		}
-
 		Player player = event.getPlayer();
 		int slot = event.getSlot();
 		ItemStack current = player.getInventory().getItem(slot);
@@ -49,9 +47,10 @@ public final class BookSignSkinListener implements Listener {
 			return;
 		}
 
-		String signedId = id + "_signed";
-		CustomStack signed = CustomStack.getInstance(namespace + ":" + signedId);
-		if (signed == null) {
+		boolean signing = event.isSigning();
+		String targetId = signing ? id + "_signed" : id;
+		CustomStack target = CustomStack.getInstance(namespace + ":" + targetId);
+		if (target == null) {
 			return;
 		}
 
@@ -63,7 +62,7 @@ public final class BookSignSkinListener implements Listener {
 		List<String> lore = prevMeta != null && prevMeta.hasLore() && prevMeta.getLore() != null
 			? new ArrayList<>(prevMeta.getLore())
 			: null;
-		BookMeta signedContent = event.getNewBookMeta();
+		BookMeta content = event.getNewBookMeta();
 		int amount = Math.max(1, current.getAmount());
 
 		new BukkitRunnable() {
@@ -72,29 +71,31 @@ public final class BookSignSkinListener implements Listener {
 				if (!player.isOnline()) {
 					return;
 				}
-				ItemStack signedStack = signed.getItemStack();
-				if (signedStack == null || signedStack.getType().isAir()) {
+				ItemStack restored = target.getItemStack();
+				if (restored == null || restored.getType().isAir()) {
 					return;
 				}
-				signedStack = signedStack.clone();
-				signedStack.setAmount(amount);
+				restored = restored.clone();
+				restored.setAmount(amount);
 
-				ItemMeta meta = signedStack.getItemMeta();
+				ItemMeta meta = restored.getItemMeta();
 				if (!(meta instanceof BookMeta bookMeta)) {
-					player.getInventory().setItem(slot, signedStack);
+					player.getInventory().setItem(slot, restored);
 					return;
 				}
 
-				if (signedContent != null) {
-					bookMeta.setPages(signedContent.getPages());
-					if (signedContent.hasTitle()) {
-						bookMeta.setTitle(signedContent.getTitle());
-					}
-					if (signedContent.hasAuthor()) {
-						bookMeta.setAuthor(signedContent.getAuthor());
-					}
-					if (signedContent.hasGeneration()) {
-						bookMeta.setGeneration(signedContent.getGeneration());
+				if (content != null) {
+					bookMeta.setPages(content.getPages());
+					if (signing) {
+						if (content.hasTitle()) {
+							bookMeta.setTitle(content.getTitle());
+						}
+						if (content.hasAuthor()) {
+							bookMeta.setAuthor(content.getAuthor());
+						}
+						if (content.hasGeneration()) {
+							bookMeta.setGeneration(content.getGeneration());
+						}
 					}
 				}
 				if (displayName != null) {
@@ -107,11 +108,12 @@ public final class BookSignSkinListener implements Listener {
 					copyPdc(prevMetaClone, bookMeta);
 				}
 
-				signedStack.setItemMeta(bookMeta);
-				player.getInventory().setItem(slot, signedStack);
+				restored.setItemMeta(bookMeta);
+				player.getInventory().setItem(slot, restored);
+				String action = signing ? "book-sign" : "book-edit";
 				ArmourShop.plugin.getLogger().info(
-					"[book-sign] " + player.getName() + " "
-						+ namespace + ":" + id + " -> " + signedId
+					"[" + action + "] " + player.getName() + " "
+						+ namespace + ":" + id + " -> " + targetId
 				);
 			}
 		}.runTaskLater(ArmourShop.plugin, 1L);

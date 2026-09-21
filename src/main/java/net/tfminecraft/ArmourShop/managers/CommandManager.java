@@ -3,6 +3,7 @@ package net.tfminecraft.ArmourShop.managers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -14,10 +15,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.Plugins.TLibs.TLibs;
+import me.Plugins.TLibs.Objects.API.SubAPI.ArmorMerger;
 import net.tfminecraft.ArmourShop.ArmourShop;
 import net.tfminecraft.ArmourShop.api.ProvinceSystemClient;
+import net.tfminecraft.ArmourShop.loaders.CategoryLoader;
+import net.tfminecraft.ArmourShop.objects.SkinCategory;
+import net.tfminecraft.ArmourShop.objects.SkinSet;
 import net.tfminecraft.ArmourShop.pack.apply.PackPullRunner;
 import net.tfminecraft.ArmourShop.pack.catalog.CatalogSyncService;
 import net.tfminecraft.ArmourShop.pack.reload.DeferredIaReloadService;
@@ -135,7 +144,174 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			return handleSkinDelete(sender, args[2]);
 		}
 
+		if (args.length >= 1 && args[0].equalsIgnoreCase("model")) {
+			if (args.length >= 4
+				&& args[1].equalsIgnoreCase("apply")) {
+				return handleModelApply(sender, args[2], args[3]);
+			}
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Usage: /armourshop model apply <category_id> <skin_id>");
+			return true;
+		}
+
 		return false;
+	}
+
+	private boolean handleModelApply(CommandSender sender, String categoryId, String skinId) {
+		if (!Permissions.isAdmin(sender)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "You do not have access to this command");
+			return true;
+		}
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Only a player can apply a model to a held item");
+			return true;
+		}
+		Player player = (Player) sender;
+		ItemStack held = player.getInventory().getItemInMainHand();
+		if (held == null || held.getType().isAir()) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Hold the item you want to skin");
+			return true;
+		}
+		SkinCategory category = CategoryLoader.getByString(categoryId);
+		if (category == null) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Unknown category: " + categoryId);
+			return true;
+		}
+		SkinSet set = null;
+		for (SkinSet candidate : category.getSets()) {
+			if (candidate.getId().equalsIgnoreCase(skinId)) {
+				set = candidate;
+				break;
+			}
+		}
+		if (set == null) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Unknown skin: " + skinId);
+			return true;
+		}
+		String path = modelPath(set, held);
+		if (path == null) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "That skin has no model for this item. Pieces: "
+				+ pieceList(set));
+			return true;
+		}
+		ItemMeta previous = held.getItemMeta();
+		BookMeta previousBook = null;
+		if (previous instanceof BookMeta) {
+			previousBook = (BookMeta) previous.clone();
+		}
+		Optional<String> name = set.addName()
+			? Optional.of(set.getName())
+			: Optional.empty();
+		ItemStack merged;
+		try {
+			ArmorMerger merger = TLibs.getItemAPI().getArmorMerger();
+			merged = merger.merge(held.clone(), name, path);
+		} catch (Exception ex) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Could not apply that model");
+			ArmourShop.plugin.getLogger().warning(
+				"[model-apply] failed " + categoryId + " " + skinId + ": " + ex.getMessage()
+			);
+			return true;
+		}
+		if (merged == null || merged.getType().isAir()) {
+			player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+				+ ChatColor.RED + "Could not apply that model");
+			return true;
+		}
+		merged.setAmount(Math.max(1, held.getAmount()));
+		if (previousBook != null) {
+			restoreBook(merged, previousBook, set.addName());
+		}
+		player.getInventory().setItemInMainHand(merged);
+		player.sendMessage(ChatColor.GREEN + "[ArmourShop] "
+			+ ChatColor.YELLOW + "Applied " + set.getId() + " to the item in your hand");
+		return true;
+	}
+
+	/**
+	 * Item skins (books included) use the set's item path. Armor sets pick the
+	 * piece that matches the held material.
+	 */
+	private static String modelPath(SkinSet set, ItemStack held) {
+		if (set.hasItem()) {
+			return set.getItem();
+		}
+		String material = held.getType().name();
+		if (material.endsWith("_HELMET") && set.hasHelmet()) {
+			return set.getHelmet();
+		}
+		if (material.endsWith("_CHESTPLATE") && set.hasChestplate()) {
+			return set.getChestplate();
+		}
+		if (material.endsWith("_LEGGINGS") && set.hasLeggings()) {
+			return set.getLeggings();
+		}
+		if (material.endsWith("_BOOTS") && set.hasBoots()) {
+			return set.getBoots();
+		}
+		return null;
+	}
+
+	private static String pieceList(SkinSet set) {
+		List<String> pieces = new ArrayList<>();
+		if (set.hasItem()) {
+			pieces.add("item");
+		}
+		if (set.hasHelmet()) {
+			pieces.add("helmet");
+		}
+		if (set.hasChestplate()) {
+			pieces.add("chestplate");
+		}
+		if (set.hasLeggings()) {
+			pieces.add("leggings");
+		}
+		if (set.hasBoots()) {
+			pieces.add("boots");
+		}
+		if (pieces.isEmpty()) {
+			return "none";
+		}
+		return String.join(", ", pieces);
+	}
+
+	/** setType inside the merger clears book meta. Put the writing back. */
+	private static void restoreBook(ItemStack merged, BookMeta previous, boolean replaceName) {
+		ItemMeta meta = merged.getItemMeta();
+		if (!(meta instanceof BookMeta bookMeta)) {
+			return;
+		}
+		if (previous.getPages() != null) {
+			bookMeta.setPages(previous.getPages());
+		}
+		if (previous.hasTitle()) {
+			bookMeta.setTitle(previous.getTitle());
+		}
+		if (previous.hasAuthor()) {
+			bookMeta.setAuthor(previous.getAuthor());
+		}
+		if (previous.hasGeneration()) {
+			bookMeta.setGeneration(previous.getGeneration());
+		}
+		if (!replaceName && previous.hasDisplayName()) {
+			bookMeta.setDisplayName(previous.getDisplayName());
+		}
+		if (previous.hasLore() && previous.getLore() != null) {
+			bookMeta.setLore(new ArrayList<>(previous.getLore()));
+		}
+		try {
+			previous.getPersistentDataContainer().copyTo(bookMeta.getPersistentDataContainer(), true);
+		} catch (NoSuchMethodError | UnsupportedOperationException ignored) {
+			// Older API without copyTo. Name and lore are already copied.
+		}
+		merged.setItemMeta(bookMeta);
 	}
 
 	private boolean handleSubmissionDelete(CommandSender sender, String submissionId) {
@@ -389,6 +565,7 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 				completions.add("listtokens");
 				completions.add("submission");
 				completions.add("skin");
+				completions.add("model");
 			}
 			return filter(completions, args[0]);
 		}
@@ -423,6 +600,37 @@ public class CommandManager implements Listener, CommandExecutor, TabCompleter {
 			&& args[0].equalsIgnoreCase("skin")
 			&& Permissions.isAdmin(sender)) {
 			return filter(Collections.singletonList("delete"), args[1]);
+		}
+
+		if (args.length == 2
+			&& args[0].equalsIgnoreCase("model")
+			&& Permissions.isAdmin(sender)) {
+			return filter(Collections.singletonList("apply"), args[1]);
+		}
+
+		if (args.length == 3
+			&& args[0].equalsIgnoreCase("model")
+			&& args[1].equalsIgnoreCase("apply")
+			&& Permissions.isAdmin(sender)) {
+			List<String> ids = new ArrayList<>();
+			for (SkinCategory category : CategoryLoader.get()) {
+				ids.add(category.getId());
+			}
+			return filter(ids, args[2]);
+		}
+
+		if (args.length == 4
+			&& args[0].equalsIgnoreCase("model")
+			&& args[1].equalsIgnoreCase("apply")
+			&& Permissions.isAdmin(sender)) {
+			SkinCategory category = CategoryLoader.getByString(args[2]);
+			List<String> ids = new ArrayList<>();
+			if (category != null) {
+				for (SkinSet set : category.getSets()) {
+					ids.add(set.getId());
+				}
+			}
+			return filter(ids, args[3]);
 		}
 
 		if (args.length == 3
