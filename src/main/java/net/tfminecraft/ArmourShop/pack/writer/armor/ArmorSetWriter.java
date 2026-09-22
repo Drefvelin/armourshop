@@ -121,7 +121,7 @@ public final class ArmorSetWriter {
 		sb.append("  namespace: ").append(ns).append('\n');
 		sb.append("armors_rendering:\n");
 		sb.append("  ").append(slug).append(":\n");
-		sb.append("    color: '#ffffff'\n");
+		sb.append("    color: '").append(ArmorRenderColor.forSlug(slug)).append("'\n");
 		sb.append("    layer_1: armor_layers/").append(slug).append("_layer_1\n");
 		sb.append("    layer_2: armor_layers/").append(slug).append("_layer_2\n");
 		sb.append("    use_color: false\n");
